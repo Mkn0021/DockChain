@@ -1,38 +1,25 @@
-import React from 'react';
 import Link from 'next/link';
+import clsx from 'clsx';
 
-interface ButtonProps {
-    children: React.ReactNode;
-    variant?: 'primary' | 'secondary';
-    href?: string;
-    onClick?: () => void;
-    className?: string;
-    type?: 'button' | 'submit' | 'reset';
-}
+type ButtonProps = {
+  children: React.ReactNode;
+  href: string;
+  variant?: 'primary' | 'secondary';
+};
 
-export const Button: React.FC<ButtonProps> = ({
-    children,
-    variant = 'primary',
-    href,
-    onClick,
-    className = '',
-    type = 'button',
-}) => {
-    const baseClasses = 'btn';
-    const variantClasses = variant === 'primary' ? 'btn-primary' : 'btn-secondary';
-    const combinedClasses = `${baseClasses} ${variantClasses} ${className}`.trim();
-
-    if (href) {
-        return (
-            <Link href={href} className={combinedClasses}>
-                {children}
-            </Link>
-        );
-    }
-
-    return (
-        <button type={type} onClick={onClick} className={combinedClasses}>
-            {children}
-        </button>
-    );
+export const Button: React.FC<ButtonProps> = ({ children, href, variant = 'primary' }) => {
+  return (
+    <Link
+      href={href}
+      className={clsx(
+        'text-center rounded-full px-6 py-4 text-base font-medium leading-6 transition-all duration-150 no-underline m-2',
+        'hover:bg-gray-50 hover:text-zinc-900 hover:-translate-y-1',
+        'active:outline active:outline-primary active:outline-offset-[3px] active:outline-2',
+        variant === 'primary' && 'bg-primary text-white',
+        variant === 'secondary' && 'border border-white text-white self-center'
+      )}
+    >
+      {children}
+    </Link>
+  );
 };
