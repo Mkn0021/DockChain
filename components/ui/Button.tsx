@@ -3,11 +3,12 @@ import clsx from 'clsx';
 
 type ButtonProps = {
   children: React.ReactNode;
+  className?: string;
   href: string;
   variant?: 'primary' | 'secondary';
 };
 
-export const Button: React.FC<ButtonProps> = ({ children, href, variant = 'primary' }) => {
+export const Button: React.FC<ButtonProps> = ({ children, href, variant = 'primary', className }) => {
   return (
     <Link
       href={href}
@@ -16,7 +17,8 @@ export const Button: React.FC<ButtonProps> = ({ children, href, variant = 'prima
         'hover:bg-gray-50 hover:text-zinc-900 hover:-translate-y-1',
         'active:outline active:outline-primary active:outline-offset-[3px] active:outline-2',
         variant === 'primary' && 'bg-primary text-white',
-        variant === 'secondary' && 'border border-white text-white self-center'
+        variant === 'secondary' && 'border border-white text-white self-center',
+        className
       )}
     >
       {children}
