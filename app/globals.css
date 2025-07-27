@@ -11,9 +11,30 @@
   body {
     @apply h-full w-full font-satoshi;
     background-image: theme('backgroundImage.hero-gradient');
-    background-size: theme('backgroundSize.desktop');
+    background-size: theme('backgroundSize.mobile');
     background-repeat: no-repeat;
     background-position: center top;
+  }
+
+  @media (min-width: 640px) {
+    html,
+    body {
+      background-size: theme('backgroundSize.mobile');
+    }
+  }
+
+  @media (min-width: 768px) {
+    html,
+    body {
+      background-size: theme('backgroundSize.tablet');
+    }
+  }
+
+  @media (min-width: 1024px) {
+    html,
+    body {
+      background-size: theme('backgroundSize.desktop');
+    }
   }
   
   h1 {

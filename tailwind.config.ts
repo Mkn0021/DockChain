@@ -60,6 +60,8 @@ const config: Config = {
       },
       backgroundSize: {
         'desktop': '100% min(150vw, 150vh)',
+        'tablet': '100% min(170vw, 170vh)',
+        'mobile': '100% min(220vw, 220vh)',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
