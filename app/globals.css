@@ -38,7 +38,13 @@
   }
   
   h1 {
-    @apply p-0 box-border text-text-primary my-lg text-5xl font-medium;
+    @apply p-0 box-border text-text-primary my-lg text-4xl font-medium;
+  }
+  
+  @media (min-width: 768px) {
+    h1 {
+      @apply text-5xl;
+    }
   }
   
   h2 {
@@ -50,11 +56,23 @@
   }
   
   h4 {
-    @apply p-0 box-border text-center text-xl text-white my-4;
+    @apply p-0 box-border text-center text-lg text-white my-4;
+  }
+  
+  @media (min-width: 768px) {
+    h4 {
+      @apply text-xl;
+    }
   }
   
   h5 {
-    @apply m-0 p-0 box-border text-center text-zinc-300 whitespace-break-spaces text-body-large mb-lg;
+    @apply m-0 p-0 box-border text-center text-zinc-300 whitespace-break-spaces text-base mb-lg;
+  }
+  
+  @media (min-width: 768px) {
+    h5 {
+      @apply text-lg;
+    }
   }
   
   p {
