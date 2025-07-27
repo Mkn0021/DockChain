@@ -17,10 +17,10 @@ export const HeroSection: React.FC = () => {
             </h5>
           </div>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto">
-            <Button variant="primary" href="/login">
+            <Button variant="primary" href="/login" className="w-[80%] sm:w-auto">
               Issue Document
             </Button>
-            <Button variant="secondary" href="/verify">
+            <Button variant="secondary" href="/verify" className="w-[80%] sm:w-auto">
               Verify Document
             </Button>
           </div>
@@ -36,7 +36,7 @@ export const HeroSection: React.FC = () => {
               alt="Key Features"
             />
           </div>
-          <div className="flex align-center justify-center px-6">
+          <div className="flex align-center justify-center md:px-6">
             <Image
               src="/assets/dashboard.avif"
               loading="eager"
