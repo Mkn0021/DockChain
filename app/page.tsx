@@ -2,7 +2,6 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Section } from '@/components/home-page/Section';
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/home-page/FeatureCard';
-import { TestimonialCard } from '@/components/home-page/TestimonialCard';
 import SocialIcon from '@/components/ui/SocialIcon';
 import Image from 'next/image';
 
@@ -114,66 +113,58 @@ export default function Home() {
         </div>
       </Section>
 
-        {/* Why Blockchain Section */}
-        <Section>
-          <h2 className="text-left self-start">Why Choose Blockchain?</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-            {features.map((feature, index) => (
-              <FeatureCard
-                key={index}
-                imageSrc={feature.imageSrc}
-                imageAlt={feature.imageAlt}
-                title={feature.title}
-                description={feature.description}
-              />
-            ))}
-          </div>
-        </Section>
+      {/* Why Blockchain Section */}
+      <Section>
+        <h2 className="text-left self-start">Why Choose Blockchain?</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              imageSrc={feature.imageSrc}
+              imageAlt={feature.imageAlt}
+              title={feature.title}
+              description={feature.description}
+            />
+          ))}
+        </div>
+      </Section>
 
-        {/* How It Works Section */}
-        <section className="section">
-          <div className="padding-global">
-            <div className="section-content">
-              <div id="how-it-works" className="card card-dark verification-section">
-                <h2>Blockchain-Based Verification</h2>
-                <div className="section-subtitle">API + WEB APP + NFC CARD</div>
-                <div>
-                  <Image
-                    src="/assets/how-it-works.webp"
-                    loading="lazy"
-                    alt="How it works"
-                    width={800}
-                    height={600}
-                  />
-                </div>
+      {/* How It Works Section */}
+      <section className="section">
+        <div className="padding-global">
+          <div className="section-content">
+            <div id="how-it-works" className="card card-dark verification-section">
+              <h2>Blockchain-Based Verification</h2>
+              <div className="section-subtitle">API + WEB APP + NFC CARD</div>
+              <div>
+                <Image
+                  src="/assets/how-it-works.webp"
+                  loading="lazy"
+                  alt="How it works"
+                  width={800}
+                  height={600}
+                />
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Testimonials Section */}
-        <section className="section">
-          <div className="padding-global">
-            <div className="container">
-              <div className="section-header">
-                <h2 className="section-title">Verifiable credentials adoption worldwide</h2>
-              </div>
-              <div className="grid grid-cols-3">
-                {testimonials.map((testimonial, index) => (
-                  <div key={index} className="card card-light">
-                    <TestimonialCard
-                      title={testimonial.title}
-                      description={testimonial.description}
-                    />
-                  </div>
-                ))}
-              </div>
+      {/* Testimonials Section */}
+      <Section>
+        <h2 className="text-left self-start">Verifiable credentials adoption worldwide</h2>
+        <div className="grid grid-cols-3">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="card card-light">
+              <h4>{testimonial.title}</h4>
+              <p>{testimonial.description}</p>
             </div>
-          </div>
-        </section>
+          ))}
+        </div>
+      </Section>
 
-        {/* Footer Section */}
-        <footer className="footer">
+      {/* Footer Section */}
+      <footer className="footer">
         <div className="padding-global">
           <div className="container">
             <div className="footer-container">
