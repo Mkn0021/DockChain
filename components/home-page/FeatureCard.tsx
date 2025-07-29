@@ -17,12 +17,20 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   className = '',
 }) => {
   return (
-    <div className={`feature-card ${className}`.trim()}>
-      <div className="feature-image card-gradient">
-        <Image src={imageSrc} alt={imageAlt} width={300} height={200} />
+    <div className={`flex flex-col h-full ${className}`.trim()}>
+      <div className="bg-gradient-to-t from-black via-[#081E83] to-[#0F2CB7] rounded-[2rem] w-full aspect-square p-4 relative mb-4">
+        <Image
+          src={imageSrc}
+          alt={imageAlt}
+          width={300}
+          height={200}
+          className="w-full h-full object-contain"
+        />
       </div>
-      <h3>{title}</h3>
-      <p>{description}</p>
+      <div className="flex-grow flex flex-col">
+        <h3 className="mb-2">{title}</h3>
+        <p className="px-4 text-center break-all hyphens-auto leading-relaxed">{description}</p>
+      </div>
     </div>
   );
 };
