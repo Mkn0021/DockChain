@@ -45,13 +45,14 @@ export default function Home() {
   ];
 
   return (
-    <div className="home-page">
-      <main className="main-wrapper">
-        {/* Header Section */}
-        <header className="header">
-          <Navbar />
-          <HeroSection />
-        </header>
+    <main>
+      {/* Header Section */}
+      <header className="header">
+        <Navbar />
+      </header>
+
+      {/* Hero Section */}
+      <HeroSection />
 
         {/* Why Blockchain Section */}
         <Section>
@@ -110,10 +111,9 @@ export default function Home() {
             </div>
           </div>
         </section>
-      </main>
 
-      {/* Footer Section */}
-      <footer className="footer">
+        {/* Footer Section */}
+        <footer className="footer">
         <div className="padding-global">
           <div className="container">
             <div className="footer-container">
@@ -151,6 +151,6 @@ export default function Home() {
           </div>
         </div>
       </footer>
-    </div>
+    </main>
   );
 }
