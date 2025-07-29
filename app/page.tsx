@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/layout/Navbar';
 import { HeroSection } from '@/components/home-page/HeroSection';
+import { Section } from '@/components/home-page/Section';
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/home-page/FeatureCard';
 import { TestimonialCard } from '@/components/home-page/TestimonialCard';
@@ -11,20 +12,20 @@ export default function Home() {
     {
       imageSrc: '/assets/why-blockchain-1.webp',
       imageAlt: 'Feature 1',
-      title: 'Accelerate customer onboarding',
-      description: 'Improve conversion rates by allowing customers to bypass repeated data entry and physical document submission to verify their identity faster.',
+      title: 'Fast Customer Onboarding',
+      description: 'Improve conversion rates by allowing customers to bypass repeated data entry and physical document submission with blockchain-powered identity verification.',
     },
     {
       imageSrc: '/assets/why-blockchain-2.webp',
       imageAlt: 'Feature 2',
-      title: 'Create a network of verifiers',
-      description: 'Enable companies to issue ID credentials and expand your market reach by generating demand for that high-quality, verified ID data from a new market of verifiers.',
+      title: 'Create Network of Verifiers',
+      description: 'Enable companies to issue ID credentials and expand your market reach by generating demand for high-quality, verified ID data from a new market of trusted verifiers.',
     },
     {
       imageSrc: '/assets/why-blockchain-3.webp',
       imageAlt: 'Feature 3',
-      title: 'Lead the way with eIDAS and mDLs',
-      description: 'The emergence of digital ID wallets and documents, underpinned by the eIDAS and mobile driver\'s licenses (mDLs), is redefining how we manage our identities.',
+      title: 'Lead with eIDAS and mDLs',
+      description: 'The emergence of digital ID wallets and documents, underpinned by the eIDAS and mobile driver\'s licenses (mDLs), is redefining how we manage our digital identities.',
     },
   ];
 
@@ -53,26 +54,20 @@ export default function Home() {
         </header>
 
         {/* Why Blockchain Section */}
-        <section className="section">
-          <div className="padding-global">
-            <div className="container">
-              <div className="section-header">
-                <h2 className="section-title">Why Choose Blockchain?</h2>
-              </div>
-              <div className="grid grid-cols-3">
-                {features.map((feature, index) => (
-                  <FeatureCard
-                    key={index}
-                    imageSrc={feature.imageSrc}
-                    imageAlt={feature.imageAlt}
-                    title={feature.title}
-                    description={feature.description}
-                  />
-                ))}
-              </div>
-            </div>
+        <Section>
+          <h2 className="text-left self-start">Why Choose Blockchain?</h2>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+            {features.map((feature, index) => (
+              <FeatureCard
+                key={index}
+                imageSrc={feature.imageSrc}
+                imageAlt={feature.imageAlt}
+                title={feature.title}
+                description={feature.description}
+              />
+            ))}
           </div>
-        </section>
+        </Section>
 
         {/* How It Works Section */}
         <section className="section">
