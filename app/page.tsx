@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <main>
       {/* Header Section */}
-      <header className="header">
+      <header>
         <Navbar />
       </header>
 
@@ -99,36 +99,18 @@ export default function Home() {
           </div>
         </div>
         <div className="w-full max-w-[1200px] relative">
-          <div className="z-10 w-[21%] absolute left-[0%] bottom-[30%] hidden md:block">
-            <Image
-              src="/assets/key-features.avif"
-              loading="eager"
-              width={200}
-              height={150}
-              className="aspect-auto"
-              alt="Key Features"
-            />
-          </div>
-          <div className="flex align-center justify-center md:px-6">
-            <Image
-              src="/assets/dashboard.avif"
-              loading="eager"
-              width={707}
-              height={400}
-              className="aspect-auto w-full"
-              alt="Dashboard"
-            />
-          </div>
-          <div className="w-[21.5%] absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-6 hidden md:block">
-            <Image
-              src="/assets/hero-image-mobile.avif"
-              loading="eager"
-              width={235}
-              height={300}
-              alt=""
-              className="aspect-[8/16]"
-            />
-          </div>
+          {heroImages.map((image, index) => (
+            <div key={index} className={image.position}>
+              <Image
+                src={image.src}
+                loading="eager"
+                width={image.width}
+                height={image.height}
+                className={image.className}
+                alt={image.alt}
+              />
+            </div>
+          ))}
         </div>
       </Section>
 
