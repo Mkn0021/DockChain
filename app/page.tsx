@@ -3,6 +3,7 @@ import { Section } from '@/components/home-page/Section';
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/home-page/FeatureCard';
 import SocialIcon from '@/components/ui/SocialIcon';
+import Logo from '@/components/ui/Logo';
 import Image from 'next/image';
 
 export default function Home() {
@@ -161,43 +162,41 @@ export default function Home() {
       </Section>
 
       {/* Footer Section */}
-      <footer className="footer">
-        <div className="padding-global">
-          <div className="container">
-            <div className="footer-container">
-              <p className="footer-title">
-                Ready to get started?
-              </p>
-              <div className="hero-buttons">
-                <Button variant="primary" href="/login">
-                  Sign up
-                </Button>
-                <Button variant="secondary" href="/verify">
-                  Verify a Document
-                </Button>
-              </div>
-            </div>
-            <div className="divider"></div>
-            <div className="footer-container">
-              <div className="footer-copyright" id="Copyright">
-                <a href="/">
-                  <Image src="/assets/logo.svg" alt="logo" height={40} width={120} />
-                </a>
-                <p>
-                  Copyright ©2024 Blockchain-Based Document Verification
-                </p>
-              </div>
-              <div className="social-icons">
-                <SocialIcon platform="telegram" username="mkn0021" />
-                <SocialIcon platform="youtube" username="" />
-                <SocialIcon platform="twitter" username="mkn0021" />
-                <SocialIcon platform="github" username="mkn0021" />
-                <SocialIcon platform="discord" username="mkn0021" />
-                <SocialIcon platform="linkedin" username="mkn0021" />
-              </div>
+      <footer className="dark bg-background-dark rounded-bl-none rounded-br-none">
+        <Section>
+          {/* Top part */}
+          <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center">
+            <h3 className="mb-6 sm:mb-0 text-center sm:text-left">
+              Ready to get started?
+            </h3>
+            <div className="flex justify-center sm:justify-start">
+              <Button variant="primary" href="/login">Sign up</Button>
+              <Button variant="secondary" href="/verify">Verify a Document</Button>
             </div>
           </div>
-        </div>
+
+          {/* Divider */}
+          <hr className="w-full border-t border-gray-300 my-8"></hr>
+
+          {/* Bottom part */}
+          <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
+            <div className="flex items-center gap-4 justify-center sm:justify-start">
+              <Logo className='hidden sm:block' />
+              <p className="text-sm text-center sm:text-left">
+                © 2025 Blockchain-Based Document Verification
+              </p>
+            </div>
+
+            <div className="flex gap-4 justify-center sm:justify-end">
+              <SocialIcon platform="telegram" username="mkn0021" />
+              <SocialIcon platform="youtube" username="mkn0021" />
+              <SocialIcon platform="twitter" username="mkn0021" />
+              <SocialIcon platform="github" username="mkn0021" />
+              <SocialIcon platform="discord" username="mkn0021" />
+              <SocialIcon platform="linkedin" username="mkn0021" />
+            </div>
+          </div>
+        </Section>
       </footer>
     </main>
   );
