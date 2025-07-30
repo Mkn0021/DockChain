@@ -130,25 +130,22 @@ export default function Home() {
       </Section>
 
       {/* How It Works Section */}
-      <section className="section">
-        <div className="padding-global">
-          <div className="section-content">
-            <div id="how-it-works" className="card card-dark verification-section">
-              <h2>Blockchain-Based Verification</h2>
-              <div className="section-subtitle">API + WEB APP + NFC CARD</div>
-              <div>
-                <Image
-                  src="/assets/how-it-works.webp"
-                  loading="lazy"
-                  alt="How it works"
-                  width={800}
-                  height={600}
-                />
-              </div>
-            </div>
+      <Section>
+        <div id="how-it-works" className="dark w-full bg-background-dark flex flex-col gap-12 p-20">
+          <div className='text-left self-start'>
+            <h2>Blockchain-Based Verification</h2>
+            <p>API + WEB APP + NFC CARD</p>
           </div>
+          <Image
+            src="/assets/how-it-works.webp"
+            loading="lazy"
+            alt="How it works"
+            width={800}
+            height={600}
+            className="w-full h-auto object-cover"
+          />
         </div>
-      </section>
+      </Section>
 
       {/* Testimonials Section */}
       <Section>
