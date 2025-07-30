@@ -29,7 +29,7 @@ export default function Home() {
       width: 235,
       height: 300,
       alt: '',
-      className: 'aspect-[8/16]',
+      className: 'aspect-auto',
       position: 'w-[21.5%] absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-6 hidden md:block'
     }
   ];
@@ -162,8 +162,8 @@ export default function Home() {
       </Section>
 
       {/* Footer Section */}
-      <footer className="dark bg-background-dark rounded-bl-none rounded-br-none">
-        <Section>
+      <footer>
+        <Section className="dark bg-background-dark rounded-bl-none rounded-br-none">
           {/* Top part */}
           <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <h3 className="mb-6 sm:mb-0 text-center sm:text-left">
