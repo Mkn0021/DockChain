@@ -31,9 +31,10 @@ const config: Config = {
           darkFeature: '#e4e4e7',
         },
         primary: {
-          DEFAULT: '#0063f7',
-          hover: '#0056b3',
-          foreground: '#ffffff'
+          DEFAULT: '#2563eb',
+          dark: '#0063f7',
+          hover: '#1d4ed8',
+          darkHover: '#0056b3',
         },
       },
       fontSize: {
