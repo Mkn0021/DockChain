@@ -1,5 +1,5 @@
 import { Navbar } from '@/components/layout/Navbar';
-import { Section } from '@/components/home-page/Section';
+import { Section } from '@/components/ui/Section';
 import { Button } from '@/components/ui/Button';
 import { FeatureCard } from '@/components/home-page/FeatureCard';
 import SocialIcon from '@/components/ui/SocialIcon';
@@ -74,7 +74,14 @@ export default function Home() {
     <main>
       {/* Header Section */}
       <header>
-        <Navbar />
+        <Navbar>
+          <Button variant="secondary" href="#how-it-works">
+            How It Works?
+          </Button>
+          <Button variant="primary" href="/login">
+            Login
+          </Button>
+        </Navbar>
       </header>
 
       {/* Hero Section */}
