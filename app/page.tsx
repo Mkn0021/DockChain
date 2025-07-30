@@ -150,11 +150,11 @@ export default function Home() {
       {/* Testimonials Section */}
       <Section>
         <h2 className="text-left self-start">Verifiable credentials adoption worldwide</h2>
-        <div className="grid grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
           {testimonials.map((testimonial, index) => (
-            <div key={index} className="bg-background-muted p-6">
-              <h4>{testimonial.title}</h4>
-              <p>{testimonial.description}</p>
+            <div key={index} className="bg-background-muted p-8">
+              <h4 className='mt-0'>{testimonial.title}</h4>
+              <p className="text-text-secondary">{testimonial.description}</p>
             </div>
           ))}
         </div>
