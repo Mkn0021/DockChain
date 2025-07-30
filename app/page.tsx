@@ -78,7 +78,7 @@ export default function Home() {
 
       {/* Hero Section */}
       <Section>
-        <div className="w-full max-w-[750px] flex flex-col items-center gap-6 sm:gap-8">
+        <div className="dark w-full max-w-[750px] flex flex-col items-center gap-6 sm:gap-8">
           {/* Just to Maintain linebreak of h5 750px is  used*/}
           <div className="max-w-full flex flex-col items-center text-center">
             <h4>#1 Blockchain-Based Document Platform</h4>

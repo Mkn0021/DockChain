@@ -14,22 +14,26 @@ const config: Config = {
         sans: ['Satoshi', 'sans-serif'],
       },
       colors: {
+        background: {
+          DEFAULT: '#ffffff',
+          muted: '#f4f4f5',
+          dark: '#0f0f0f',
+          mutedDark: '#1a1a1a',
+        },
+        text: {
+          primary: '#18181b',
+          secondary: '#51525c',
+          muted: '#9ca3af',
+          feature: '#222222',
+          darkPrimary: '#ffffff',
+          darkSecondary: '#d4d4d8',
+          darkMuted: '#a1a1aa',
+          darkFeature: '#e4e4e7',
+        },
         primary: {
           DEFAULT: '#0063f7',
           hover: '#0056b3',
-        },
-        text: {
-          primary: '#ffffff',
-          secondary: '#18181b',
-          muted: '#51525c',
-          feature: '#222222',
-        },
-        background: {
-          black: '#000000',
-        },
-        accent: {
-          DEFAULT: '#0063f7',
-          hover: '#0056b3',
+          foreground: '#ffffff'
         },
       },
       fontSize: {
@@ -39,16 +43,6 @@ const config: Config = {
         '3xl': ['2.25rem', { lineHeight: '1.25' }],
         '4xl': ['3rem', { lineHeight: '1.25' }],
         '5xl': ['3.75rem', { lineHeight: '1.25' }],
-        'display-large': ['4rem', { lineHeight: '1.1', letterSpacing: '-0.02em' }],
-        'display-medium': ['3rem', { lineHeight: '1.2', letterSpacing: '-0.01em' }],
-        'display-small': ['2.5rem', { lineHeight: '1.3' }],
-        'heading-large': ['2rem', { lineHeight: '1.4' }],
-        'heading-medium': ['1.5rem', { lineHeight: '1.5' }],
-        'heading-small': ['1.25rem', { lineHeight: '1.6' }],
-        'body-large': ['1.125rem', { lineHeight: '1.7' }],
-        'body-medium': ['1rem', { lineHeight: '1.6' }],
-        'body-small': ['0.875rem', { lineHeight: '1.5' }],
-        'caption': ['0.75rem', { lineHeight: '1.4' }],
       },
       lineHeight: {
         'tight': '1.25',
