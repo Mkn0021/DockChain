@@ -46,7 +46,7 @@ const AuthForm: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-full bg-white p-16 shadow-medium">
+        <div className="w-full h-full max-w-[450px] bg-white p-10 sm:p-16 shadow-medium">
             <div className="w-[200%]">
                 <h1 className="w-1/2 text-left">{activeTab === 'login' ? 'Login' : 'Sign Up'}</h1>
             </div>
