@@ -55,7 +55,7 @@ const AuthForm: React.FC = () => {
                     <div className="w-full h-[240px] flex flex-col gap-6 justify-center py-6">
                         {(activeTab === 'login' ? loginFields : signupFields).map((field) => (
                             <div className="w-full h-[50px]" key={field.id}>
-                                <input className='w-full h-full border border-gray-300 rounded-xl p-2 px-6'
+                                <input className='w-full h-full border-2 border-gray-300 focus:border-accent outline-none transition-colors duration-200 rounded-xl p-2 px-6'
                                     {...field}
                                     value={formData[field.name]}
                                     onChange={handleChange}

@@ -36,6 +36,7 @@ const config: Config = {
           hover: '#1d4ed8',
           darkHover: '#0056b3',
         },
+        accent: '#b2ccff',
       },
       fontSize: {
         'base': ['1rem', { lineHeight: '1.6' }],
