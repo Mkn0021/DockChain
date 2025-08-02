@@ -1,23 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import type { User } from '../types/user';
 
-export interface IUser extends Document {
-  clerkId?: string;
-  name: string;
-  email: string;
-  profileImageUrl?: string;
-  createdAt: Date;
-  updatedAt: Date;
+export interface IUser extends Document, Omit<User, 'id'> {
+  _id: mongoose.Types.ObjectId;
 }
 
 // User schema
 const userSchema = new Schema<IUser>(
   {
-    clerkId: {
-      type: String,
-      unique: true,
-      sparse: true,
-      index: true,
-    },
     name: {
       type: String,
       required: [true, 'Name is required'],
@@ -34,8 +24,11 @@ const userSchema = new Schema<IUser>(
     profileImageUrl: {
       type: String,
       trim: true,
-      // Validate URL format
       match: [/^https?:\/\/.+/, 'Please enter a valid URL'],
+    },
+    hashedPassword: {
+      type: String,
+      required: false,
     },
   },
   {
