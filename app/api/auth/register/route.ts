@@ -41,18 +41,20 @@ export async function POST(request: NextRequest) {
             hashedPassword,
         });
 
-        const { hashedPassword: _, ...userWithoutPassword } = user.toObject();
+        // Convert to object and remove hashedPassword
+        const userObject = user.toObject();
+        delete userObject.hashedPassword;
 
         return NextResponse.json(
             {
                 message: 'User created successfully',
                 user: {
-                    id: userWithoutPassword._id.toString(),
-                    name: userWithoutPassword.name,
-                    email: userWithoutPassword.email,
-                    profileImageUrl: userWithoutPassword.profileImageUrl,
-                    createdAt: userWithoutPassword.createdAt,
-                    updatedAt: userWithoutPassword.updatedAt,
+                    id: userObject._id.toString(),
+                    name: userObject.name,
+                    email: userObject.email,
+                    profileImageUrl: userObject.profileImageUrl,
+                    createdAt: userObject.createdAt,
+                    updatedAt: userObject.updatedAt,
                 }
             },
             { status: 201 }

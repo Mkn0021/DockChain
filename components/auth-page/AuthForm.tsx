@@ -79,7 +79,7 @@ const AuthForm: React.FC = () => {
 
             router.push('/dashboard');
         } catch (error) {
-            setError('Registration failed. Please try again.');
+            setError(`Registration failed. Please try again : ${error instanceof Error ? error.message : 'Unknown error'}`)
         }
     };
 
@@ -102,7 +102,7 @@ const AuthForm: React.FC = () => {
                 });
             }
         } catch (error) {
-            setError('An unexpected error occurred');
+            setError(`An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`);
         } finally {
             setIsLoading(false);
         }
