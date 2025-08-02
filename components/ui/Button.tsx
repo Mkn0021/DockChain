@@ -8,6 +8,7 @@ type ButtonProps = {
   variant?: 'primary' | 'secondary';
   type?: 'button' | 'submit' | 'reset';
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  disabled?: boolean;
 };
 
 export const Button: React.FC<ButtonProps> = ({
@@ -17,6 +18,7 @@ export const Button: React.FC<ButtonProps> = ({
   className,
   type = 'button',
   onClick,
+  disabled = false,
 }) => {
   const baseClasses = clsx(
     'text-center px-6 py-4 text-base font-medium leading-6 transition-all duration-150 no-underline m-2',
@@ -25,6 +27,7 @@ export const Button: React.FC<ButtonProps> = ({
     'active:outline active:outline-primary active:outline-offset-[3px] active:outline-2',
     variant === 'primary' && 'bg-primary dark:bg-primary-dark text-white',
     variant === 'secondary' && 'border border-primary dark:border-white text-primary dark:text-white self-center',
+    disabled && 'opacity-50 cursor-not-allowed hover:transform-none',
     className
   );
 
@@ -37,7 +40,7 @@ export const Button: React.FC<ButtonProps> = ({
   }
 
   return (
-    <button type={type} className={baseClasses} onClick={onClick}>
+    <button type={type} className={baseClasses} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
