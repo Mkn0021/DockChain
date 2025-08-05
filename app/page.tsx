@@ -73,7 +73,7 @@ export default function Home() {
   return (
     <main>
       {/* Header Section */}
-      <header>
+      <header className="dark">
         <Navbar>
           <Button variant="secondary" href="#how-it-works">
             How It Works?

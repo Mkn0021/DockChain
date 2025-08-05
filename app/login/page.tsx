@@ -14,7 +14,9 @@ export default function Login() {
   ]
   return (
     <main>
-      <Navbar />
+      <header className="dark">
+        <Navbar />
+      </header>
       <Section className="!py-4 overflow-hidden">
         <div className="flex w-full h-full flex-col lg:flex-row md:justify-center">
           {/* Left Side - Auth Form */}

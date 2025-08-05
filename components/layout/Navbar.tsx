@@ -7,7 +7,7 @@ interface NavbarProps {
 
 export const Navbar: React.FC<NavbarProps> = ({ children }) => {
     return (
-        <div className="dark m-0 text-center flex justify-between items-center w-full px-6 py-8 md:px-12 lg:px-20 shadow-none h-[100px] relative">
+        <div className="m-0 text-center flex justify-between items-center w-full px-6 py-8 md:px-12 lg:px-20 shadow-none h-[100px] relative">
             <Logo />
             <div className="hidden md:flex gap-4">
                 {children}
