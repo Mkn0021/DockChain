@@ -183,7 +183,7 @@ export default function Home() {
           </div>
 
           {/* Divider */}
-          <hr className="w-full border-t border-gray-300 my-8"></hr>
+          <hr className="w-full border-t border-border my-8"></hr>
 
           {/* Bottom part */}
           <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">

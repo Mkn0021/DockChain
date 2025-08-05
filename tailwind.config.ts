@@ -37,6 +37,10 @@ const config: Config = {
           darkHover: '#0056b3',
         },
         accent: '#b2ccff',
+        border: {
+          DEFAULT: '#d1d5db',
+          dark: '#374151',
+        },
       },
       fontSize: {
         'base': ['1rem', { lineHeight: '1.6' }],

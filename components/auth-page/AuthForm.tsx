@@ -125,7 +125,7 @@ const AuthForm: React.FC = () => {
                         {(activeTab === 'login' ? loginFields : signupFields).map((field) => (
                             <div className="w-full h-[50px]" key={field.id}>
                                 <input
-                                    className='w-full h-full border-2 border-gray-300 focus:border-accent outline-none transition-colors duration-200 rounded-xl p-2 px-6'
+                                    className='w-full h-full border-2 border-border focus:border-accent outline-none transition-colors duration-200 rounded-xl p-2 px-6'
                                     {...field}
                                     value={formData[field.name]}
                                     onChange={handleChange}
