@@ -1,8 +1,10 @@
 import mongoose, { Document, Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
 import type { User } from '../types/user';
 
 export interface IUser extends Document, Omit<User, 'id'> {
   _id: mongoose.Types.ObjectId;
+  isPasswordCorrect(password: string): Promise<boolean>;
 }
 
 // User schema
@@ -35,6 +37,26 @@ const userSchema = new Schema<IUser>(
     timestamps: true,
   }
 );
+
+// Pre-save hook to hash password
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('hashedPassword') || !this.hashedPassword) {
+    return next();
+  }
+
+  const salt = await bcrypt.genSalt(12);
+  this.hashedPassword = await bcrypt.hash(this.hashedPassword, salt);
+  next();
+});
+
+// Method to check password
+userSchema.methods.isPasswordCorrect = async function (password: string): Promise<boolean> {
+  if (!this.hashedPassword) {
+    return false;
+  }
+  return await bcrypt.compare(password, this.hashedPassword);
+};
+
 
 const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
