@@ -66,7 +66,7 @@ const AuthForm: React.FC = () => {
 
             const data = await response.json();
 
-            if (!response.ok) {
+            if (!data.success) {
                 setError(data.error || 'Registration failed');
                 return;
             }

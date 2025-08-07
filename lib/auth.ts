@@ -2,12 +2,12 @@ import { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
 import { MongoClient } from 'mongodb';
-import bcrypt from 'bcryptjs';
 import dbConnect from '@/lib/mongodb';
 import UserModel, { IUser } from '@/models/User';
 import type { User } from '@/types/user';
 import { JWT } from 'next-auth/jwt';
 import { Session } from 'next-auth';
+import { APIError } from '@/lib/api/errors';
 
 const client = new MongoClient(process.env.MONGODB_URI!);
 const clientPromise = client.connect();
@@ -23,24 +23,21 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 if (!credentials?.email || !credentials?.password) {
-                    return null;
+                    throw APIError.validation('Email and password are required');
                 }
 
                 try {
                     await dbConnect();
                     const user: IUser | null = await UserModel.findOne({ email: credentials.email });
 
-                    if (!user || !user.hashedPassword) {
-                        return null;
+                    if (!user) {
+                        throw APIError.unauthorized('Invalid credentials');
                     }
 
-                    const isPasswordValid = await bcrypt.compare(
-                        credentials.password,
-                        user.hashedPassword
-                    );
+                    const isPasswordValid = await user.isPasswordCorrect(credentials.password);
 
                     if (!isPasswordValid) {
-                        return null;
+                        throw APIError.unauthorized('Invalid credentials');
                     }
 
                     return {
@@ -53,7 +50,10 @@ export const authOptions: NextAuthOptions = {
                     } as User;
                 } catch (error) {
                     console.error('Authorization error:', error);
-                    return null;
+                    if (error instanceof APIError) {
+                        return null; // NextAuth expects null for auth failures
+                    }
+                    throw APIError.internal('Authentication failed');
                 }
             }
         })
