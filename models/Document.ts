@@ -1,6 +1,5 @@
 import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
 import { ethers, JsonRpcProvider, FunctionFragment, ContractFactory } from 'ethers';
-import * as web3Validator from 'web3-validator';
 import crypto from 'crypto';
 import type { Document } from '../types/document';
 import Template, { ITemplate } from './Template';
@@ -10,6 +9,11 @@ export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateI
     _id: mongoose.Types.ObjectId;
     templateId: mongoose.Types.ObjectId;
     issuerId: mongoose.Types.ObjectId;
+}
+
+// Static methods interface for Document model
+export interface IDocumentModel extends mongoose.Model<IDocument> {
+    verifyDocument(document: Document): Promise<boolean>;
 }
 
 // Document schema
@@ -124,18 +128,21 @@ documentSchema.pre('save', async function (next) {
     next();
 });
 
-// Method to verify if the document is valid
-documentSchema.methods.verifyDocument = async function (): Promise<boolean> {
-    const document = this;
+// Static method to verify external document data against blockchain
+documentSchema.statics.verifyDocument = async function (
+    document: Document
+): Promise<boolean> {
     const contractAddress = document.blockchain.contractAddress;
 
-    if (!web3Validator.isAddress(contractAddress)) {
+    if (!contractAddress || typeof contractAddress !== 'string' ||
+        !/^(0x)?[0-9a-f]{40}$/i.test(contractAddress.toLowerCase().startsWith('0x') ? contractAddress : `0x${contractAddress}`)) {
         throw APIError.validation("Contract Address is not Valid");
     }
 
-    const template: ITemplate | null = await Template.findById(document.templateId);
-    if (!template) throw APIError.notFound("Template not found");
-
+    const template: ITemplate | null = await Template.findById(document.templateId).select('blockchain.abi');
+    if (!template || !template.blockchain.abi) {
+        throw APIError.notFound("Template or ABI not found");
+    }
 
     const provider = new JsonRpcProvider(process.env.HARDHAT_URL);
 
@@ -144,7 +151,6 @@ documentSchema.methods.verifyDocument = async function (): Promise<boolean> {
 
     const contract = new ethers.Contract(contractAddress, template.blockchain.abi, provider);
     const contractInterface = new ethers.Interface(template.blockchain.abi);
-
 
     const viewFunctions = contractInterface.fragments.filter(
         (fragment): fragment is FunctionFragment =>
@@ -169,6 +175,6 @@ documentSchema.methods.verifyDocument = async function (): Promise<boolean> {
     return true;
 };
 
-const DocumentModel = mongoose.models.Document || mongoose.model<IDocument>('Document', documentSchema);
+const DocumentModel = mongoose.models.Document || mongoose.model<IDocument, IDocumentModel>('Document', documentSchema);
 
 export default DocumentModel;
