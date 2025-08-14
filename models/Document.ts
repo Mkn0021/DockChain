@@ -14,6 +14,7 @@ export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateI
 // Static methods interface for Document model
 export interface IDocumentModel extends mongoose.Model<IDocument> {
     verifyDocument(document: Document): Promise<boolean>;
+    renderDocument(templateId: string, data: Map<string, string> | Record<string, string>): Promise<string>;
 }
 
 // Document schema
@@ -128,6 +129,29 @@ documentSchema.pre('save', async function (next) {
     next();
 });
 
+// Static method to render document with template and data
+documentSchema.statics.renderDocument = async function (
+    templateId: string, 
+    data: Map<string, string> | Record<string, string>
+): Promise<string> {
+    const template: ITemplate | null = await Template.findById(templateId).select('svgTemplate');
+    if (!template) throw APIError.notFound("Template not found");
+
+    let renderedSvg = template.svgTemplate;
+
+    const dataEntries = data instanceof Map 
+        ? data.entries()
+        : Object.entries(data);
+
+    for (const [key, value] of dataEntries) {
+        const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+        renderedSvg = renderedSvg.replace(regex, value || '');
+    }
+    renderedSvg = renderedSvg.replace(/{{\s*\w+\s*}}/g, '');
+
+    return renderedSvg;
+};
+
 // Static method to verify external document data against blockchain
 documentSchema.statics.verifyDocument = async function (
     document: Document
@@ -163,7 +187,7 @@ documentSchema.statics.verifyDocument = async function (
     for (const fn of viewFunctions) {
         try {
             await contract[fn.name]();
-        } catch (err) {
+        } catch {
             throw APIError.validation(`Unable to read contract data for "${fn.name}"`);
         }
     }
