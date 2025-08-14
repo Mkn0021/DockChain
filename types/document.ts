@@ -18,3 +18,17 @@ export interface Document {
     issuedAt: Date;
     status: "valid" | "revoked" | "expired";
 }
+
+export interface DocumentRenderInput extends Pick<Document, 'templateId' | 'data'> { }
+
+export interface DocumentAggregationResult {
+    documents: Array<Document & {
+        templateId: { _id: string; name: string; description: string; };
+    }>;
+    totalCount: Array<{ count: number }>;
+}
+
+export interface DocumentVerificationResult extends Omit<Document, 'templateId' | 'issuerId'> {
+    template: { _id: string; name: string; description: string; };
+    issuer: { _id: string; name: string; email: string; };
+}

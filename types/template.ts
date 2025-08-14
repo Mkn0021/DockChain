@@ -1,26 +1,5 @@
 import type { InterfaceAbi } from 'ethers';
 
-// Simplified solc output type using InterfaceAbi
-export interface SolcOutput {
-    contracts: {
-        [fileName: string]: {
-            [contractName: string]: {
-                abi: InterfaceAbi;
-                evm: {
-                    bytecode: {
-                        object: string;
-                    };
-                };
-            };
-        };
-    };
-    errors?: Array<{
-        severity: 'error' | 'warning';
-        message: string;
-        formattedMessage?: string;
-    }>;
-}
-
 export interface Template {
     id: string;
     name: string;
@@ -40,4 +19,29 @@ export interface Template {
     };
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface TemplateAggregationResult {
+    templates: Template[];
+    totalCount: Array<{ count: number }>;
+}
+
+export interface SolcOutput {
+    contracts: {
+        [fileName: string]: {
+            [contractName: string]: {
+                abi: InterfaceAbi;
+                evm: {
+                    bytecode: {
+                        object: string;
+                    };
+                };
+            };
+        };
+    };
+    errors?: Array<{
+        severity: 'error' | 'warning';
+        message: string;
+        formattedMessage?: string;
+    }>;
 }
