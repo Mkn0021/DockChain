@@ -1,9 +1,10 @@
 import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
-import { ethers, JsonRpcProvider, ContractFactory } from 'ethers';
+import { ethers, ContractFactory } from 'ethers';
 import crypto from 'crypto';
-import type { Document } from '../types/document';
+import type { Document } from '@/types/document';
 import Template, { ITemplate } from './Template';
-import { APIError } from '../lib/api/errors';
+import { APIError } from '@/lib/api/errors';
+import { getHardhatProvider, getHardhatWallet } from '@/lib/hardhat';
 
 export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateId' | 'issuerId'> {
     _id: mongoose.Types.ObjectId;
@@ -13,8 +14,8 @@ export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateI
 
 // Static methods interface for Document model
 export interface IDocumentModel extends mongoose.Model<IDocument> {
-    verifyDocument(contractAddress: String): Promise<boolean>;
-    renderDocument(templateId: string, data: Map<string, string> | Record<string, string>): Promise<string>;
+    verifyDocument(contractAddress: string): Promise<boolean>;
+    renderDocument(templateId: string, data: Record<string, string> | Map<string, string>): Promise<string>;
 }
 
 // Document schema
@@ -101,8 +102,8 @@ documentSchema.pre('save', async function (next) {
         return next(APIError.validation("Template bytecode not found"));
     }
 
-    const provider = new JsonRpcProvider(process.env.HARDHAT_URL);
-    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+    const provider = getHardhatProvider();
+    const wallet = getHardhatWallet();
 
     const factory = new ContractFactory(template.blockchain.abi, template.blockchain.bytecode, wallet);
 
@@ -132,7 +133,7 @@ documentSchema.pre('save', async function (next) {
 // Static method to render document with template and data
 documentSchema.statics.renderDocument = async function (
     templateId: string,
-    data: Map<string, string> | Record<string, string>
+    data: Record<string, string> | Map<string, string>
 ): Promise<string> {
     const template: ITemplate | null = await Template.findById(templateId).select('svgTemplate');
     if (!template) throw APIError.notFound("Template not found");
@@ -154,7 +155,7 @@ documentSchema.statics.renderDocument = async function (
 
 // Static method to verify external document data against blockchain
 documentSchema.statics.verifyDocument = async function (
-    contractAddress: String
+    contractAddress: string
 ): Promise<boolean> {
     if (!contractAddress || typeof contractAddress !== 'string' ||
         !/^(0x)?[0-9a-f]{40}$/i.test(contractAddress.toLowerCase().startsWith('0x') ? contractAddress : `0x${contractAddress}`)) {
@@ -169,14 +170,14 @@ documentSchema.statics.verifyDocument = async function (
         throw APIError.notFound("Template or ABI not found");
     }
 
-    const provider = new JsonRpcProvider(process.env.HARDHAT_URL);
+    const provider = getHardhatProvider();
 
     const code = await provider.getCode(contractAddress);
     if (code === "0x" || code === "0x0") throw APIError.notFound("Contract is not Deployed");
 
     const contract = new ethers.Contract(contractAddress, template.blockchain.abi, provider);
     const contractData: Record<string, string> = {};
-    
+
     for (const variable of template.variables) {
         try {
             const result = await contract[variable.key]();
@@ -203,6 +204,6 @@ documentSchema.statics.verifyDocument = async function (
     return true;
 };
 
-const DocumentModel = mongoose.models.Document || mongoose.model<IDocument, IDocumentModel>('Document', documentSchema);
+const DocumentModel = (mongoose.models.Document as IDocumentModel) || mongoose.model<IDocument, IDocumentModel>('Document', documentSchema);
 
 export default DocumentModel;
