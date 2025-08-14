@@ -1,5 +1,9 @@
 import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
+import { ethers, JsonRpcProvider, FunctionFragment } from 'ethers';
+import * as web3Validator from 'web3-validator';
 import type { Document } from '../types/document';
+import Template, { ITemplate } from './Template';
+import { APIError } from '../lib/api/errors';
 
 export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateId' | 'issuerId'> {
     _id: mongoose.Types.ObjectId;
@@ -87,6 +91,51 @@ const documentSchema = new Schema<IDocument>(
         timestamps: true,
     }
 )
+
+// Method to verify if the document is valid
+documentSchema.methods.verifyDocument = async function (): Promise<boolean> {
+    const document = this;
+    const contractAddress = document.blockchain.contractAddress;
+
+    if (!web3Validator.isAddress(contractAddress)) {
+        throw APIError.validation("Contract Address is not Valid");
+    }
+
+    const template: ITemplate | null = await Template.findById(document.templateId);
+    if (!template) throw APIError.notFound("Template not found");
+
+
+    const provider = new JsonRpcProvider(process.env.HARDHAT_URL);
+
+    const code = await provider.getCode(contractAddress);
+    if (code === "0x" || code === "0x0") throw APIError.notFound("Contract is not Deployed");
+
+    const contract = new ethers.Contract(contractAddress, template.blockchain.abi, provider);
+    const contractInterface = new ethers.Interface(template.blockchain.abi);
+
+
+    const viewFunctions = contractInterface.fragments.filter(
+        (fragment): fragment is FunctionFragment =>
+            fragment.type === "function" &&
+            fragment.inputs.length === 0 &&
+            "stateMutability" in fragment &&
+            fragment.stateMutability === "view"
+    );
+
+    for (const fn of viewFunctions) {
+        try {
+            await contract[fn.name]();
+        } catch (err) {
+            throw APIError.validation(`Unable to read contract data for "${fn.name}"`);
+        }
+    }
+
+    if (document.status !== 'valid') {
+        throw APIError.validation(`Document status is ${document.status}`);
+    }
+
+    return true;
+};
 
 const DocumentModel = mongoose.models.Document || mongoose.model<IDocument>('Document', documentSchema);
 
