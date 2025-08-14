@@ -8,43 +8,6 @@ export interface ITemplate extends Document, Omit<Template, 'id' | 'createdBy'> 
     createdBy: mongoose.Types.ObjectId;
 }
 
-// Contract compilation utility
-function compileContract(templateName: string, requiredFields: string[]) {
-    const contractSource = `
-// SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.0;
-
-contract DocumentTemplate {
-    string public Document_Type = "${templateName}";
-    string public Issued_Time;
-    ${requiredFields.map(field => `string public ${field};`).join('\n    ')}
-
-    constructor(${requiredFields.map(field => `string memory _${field}`).join(', ')}, string memory _Issued_Time) {
-        ${requiredFields.map(field => `${field} = _${field};`).join('\n        ')}
-        Issued_Time = _Issued_Time;
-    }
-}`;
-
-    const inputForSolc = {
-        language: 'Solidity',
-        sources: {
-            'Contract.sol': {
-                content: contractSource,
-            },
-        },
-        settings: {
-            outputSelection: {
-                '*': {
-                    '*': ['*'],
-                },
-            },
-        },
-    };
-
-    return { contractSource, inputForSolc };
-}
-
 // Template schema
 const templateSchema = new Schema<ITemplate>(
     {
@@ -135,6 +98,43 @@ templateSchema.pre('save', async function (next) {
 
     next();
 });
+
+// Contract compilation utility
+function compileContract(templateName: string, requiredFields: string[]) {
+    const contractSource = `
+// SPDX-License-Identifier: MIT
+
+pragma solidity ^0.8.0;
+
+contract DocumentTemplate {
+    string public Document_Type = "${templateName}";
+    string public Issued_Time;
+    ${requiredFields.map(field => `string public ${field};`).join('\n    ')}
+
+    constructor(${requiredFields.map(field => `string memory _${field}`).join(', ')}, string memory _Issued_Time) {
+        ${requiredFields.map(field => `${field} = _${field};`).join('\n        ')}
+        Issued_Time = _Issued_Time;
+    }
+}`;
+
+    const inputForSolc = {
+        language: 'Solidity',
+        sources: {
+            'Contract.sol': {
+                content: contractSource,
+            },
+        },
+        settings: {
+            outputSelection: {
+                '*': {
+                    '*': ['*'],
+                },
+            },
+        },
+    };
+
+    return { contractSource, inputForSolc };
+}
 
 const Template = mongoose.models.Template || mongoose.model<ITemplate>('Template', templateSchema);
 

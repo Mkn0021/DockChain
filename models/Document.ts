@@ -1,5 +1,5 @@
 import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
-import { ethers, JsonRpcProvider, FunctionFragment, ContractFactory } from 'ethers';
+import { ethers, JsonRpcProvider, ContractFactory } from 'ethers';
 import crypto from 'crypto';
 import type { Document } from '../types/document';
 import Template, { ITemplate } from './Template';
@@ -13,7 +13,7 @@ export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateI
 
 // Static methods interface for Document model
 export interface IDocumentModel extends mongoose.Model<IDocument> {
-    verifyDocument(document: Document): Promise<boolean>;
+    verifyDocument(contractAddress: String): Promise<boolean>;
     renderDocument(templateId: string, data: Map<string, string> | Record<string, string>): Promise<string>;
 }
 
@@ -131,7 +131,7 @@ documentSchema.pre('save', async function (next) {
 
 // Static method to render document with template and data
 documentSchema.statics.renderDocument = async function (
-    templateId: string, 
+    templateId: string,
     data: Map<string, string> | Record<string, string>
 ): Promise<string> {
     const template: ITemplate | null = await Template.findById(templateId).select('svgTemplate');
@@ -139,7 +139,7 @@ documentSchema.statics.renderDocument = async function (
 
     let renderedSvg = template.svgTemplate;
 
-    const dataEntries = data instanceof Map 
+    const dataEntries = data instanceof Map
         ? data.entries()
         : Object.entries(data);
 
@@ -154,16 +154,17 @@ documentSchema.statics.renderDocument = async function (
 
 // Static method to verify external document data against blockchain
 documentSchema.statics.verifyDocument = async function (
-    document: Document
+    contractAddress: String
 ): Promise<boolean> {
-    const contractAddress = document.blockchain.contractAddress;
-
     if (!contractAddress || typeof contractAddress !== 'string' ||
         !/^(0x)?[0-9a-f]{40}$/i.test(contractAddress.toLowerCase().startsWith('0x') ? contractAddress : `0x${contractAddress}`)) {
         throw APIError.validation("Contract Address is not Valid");
     }
 
-    const template: ITemplate | null = await Template.findById(document.templateId).select('blockchain.abi');
+    const document: IDocument | null = await this.findOne({ 'blockchain.contractAddress': contractAddress });
+    if (!document) throw APIError.notFound("Document not found for the given contract address");
+
+    const template: ITemplate | null = await Template.findById(document.templateId).select('blockchain.abi variables');
     if (!template || !template.blockchain.abi) {
         throw APIError.notFound("Template or ABI not found");
     }
@@ -174,22 +175,25 @@ documentSchema.statics.verifyDocument = async function (
     if (code === "0x" || code === "0x0") throw APIError.notFound("Contract is not Deployed");
 
     const contract = new ethers.Contract(contractAddress, template.blockchain.abi, provider);
-    const contractInterface = new ethers.Interface(template.blockchain.abi);
-
-    const viewFunctions = contractInterface.fragments.filter(
-        (fragment): fragment is FunctionFragment =>
-            fragment.type === "function" &&
-            fragment.inputs.length === 0 &&
-            "stateMutability" in fragment &&
-            fragment.stateMutability === "view"
-    );
-
-    for (const fn of viewFunctions) {
+    const contractData: Record<string, string> = {};
+    
+    for (const variable of template.variables) {
         try {
-            await contract[fn.name]();
+            const result = await contract[variable.key]();
+            contractData[variable.key] = String(result);
         } catch {
-            throw APIError.validation(`Unable to read contract data for "${fn.name}"`);
+            throw APIError.validation(`Unable to read contract data for field "${variable.key}"`);
         }
+    }
+
+    // The pre-save hook uses Object.values(this.data), so need to match that structure
+    const contractDataHash = crypto
+        .createHash('sha256')
+        .update(JSON.stringify(contractData))
+        .digest('hex');
+
+    if (document.blockchain.documentHash !== contractDataHash) {
+        throw APIError.validation("Document hash verification failed - data mismatch");
     }
 
     if (document.status !== 'valid') {
