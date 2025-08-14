@@ -58,6 +58,6 @@ userSchema.methods.isPasswordCorrect = async function (password: string): Promis
 };
 
 
-const User = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
+const UserModel = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 
-export default User;
+export default UserModel;

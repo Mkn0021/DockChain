@@ -136,6 +136,6 @@ contract DocumentTemplate {
     return { contractSource, inputForSolc };
 }
 
-const Template = mongoose.models.Template || mongoose.model<ITemplate>('Template', templateSchema);
+const TemplateModel = mongoose.models.Template || mongoose.model<ITemplate>('Template', templateSchema);
 
-export default Template;
+export default TemplateModel;
