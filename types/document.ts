@@ -1,5 +1,3 @@
-import type { InterfaceAbi } from 'ethers';
-
 export interface Document {
     id: string;
     templateId: string;
@@ -11,11 +9,10 @@ export interface Document {
     data: Record<string, string>;
     fileName: string;
     blockchain: {
-        contractAddress: string;
+        contractAddress?: string;
         network?: string;
         txHash?: string;
         documentHash?: string;
-        abi?: InterfaceAbi;
     };
     issuerId: string;
     issuedAt: Date;

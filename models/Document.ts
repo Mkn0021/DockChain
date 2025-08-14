@@ -1,6 +1,7 @@
 import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
-import { ethers, JsonRpcProvider, FunctionFragment } from 'ethers';
+import { ethers, JsonRpcProvider, FunctionFragment, ContractFactory } from 'ethers';
 import * as web3Validator from 'web3-validator';
+import crypto from 'crypto';
 import type { Document } from '../types/document';
 import Template, { ITemplate } from './Template';
 import { APIError } from '../lib/api/errors';
@@ -49,27 +50,19 @@ const documentSchema = new Schema<IDocument>(
         blockchain: {
             contractAddress: {
                 type: String,
-                required: [true, 'Contract address is required'],
                 trim: true,
             },
             network: {
                 type: String,
-                required: [true, 'Network is required'],
                 trim: true,
             },
             txHash: {
                 type: String,
-                required: [true, 'Transaction hash is required'],
                 trim: true,
             },
             documentHash: {
                 type: String,
-                required: [true, 'Document hash is required'],
                 trim: true,
-            },
-            abi: {
-                type: Object,
-                default: {},
             },
         },
         issuerId: {
@@ -91,6 +84,45 @@ const documentSchema = new Schema<IDocument>(
         timestamps: true,
     }
 )
+
+// Pre-save hook to automatically deploy contract for new documents
+documentSchema.pre('save', async function (next) {
+    if (!this.isNew || this.blockchain.contractAddress) return next();
+
+    const template = await Template.findById(this.templateId);
+    if (!template) return next(APIError.notFound("Template not found"));
+
+    if (!template.blockchain.bytecode) {
+        return next(APIError.validation("Template bytecode not found"));
+    }
+
+    const provider = new JsonRpcProvider(process.env.HARDHAT_URL);
+    const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+
+    const factory = new ContractFactory(template.blockchain.abi, template.blockchain.bytecode, wallet);
+
+    const constructorArgs = Object.values(this.data);
+
+    const deployTx = await factory.deploy(...constructorArgs);
+    const contract = await deployTx.waitForDeployment();
+    const contractAddress = await contract.getAddress();
+    const deploymentTx = contract.deploymentTransaction();
+    if (!deploymentTx) return next(APIError.internal("Deployment transaction not found"));
+
+    const documentHash = crypto
+        .createHash('sha256')
+        .update(JSON.stringify(this.data))
+        .digest('hex');
+
+    this.blockchain = {
+        contractAddress,
+        txHash: deploymentTx.hash,
+        documentHash,
+        network: (await provider.getNetwork()).name,
+    };
+
+    next();
+});
 
 // Method to verify if the document is valid
 documentSchema.methods.verifyDocument = async function (): Promise<boolean> {
