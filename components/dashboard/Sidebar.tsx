@@ -63,13 +63,13 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
 
     return (
         <>
-            {/* Sidebar */}
+            {/* Sidebar - Fixed on mobile, static on desktop */}
             <div className={`
-                fixed lg:relative inset-y-0 left-0 z-50 rounded-none
-                w-72 bg-background-muted lg:bg-background-muted/30 border border-border
-                transform transition-transform duration-300 ease-in-out
+                fixed lg:static inset-y-0 left-0 z-50 rounded-none
+                w-64 xl:w-72 bg-background-muted lg:bg-background-muted/30 border border-border
+                transform transition-transform duration-300 ease-in-out lg:transform-none
                 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-                lg:block
+                lg:block flex-shrink-0
             `}>
                 <nav className="h-full max-h-full w-[90%] mx-auto flex flex-col">
                     <div className="w-full h-[180px] flex items-center justify-center">

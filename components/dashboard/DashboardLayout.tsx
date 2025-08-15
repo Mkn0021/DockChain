@@ -31,7 +31,7 @@ export function DashboardLayout({ user, children }: DashboardLayoutProps) {
                 setSidebarOpen={setSidebarOpen}
             />
 
-            <div className="flex-1 flex flex-col lg:ml-0 min-w-0 bg-background dark:bg-background-dark">
+            <div className="flex-1 flex flex-col min-w-0 bg-background dark:bg-background-dark">
                 <div className="m-0 text-center flex justify-between items-center w-full px-6 py-8 md:px-12 lg:px-20 shadow-none h-[180px] relative">
                     <div className="flex items-center gap-4">
                         <HamburgerMenu
@@ -44,7 +44,7 @@ export function DashboardLayout({ user, children }: DashboardLayoutProps) {
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 overflow-auto w-full px-6 py-8 md:px-12 lg:px-20">
                     {children}
                 </div>
             </div>
