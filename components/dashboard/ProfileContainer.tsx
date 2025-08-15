@@ -5,6 +5,7 @@ import { signOut } from 'next-auth/react';
 import { FaUser, FaSignOutAlt, FaCog, FaBell } from 'react-icons/fa';
 import Image from 'next/image';
 import { User } from '@/types/user';
+import { MenuButton, type MenuItem } from '../ui/MenuButton';
 
 interface ProfileContainerProps {
     user: User;
@@ -62,7 +63,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
             .slice(0, 2);
     };
 
-    const profileMenuItems = [
+    const profileMenuItems: MenuItem[] = [
         {
             icon: FaUser,
             label: 'View Profile',
@@ -167,19 +168,13 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
 
                         {/* Menu Items */}
                         <div className="py-2">
-                            {profileMenuItems.map((item, index) => {
-                                const Icon = item.icon;
-                                return (
-                                    <button
-                                        key={index}
-                                        onClick={item.action}
-                                        className="w-full flex items-center gap-4 px-6 py-4 text-left text-text-secondary dark:text-text-darkSecondary hover:bg-background-muted dark:hover:bg-background-mutedDark hover:text-text-primary dark:hover:text-text-darkPrimary transition-all duration-150 border-none"
-                                    >
-                                        <Icon className="w-5 h-5 flex-shrink-0" />
-                                        <span className="font-medium">{item.label}</span>
-                                    </button>
-                                );
-                            })}
+                            {profileMenuItems.map((item, index) => (
+                                <MenuButton
+                                    key={index}
+                                    item={item}
+                                    variant="dropdown"
+                                />
+                            ))}
                         </div>
 
                         {/* Logout */}
