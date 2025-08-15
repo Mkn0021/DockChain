@@ -9,50 +9,58 @@ import {
     FaQuestionCircle,
     FaBars,
 } from "react-icons/fa";
+import { usePathname, useRouter } from 'next/navigation';
 import Logo from "../ui/Logo";
 import { MenuButton, type SidebarMenuItem } from "../ui/MenuButton";
 
-const sidebarItems: SidebarMenuItem[] = [
+const sidebarItems: (SidebarMenuItem & { route: string })[] = [
     {
         id: 'dashboard',
         label: 'Dashboard',
-        icon: FaHome
+        icon: FaHome,
+        route: '/dashboard'
     },
     {
         id: 'upload-template',
         label: 'Upload Template',
-        icon: FaUpload
+        icon: FaUpload,
+        route: '/dashboard/upload-template'
     },
     {
         id: 'issue-document',
         label: 'Issue Document',
-        icon: FaPaperPlane
+        icon: FaPaperPlane,
+        route: '/dashboard/issue-document'
     },
     {
         id: 'issued-documents',
         label: 'Issued Documents',
-        icon: FaCheckCircle
+        icon: FaCheckCircle,
+        route: '/dashboard/issued-documents'
     },
     {
         id: 'user-management',
         label: 'User Management',
-        icon: FaUserCog
+        icon: FaUserCog,
+        route: '/dashboard/user-management'
     },
     {
         id: 'help-support',
         label: 'Help & Support',
-        icon: FaQuestionCircle
+        icon: FaQuestionCircle,
+        route: '/dashboard/help-support'
     }
 ];
 
 interface SidebarProps {
-    activeItem: string;
-    setActiveItem: (item: string) => void;
     sidebarOpen: boolean;
     setSidebarOpen: (open: boolean) => void;
 }
 
-export function Sidebar({ activeItem, setActiveItem, sidebarOpen, setSidebarOpen }: SidebarProps) {
+export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
+    const pathname = usePathname();
+    const router = useRouter();
+
     return (
         <>
             {/* Sidebar */}
@@ -73,12 +81,12 @@ export function Sidebar({ activeItem, setActiveItem, sidebarOpen, setSidebarOpen
                                 key={item.id}
                                 item={item}
                                 onClick={() => {
-                                    setActiveItem(item.id);
+                                    router.push(item.route);
                                     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
                                         setSidebarOpen(false);
                                     }
                                 }}
-                                isActive={activeItem === item.id}
+                                isActive={pathname === item.route}
                                 variant="sidebar"
                             />
                         ))}
