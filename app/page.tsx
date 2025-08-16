@@ -86,8 +86,8 @@ export default function Home() {
 
       {/* Hero Section */}
       <Section>
-        <div className="dark w-full max-w-[750px] flex flex-col items-center gap-6 sm:gap-8">
-          {/* Just to Maintain linebreak of h5 750px is  used*/}
+        <div className="dark w-full max-w-3xl flex flex-col items-center gap-6 sm:gap-8">
+          {/* Just to Maintain linebreak of h5: 3xl is  used*/}
           <div className="max-w-full flex flex-col items-center text-center">
             <h4>#1 Blockchain-Based Document Platform</h4>
             <h1>Verify and Issue Documents Securely with Blockchain</h1>
@@ -105,7 +105,7 @@ export default function Home() {
             </Button>
           </div>
         </div>
-        <div className="w-full max-w-[1200px] relative">
+        <div className="w-full max-w-6xl relative">
           {heroImages.map((image, index) => (
             <div key={index} className={image.position}>
               <Image

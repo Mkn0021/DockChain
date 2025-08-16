@@ -5,6 +5,7 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/Button';
 import type { CreateUserInput, LoginInput } from '@/types/user';
+import FormInput from '../ui/FormInput';
 
 type FormField = {
     id: string;
@@ -109,7 +110,7 @@ const AuthForm: React.FC = () => {
     };
 
     return (
-        <div className="w-full h-full max-w-[450px] bg-white p-10 sm:p-16 shadow-medium">
+        <div className="w-full h-full max-w-md bg-white p-10 sm:p-16 shadow-medium">
             <div className="w-[200%]">
                 <h1 className="w-1/2 text-left">{activeTab === 'login' ? 'Login' : 'Sign Up'}</h1>
             </div>
@@ -121,17 +122,15 @@ const AuthForm: React.FC = () => {
                         </div>
                     )}
 
-                    <div className="w-full h-[240px] flex flex-col gap-6 justify-center py-6">
+                    <div className="w-full h-60 flex flex-col gap-6 justify-center py-6">
                         {(activeTab === 'login' ? loginFields : signupFields).map((field) => (
-                            <div className="w-full h-[50px]" key={field.id}>
-                                <input
-                                    className='w-full h-full border-2 border-border focus:border-accent outline-none transition-colors duration-200 rounded-xl p-2 px-6'
-                                    {...field}
-                                    value={formData[field.name]}
-                                    onChange={handleChange}
-                                    disabled={isLoading}
-                                />
-                            </div>
+                            <FormInput
+                                key={field.id}
+                                {...field}
+                                value={formData[field.name]}
+                                onChange={handleChange}
+                                disabled={isLoading}
+                            />
                         ))}
                     </div>
 

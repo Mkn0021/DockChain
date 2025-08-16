@@ -72,7 +72,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                 lg:block flex-shrink-0
             `}>
                 <nav className="h-full max-h-full w-[90%] mx-auto flex flex-col">
-                    <div className="w-full h-[180px] flex items-center justify-center">
+                    <div className="w-full h-44 flex items-center justify-center">
                         <Logo />
                     </div>
                     <div className="flex flex-col">
