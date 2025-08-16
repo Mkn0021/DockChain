@@ -38,8 +38,8 @@ const config: Config = {
         },
         accent: '#b2ccff',
         border: {
-          DEFAULT: '#d1d5db',
-          dark: '#374151',
+          DEFAULT: '#ccc',
+          dark: '#666',
         },
       },
       fontSize: {
