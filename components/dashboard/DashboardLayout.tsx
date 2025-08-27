@@ -38,13 +38,13 @@ export function DashboardLayout({ user, children }: DashboardLayoutProps) {
                             sidebarOpen={sidebarOpen}
                             setSidebarOpen={setSidebarOpen}
                         />
-                        <h3 className='m-0 p-0'>{pageData[pathname as keyof typeof pageData]?.title || 'Dashboard'}</h3>
+                        <h2 className='m-0 p-0'>{pageData[pathname as keyof typeof pageData]?.title || 'Dashboard'}</h2>
                     </div>
                     <ProfileContainer user={user} />
                 </div>
 
                 {/* Main Content */}
-                <div className="flex-1 overflow-auto w-full px-6 py-8 md:px-12 lg:px-20">
+                <div className="flex-1 overflow-auto w-full px-6 md:px-12 lg:px-20">
                     {children}
                 </div>
             </div>
