@@ -47,8 +47,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) throw APIError.unauthorized('Authentication required');
 
-    const body = await request.json();
-    const { name, description, svgTemplate, variables }: Template = body;
+    const { name, description, svgTemplate, variables }: Template = await request.json();
 
     if (!name || !svgTemplate || !variables) {
         throw APIError.validation('Missing required fields: name, svgTemplate, variables');

@@ -5,15 +5,17 @@ import { Button } from '@/components/ui/Button';
 import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
 import FormInput from '@/components/ui/FormInput';
 import { useAlert } from "@/components/providers/AlertProvider";
+import type { Template } from '@/types/template';
 
 export default function UploadTemplatePage() {
     const { showAlert } = useAlert();
     const fileInputRef = React.useRef<HTMLInputElement>(null);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [svgContent, setSvgContent] = useState<string>('');
+    const [svgTemplate, setSvgTemplate] = useState<string>('');
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [isDeploying, setIsDeploying] = useState(false);
+    const canDeploy = selectedFile && title.trim() !== '';
 
     const deploymentFeatures = [
         "Use {{field name}} for required fields or variables",
@@ -28,7 +30,7 @@ export default function UploadTemplatePage() {
 
             const reader = new FileReader();
             reader.onload = (e: ProgressEvent<FileReader>) => {
-                setSvgContent(e.target?.result as string);
+                setSvgTemplate(e.target?.result as string);
             };
             reader.readAsText(file);
         }
@@ -37,26 +39,58 @@ export default function UploadTemplatePage() {
     const clearFile = (e: React.MouseEvent) => {
         e.stopPropagation();
         setSelectedFile(null);
-        setSvgContent('');
+        setSvgTemplate('');
         if (fileInputRef.current) {
             fileInputRef.current.value = '';
         }
     };
 
     const handleDeploy = async () => {
+        if (!canDeploy) {
+            showAlert('Please upload an SVG file with Title before deploying.', 'error');
+            return;
+        }
         setIsDeploying(true);
         try {
-            // Simulate deployment process
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            const regex = /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g;
+            const matches = [...svgTemplate.matchAll(regex)];
+            const requiredFields = matches.map(m => m[1]);
+            if (requiredFields.length === 0) {
+                showAlert('No required fields (e.g., {{field_name}}) found in SVG', 'error');
+                return;
+            }
+
+            const newTemplate: Partial<Template> = {
+                name: title,
+                description,
+                svgTemplate,
+                variables: requiredFields.map(key => ({
+                    key,
+                    type: "string",
+                    required: true
+                }))
+            };
+
+            const response = await fetch('/api/templates', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newTemplate)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                showAlert(`Deployment failed: ${errorData.message || 'Unknown error'}`, 'error');
+                return;
+            }
+
             showAlert('Template deployed successfully to blockchain!', 'success');
+            window.location.href = '/dashboard/issue-document';
         } catch (error) {
             showAlert(`Deployment failed: ${error}`, 'error');
         } finally {
             setIsDeploying(false);
         }
     };
-
-    const canDeploy = selectedFile && title.trim();
 
     return (
         <main className="w-full">
@@ -85,7 +119,7 @@ export default function UploadTemplatePage() {
                                 {/* SVG Preview */}
                                 <div className="w-full h-96 border-2 border-border rounded-lg p-2 bg-background-muted shadow-sm overflow-hidden">
                                     <div className="w-full h-full flex items-center justify-center [&_svg]:rounded-lg [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto"
-                                        dangerouslySetInnerHTML={{ __html: svgContent }}
+                                        dangerouslySetInnerHTML={{ __html: svgTemplate }}
                                     />
                                 </div>
                             </div>
