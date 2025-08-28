@@ -1,8 +1,30 @@
-export default async function Dashboard() {
+"use client";
+import React, { useEffect, useState } from "react";
+import { useAlert } from "@/components/providers/AlertProvider";
+import type { DashboardStats } from "@/app/api/dashboard/route";
+
+export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const { showAlert } = useAlert();
+
+  useEffect(() => {
+    async function fetchStats() {
+      try {
+        const res = await fetch("/api/dashboard");
+        if (!res.ok) showAlert('Failed to fetch dashboard stats', 'error');
+        const response: { data: DashboardStats } = await res.json();
+        setStats(response.data);
+      } catch {
+        showAlert('Error occured fetching dashboard stats', 'error');
+      }
+    }
+    fetchStats();
+  }, []);
+
   const items = [
-    { title: 'Templates', value: 12 },
-    { title: 'Documents', value: 28 },
-    { title: 'Status', value: "Connected" },
+    { title: 'Templates', value: stats?.templates ?? 0 },
+    { title: 'Documents', value: stats?.documents ?? 0 },
+    { title: 'Status', value: stats?.status ?? "Disconnected" },
   ];
 
   return (

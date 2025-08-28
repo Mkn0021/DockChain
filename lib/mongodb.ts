@@ -23,6 +23,10 @@ if (!global.mongoose) {
   global.mongoose = cached;
 }
 
+export function isMongoConnected(): boolean {
+  return mongoose.connection.readyState === 1;
+}
+
 async function dbConnect() {
   if (cached.conn) {
     return cached.conn;
