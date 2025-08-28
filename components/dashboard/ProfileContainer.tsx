@@ -54,13 +54,22 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
-    const getInitials = (name: string) => {
-        return name
+    const getInitialsAndColor = (name: string) => {
+        const initials = name
             .split(' ')
             .map(word => word.charAt(0))
             .join('')
             .toUpperCase()
             .slice(0, 2);
+
+        const colors = [
+            'bg-blue-500', 'bg-green-500', 'bg-red-500', 'bg-yellow-500',
+            'bg-purple-500', 'bg-pink-500', 'bg-indigo-500', 'bg-teal-500',
+            'bg-orange-500', 'bg-cyan-500', 'bg-lime-500', 'bg-amber-500'
+        ];
+        const hash = initials.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
+        const colorClass = colors[Math.abs(hash) % colors.length];
+        return { initials, colorClass };
     };
 
     const profileMenuItems: MenuItem[] = [
@@ -117,7 +126,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                     <div
                         ref={avatarRef}
                         onClick={toggleDropdown}
-                        className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-semibold text-sm cursor-pointer hover:ring-2 hover:ring-primary hover:ring-opacity-50 transition-all duration-200 shadow-soft"
+                        className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold text-sm hover:scale-110 cursor-pointer transition-all duration-200 shadow-soft ${getInitialsAndColor(user.name).colorClass}`}
                         aria-expanded={isOpen}
                         aria-haspopup="true"
                         role="button"
@@ -129,7 +138,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                             }
                         }}
                     >
-                        {getInitials(user.name)}
+                        {getInitialsAndColor(user.name).initials}
                     </div>
                 )}
             </div>
@@ -153,12 +162,12 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                                         className="w-12 h-12 rounded-full object-cover"
                                     />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-full bg-primary dark:bg-primary-dark text-white flex items-center justify-center font-medium text-lg">
-                                        {getInitials(user.name)}
+                                    <div className={`w-12 h-12 rounded-full text-white flex items-center justify-center font-medium text-lg ${getInitialsAndColor(user.name).colorClass}`}>
+                                        {getInitialsAndColor(user.name).initials}
                                     </div>
                                 )}
                                 <div className="flex flex-col self-start items-start">
-                                    <h4 className="m-0">{user.name}</h4>
+                                    <h4 className="m-0 whitespace-nowrap overflow-x-auto">{user.name}</h4>
                                     {user.email && (
                                         <p className="text-text-secondary dark:text-text-darkSecondary text-xs">{user.email}</p>
                                     )}
