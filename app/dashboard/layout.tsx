@@ -2,6 +2,7 @@ import { getServerSession } from 'next-auth';
 import { redirect } from 'next/navigation';
 import { authOptions } from '@/lib/auth';
 import { DashboardLayout } from '@/components/dashboard/DashboardLayout';
+import { AlertProvider } from '@/components/providers/AlertProvider';
 
 export default async function DashboardLayoutWrapper({
     children,
@@ -16,7 +17,9 @@ export default async function DashboardLayoutWrapper({
 
     return (
         <DashboardLayout user={session.user}>
-            {children}
+            <AlertProvider>
+                {children}
+            </AlertProvider>
         </DashboardLayout>
     );
 }
