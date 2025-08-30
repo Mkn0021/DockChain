@@ -17,7 +17,7 @@ export const GET = asyncHandler(async (request: NextRequest) => {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const result = await DocumentModel.aggregate([
+    const result = await DocumentModel.aggregate<DocumentAggregationResult>([
         { $match: { issuerId: new mongoose.Types.ObjectId(session.user.id) } },
         {
             $facet: {
@@ -39,7 +39,7 @@ export const GET = asyncHandler(async (request: NextRequest) => {
                 totalCount: [{ $count: 'count' }]
             }
         }
-    ]) as [DocumentAggregationResult];
+    ]);
 
     const documents = result[0].documents;
     const total = result[0].totalCount[0]?.count || 0;

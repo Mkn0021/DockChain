@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
+import mongoose from 'mongoose';
 import { asyncHandler, apiResponse } from '@/lib/api/response';
 import { APIError } from '@/lib/api/errors';
 import TemplateModel, { ITemplate } from '@/models/Template';
@@ -15,8 +16,8 @@ export const GET = asyncHandler(async (request: NextRequest) => {
     const limit = parseInt(searchParams.get('limit') || '10');
     const skip = (page - 1) * limit;
 
-    const result = await TemplateModel.aggregate([
-        { $match: { createdBy: session.user.id } },
+    const result = await TemplateModel.aggregate<TemplateAggregationResult>([
+        { $match: { createdBy: new mongoose.Types.ObjectId(session.user.id) } },
         {
             $facet: {
                 templates: [
@@ -27,7 +28,7 @@ export const GET = asyncHandler(async (request: NextRequest) => {
                 totalCount: [{ $count: 'count' }]
             }
         }
-    ]) as [TemplateAggregationResult];
+    ]);
 
     const templates = result[0].templates;
     const total = result[0].totalCount[0]?.count || 0;

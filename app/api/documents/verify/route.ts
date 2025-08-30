@@ -11,7 +11,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
     const isValid = await DocumentModel.verifyDocument(contractAddress);
 
     if (isValid) {
-        const result = await DocumentModel.aggregate([
+        const result = await DocumentModel.aggregate<DocumentVerificationResult>([
             { $match: { 'blockchain.contractAddress': contractAddress } },
             {
                 $lookup: {
@@ -33,7 +33,7 @@ export const POST = asyncHandler(async (request: NextRequest) => {
                 }
             },
             { $unwind: '$issuer' }
-        ]) as Array<DocumentVerificationResult>;
+        ]);
 
         const document = result[0];
         if (!document) throw APIError.notFound('Document not found');
