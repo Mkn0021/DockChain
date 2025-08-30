@@ -34,7 +34,7 @@ const templateSchema = new Schema<ITemplate>(
                 },
                 type: {
                     type: String,
-                    enum: ['string', 'number', 'date', 'image'],
+                    enum: ['string', 'date'],
                     required: [true, 'Variable type is required'],
                 },
                 required: {

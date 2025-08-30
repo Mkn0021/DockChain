@@ -3,7 +3,7 @@ import { getServerSession } from 'next-auth';
 import { asyncHandler, apiResponse } from '@/lib/api/response';
 import { APIError } from '@/lib/api/errors';
 import DocumentModel, { IDocument } from '@/models/Document';
-import Template from '@/models/Template';
+import Template, { ITemplate } from '@/models/Template';
 import { authOptions } from '@/lib/auth';
 import mongoose from 'mongoose';
 import type { Document, DocumentAggregationResult } from '@/types/document';
@@ -78,13 +78,13 @@ export const POST = asyncHandler(async (request: NextRequest) => {
         throw APIError.validation('Invalid template ID format');
     }
 
-    const template = await Template.findById(templateId);
+    const template: ITemplate | null = await Template.findById(templateId);
     if (!template) throw APIError.notFound('Template not found');
 
     const document: IDocument = new DocumentModel({
         templateId,
         issuedTo,
-        data: new Map(Object.entries(data)),
+        data,
         fileName,
         issuerId: session.user.id
     });

@@ -5,11 +5,7 @@ export interface Template {
     name: string;
     description?: string;
     svgTemplate: string;
-    variables: {
-        key: string;
-        type: "string" | "date";
-        required: boolean;
-    }[];
+    variables: TemplateVariables[];
     createdBy: string;
     blockchain: {
         abi?: InterfaceAbi | null;
@@ -19,6 +15,12 @@ export interface Template {
     };
     createdAt: Date;
     updatedAt: Date;
+}
+
+export interface TemplateVariables {
+    key: string;
+    type: "string" | "date";
+    required: boolean;
 }
 
 export interface TemplateAggregationResult {
