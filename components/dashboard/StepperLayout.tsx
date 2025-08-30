@@ -12,9 +12,10 @@ interface StepperProps {
     current: number;
     setCurrent: (step: number) => void;
     children: React.ReactNode;
+    canGoToNextStep?: boolean;
 }
 
-const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, children }) => {
+const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, children, canGoToNextStep }) => {
     return (
         <div>
             <div className="flex items-center justify-between w-full">
@@ -69,7 +70,7 @@ const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, chi
                 </Button>
                 <Button
                     onClick={() => setCurrent(Math.min(current + 1, steps.length - 1))}
-                    disabled={current === steps.length - 1}
+                    disabled={current === steps.length - 1 || (typeof canGoToNextStep !== 'undefined' && !canGoToNextStep)}
                 >
                     <MdNavigateNext size={24} />
                 </Button>

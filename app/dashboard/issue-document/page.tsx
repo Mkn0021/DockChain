@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Stepper from "@/components/dashboard/StepperLayout";
 import { Button } from '@/components/ui/Button';
+import FormInput from '@/components/ui/FormInput';
 import { Template } from '@/types/template';
 import { useAlert } from "@/components/providers/AlertProvider";
 
@@ -27,7 +28,29 @@ export default function IssueDocumentPage() {
     const [currentStep, setCurrentStep] = useState(0);
     const [templates, setTemplates] = useState<Template[]>([]);
     const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+    const [formValues, setFormValues] = useState<{ [key: string]: string }>({});
     const { showAlert } = useAlert();
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFormValues((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    };
+
+    const canGoToNextStep = (() => {
+        if (currentStep === 0) {
+            return selectedTemplate !== null;
+        }
+        if (currentStep === 1 && selectedTemplate) {
+            return selectedTemplate.variables
+                .filter((field) => field.required)
+                .every((field) => formValues[field.key]?.trim());
+        }
+        return true;
+    })();
+
+    const handleSetCurrentStep = (step: number) => {
+        if (step > currentStep && !canGoToNextStep) return;
+        setCurrentStep(step);
+    };
 
     useEffect(() => {
         async function fetchTemplates() {
@@ -43,7 +66,7 @@ export default function IssueDocumentPage() {
         fetchTemplates();
     }, []);
     return (
-        <Stepper steps={IssueDocumentSteps} current={currentStep} setCurrent={setCurrentStep}>
+        <Stepper steps={IssueDocumentSteps} current={currentStep} setCurrent={handleSetCurrentStep} canGoToNextStep={canGoToNextStep}>
             {currentStep === 0 && (
                 <div className="w-full h-72 rounded-none overflow-x-auto overflow-y-hidden">
                     <div className="h-full flex flex-nowrap gap-6 items-center py-2">
@@ -72,9 +95,26 @@ export default function IssueDocumentPage() {
                 </div>
             )}
             {currentStep === 1 && (
-                <div className="mt-8">
-                    <h3 className="text-lg font-medium mb-2">Fill Required Fields</h3>
-                    <p>Form fields content goes here.</p>
+                <div className="w-full max-w-3xl">
+                    <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {selectedTemplate && selectedTemplate.variables.map((field) => {
+                            const formattedKey = field.key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+                            return (
+                                <FormInput
+                                    className='w-full max-h-12'
+                                    key={field.key}
+                                    label={formattedKey}
+                                    id={field.key}
+                                    name={field.key}
+                                    required={field.required}
+                                    type={field.type === 'date' ? 'date' : 'text'}
+                                    placeholder={`Enter ${formattedKey}`}
+                                    value={formValues[field.key] || ''}
+                                    onChange={handleInputChange}
+                                />
+                            );
+                        })}
+                    </form>
                 </div>
             )}
             {currentStep === 2 && (

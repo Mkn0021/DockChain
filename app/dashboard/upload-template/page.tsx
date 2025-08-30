@@ -66,7 +66,7 @@ export default function UploadTemplatePage() {
                 svgTemplate,
                 variables: requiredFields.map(key => ({
                     key,
-                    type: "string",
+                    type: key.toLowerCase().includes('date') ? 'date' : 'string',
                     required: true
                 }))
             };

@@ -7,7 +7,7 @@ export interface Template {
     svgTemplate: string;
     variables: {
         key: string;
-        type: "string" | "number" | "date" | "image";
+        type: "string" | "date";
         required: boolean;
     }[];
     createdBy: string;
