@@ -6,6 +6,7 @@ import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
 import FormInput from '@/components/ui/FormInput';
 import { useAlert } from "@/components/providers/AlertProvider";
 import type { Template } from '@/types/template';
+import InfoBox from '@/components/dashboard/InfoBox';
 
 export default function UploadTemplatePage() {
     const { showAlert } = useAlert();
@@ -154,18 +155,7 @@ export default function UploadTemplatePage() {
                             placeholder="Provide a detailed description of your template, its use cases, and features..."
                             required
                         />
-
-                        <div className="bg-blue-50 rounded-lg px-4 py-6 border border-blue-200">
-                            <h4 className="text-blue-900 m-0 p-0 mb-2">Deployment Process</h4>
-                            <ul className="text-sm text-blue-800 space-y-2">
-                                {deploymentFeatures.map((feature, idx) => (
-                                    <li key={idx} className="flex items-start space-x-2">
-                                        <span className="text-primary">•</span>
-                                        <span>{feature}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                        <InfoBox title="Deployment Process" items={deploymentFeatures} />
                     </div>
                 </div>
             </div>
