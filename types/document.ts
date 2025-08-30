@@ -29,6 +29,6 @@ export interface DocumentAggregationResult {
 }
 
 export interface DocumentVerificationResult extends Omit<Document, 'templateId' | 'issuerId'> {
-    template: { _id: string; name: string; description: string; };
-    issuer: { _id: string; name: string; email: string; };
+    template: { id: string; name: string; description: string; };
+    issuer: { id: string; name: string; email: string; };
 }

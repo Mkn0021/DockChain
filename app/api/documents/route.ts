@@ -14,8 +14,8 @@ export const GET = asyncHandler(async (request: NextRequest) => {
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
-    const limit = parseInt(searchParams.get('limit') || '10');
-    const skip = (page - 1) * limit;
+    const limit = parseInt(searchParams.get('limit') || '0');
+    const skip = limit > 0 ? (page - 1) * limit : 0;
 
     const result = await DocumentModel.aggregate<DocumentAggregationResult>([
         { $match: { issuerId: new mongoose.Types.ObjectId(session.user.id) } },
@@ -23,18 +23,26 @@ export const GET = asyncHandler(async (request: NextRequest) => {
             $facet: {
                 documents: [
                     { $sort: { createdAt: -1 } },
-                    { $skip: skip },
-                    { $limit: limit },
+                    ...(limit > 0 ? [{ $skip: skip }, { $limit: limit }] : []),
                     {
                         $lookup: {
                             from: 'templates',
                             localField: 'templateId',
                             foreignField: '_id',
-                            as: 'templateId',
+                            as: 'template',
                             pipeline: [{ $project: { name: 1, description: 1 } }]
                         }
                     },
-                    { $unwind: '$templateId' }
+                    { $unwind: '$template' },
+                    {
+                        $addFields: {
+                            id: { $toString: '$_id' },
+                            'templateId.id': { $toString: '$templateId._id' }
+                        }
+                    },
+                    {
+                        $unset: ['_id', 'templateId._id']
+                    }
                 ],
                 totalCount: [{ $count: 'count' }]
             }

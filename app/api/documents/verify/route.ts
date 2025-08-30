@@ -32,14 +32,24 @@ export const POST = asyncHandler(async (request: NextRequest) => {
                     pipeline: [{ $project: { name: 1, email: 1 } }]
                 }
             },
-            { $unwind: '$issuer' }
+            { $unwind: '$issuer' },
+            {
+                $addFields: {
+                    id: { $toString: '$_id' },
+                    'template.id': { $toString: '$template._id' },
+                    'issuer.id': { $toString: '$issuer._id' }
+                }
+            },
+            {
+                $unset: ['_id', 'template._id', 'issuer._id']
+            }
         ]);
 
         const document = result[0];
         if (!document) throw APIError.notFound('Document not found');
 
         const renderedSvg = await DocumentModel.renderDocument(
-            document.template._id.toString(),
+            document.template.id.toString(),
             document.data
         );
 

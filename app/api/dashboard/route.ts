@@ -19,21 +19,16 @@ export const GET = asyncHandler(async () => {
 
     await dbConnect();
 
-    const status = isMongoConnected() ? 'Connected' : 'Disconnected';
-
-    const [templateAgg, documentAgg]: [{ count?: number }[], { count?: number }[]] = await Promise.all([
-        TemplateModel.aggregate([
-            { $match: { createdBy: new mongoose.Types.ObjectId(session.user.id) } },
-            { $count: 'count' }
-        ]),
-        DocumentModel.aggregate([
-            { $match: { createdBy: new mongoose.Types.ObjectId(session.user.id) } },
-            { $count: 'count' }
-        ])
+    const [templates, documents] = await Promise.all([
+        TemplateModel.countDocuments({ createdBy: session.user.id }),
+        DocumentModel.countDocuments({ createdBy: session.user.id })
     ]);
-    const templates = templateAgg[0]?.count || 0;
-    const documents = documentAgg[0]?.count || 0;
 
-    const stats: DashboardStats = { templates, documents, status };
+    const stats: DashboardStats = {
+        templates,
+        documents,
+        status: isMongoConnected() ? 'Connected' : 'Disconnected'
+    };
+
     return apiResponse.success(stats);
 });
