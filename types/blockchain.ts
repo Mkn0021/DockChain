@@ -20,7 +20,7 @@ export interface CompilationResult {
 }
 
 export interface TemplateBlockchainData {
-    abi: InterfaceAbi | null;
+    abi: InterfaceAbi;
     bytecode: string;
     contractSource: string;
     compilationStatus: 'pending' | 'success' | 'failed';

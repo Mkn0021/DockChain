@@ -2,64 +2,32 @@ import { NextRequest } from 'next/server';
 import { asyncHandler, apiResponse } from '@/lib/api/response';
 import { APIError } from '@/lib/api/errors';
 import DocumentModel from '@/models/Document';
-import type { DocumentVerificationResult } from '@/types/document';
+import type { DocumentApiInput } from '@/types/document';
+import TemplateModel, { ITemplate } from '@/models/Template';
+import { ContractDeployer } from '@/lib/blockchain/deployer';
 
 export const POST = asyncHandler(async (request: NextRequest) => {
-    const { contractAddress }: { contractAddress: string } = await request.json();
-    if (!contractAddress) throw APIError.validation('Contract address is required');
+    const { templateId, data }: DocumentApiInput = await request.json();
+    if (!templateId || !data) throw APIError.validation('TemplateId and data are required');
 
-    const isValid = await DocumentModel.verifyDocument(contractAddress);
+    const template: ITemplate | null = await TemplateModel.findById(templateId);
+    if (!template) throw APIError.notFound('Template not found');
 
-    if (isValid) {
-        const result = await DocumentModel.aggregate<DocumentVerificationResult>([
-            { $match: { 'blockchain.contractAddress': contractAddress } },
-            {
-                $lookup: {
-                    from: 'templates',
-                    localField: 'templateId',
-                    foreignField: '_id',
-                    as: 'template',
-                    pipeline: [{ $project: { name: 1, description: 1 } }]
-                }
-            },
-            { $unwind: '$template' },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'issuerId',
-                    foreignField: '_id',
-                    as: 'issuer',
-                    pipeline: [{ $project: { name: 1, email: 1 } }]
-                }
-            },
-            { $unwind: '$issuer' },
-            {
-                $addFields: {
-                    id: { $toString: '$_id' },
-                    'template.id': { $toString: '$template._id' },
-                    'issuer.id': { $toString: '$issuer._id' }
-                }
-            },
-            {
-                $unset: ['_id', 'template._id', 'issuer._id']
-            }
-        ]);
+    const verification = await ContractDeployer.verifyDocument(
+        template.blockchain.deployedAddress,
+        template.blockchain.abi,
+        data
+    );
 
-        const document = result[0];
-        if (!document) throw APIError.notFound('Document not found');
+    const renderedSvg = await DocumentModel.renderDocument(templateId, data);
 
-        const renderedSvg = await DocumentModel.renderDocument(
-            document.template.id.toString(),
-            document.data
-        );
-
-        return apiResponse.success({
-            isValid: true,
-            document,
-            renderedSvg,
-            message: 'Document is valid and verified'
-        });
-    }
-
-    throw APIError.validation('Document verification failed');
+    return apiResponse.success({
+        isValid: verification.isValid,
+        exists: verification.exists,
+        issuer: verification.issuer,
+        timestamp: new Date(verification.timestamp * 1000),
+        renderedSvg,
+        contentType: 'image/svg+xml',
+        message: verification.isValid ? 'Document is valid and verified' : 'Document is invalid'
+    });
 });

@@ -19,16 +19,11 @@ export interface Document {
     status: "valid" | "revoked" | "expired";
 }
 
-export interface DocumentRenderInput extends Pick<Document, 'templateId' | 'data'> { }
+export interface DocumentApiInput extends Pick<Document, 'templateId' | 'data'> { }
 
 export interface DocumentAggregationResult {
     documents: Array<Document & {
         templateId: { _id: string; name: string; description: string; };
     }>;
     totalCount: Array<{ count: number }>;
-}
-
-export interface DocumentVerificationResult extends Omit<Document, 'templateId' | 'issuerId'> {
-    template: { id: string; name: string; description: string; };
-    issuer: { id: string; name: string; email: string; };
 }
