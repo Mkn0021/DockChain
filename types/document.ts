@@ -9,10 +9,10 @@ export interface Document {
     data: Record<string, string>;
     fileName: string;
     blockchain: {
-        contractAddress?: string;
+        contractAddress: string;
         network?: string;
-        txHash?: string;
-        documentHash?: string;
+        txHash: string;
+        documentHash: string;
     };
     issuerId: string;
     issuedAt: Date;

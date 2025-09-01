@@ -1,10 +1,10 @@
-import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
-import { ethers, ContractFactory } from 'ethers';
-import crypto from 'crypto';
-import type { Document } from '@/types/document';
-import Template, { ITemplate } from './Template';
 import { APIError } from '@/lib/api/errors';
-import { getHardhatProvider, getHardhatWallet } from '@/lib/hardhat';
+import Template, { ITemplate } from './Template';
+import type { Document } from '@/types/document';
+import mongoose, { Document as MongooseDoc, Schema } from 'mongoose';
+import { ContractDeployer } from '@/lib/blockchain/deployer';
+
+
 
 export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateId' | 'issuerId'> {
     _id: mongoose.Types.ObjectId;
@@ -14,7 +14,6 @@ export interface IDocument extends MongooseDoc, Omit<Document, 'id' | 'templateI
 
 // Static methods interface for Document model
 export interface IDocumentModel extends mongoose.Model<IDocument> {
-    verifyDocument(contractAddress: string): Promise<boolean>;
     renderDocument(templateId: string, data: Record<string, string> | Map<string, string>): Promise<string>;
 }
 
@@ -44,8 +43,7 @@ const documentSchema = new Schema<IDocument>(
             },
         },
         data: {
-            type: Map,
-            of: String,
+            type: Object,
             required: [true, 'Data is required'],
         },
         fileName: {
@@ -98,33 +96,20 @@ documentSchema.pre('save', async function (next) {
     const template = await Template.findById(this.templateId);
     if (!template) return next(APIError.notFound("Template not found"));
 
-    if (!template.blockchain.bytecode) {
-        return next(APIError.validation("Template bytecode not found"));
+    if (!template.blockchain.bytecode || !template.blockchain.abi) {
+        return next(APIError.validation("Template bytecode or abi not found"));
     }
 
-    const provider = getHardhatProvider();
-    const wallet = getHardhatWallet();
-
-    const factory = new ContractFactory(template.blockchain.abi, template.blockchain.bytecode, wallet);
-
-    const constructorArgs = Object.values(this.data);
-
-    const deployTx = await factory.deploy(...constructorArgs);
-    const contract = await deployTx.waitForDeployment();
-    const contractAddress = await contract.getAddress();
-    const deploymentTx = contract.deploymentTransaction();
-    if (!deploymentTx) return next(APIError.internal("Deployment transaction not found"));
-
-    const documentHash = crypto
-        .createHash('sha256')
-        .update(JSON.stringify(this.data))
-        .digest('hex');
+    const deployment = await ContractDeployer.issueDocument(
+        template.blockchain.deployedAddress,
+        template.blockchain.abi,
+        this.data
+    )
 
     this.blockchain = {
-        contractAddress,
-        txHash: deploymentTx.hash,
-        documentHash,
-        network: (await provider.getNetwork()).name,
+        contractAddress: template.blockchain.deployedAddress,
+        txHash: deployment.transactionHash,
+        documentHash: deployment.docHash
     };
 
     next();
@@ -153,56 +138,6 @@ documentSchema.statics.renderDocument = async function (
     return renderedSvg;
 };
 
-// Static method to verify external document data against blockchain
-documentSchema.statics.verifyDocument = async function (
-    contractAddress: string
-): Promise<boolean> {
-    if (!contractAddress || typeof contractAddress !== 'string' ||
-        !/^(0x)?[0-9a-f]{40}$/i.test(contractAddress.toLowerCase().startsWith('0x') ? contractAddress : `0x${contractAddress}`)) {
-        throw APIError.validation("Contract Address is not Valid");
-    }
-
-    const document: IDocument | null = await this.findOne({ 'blockchain.contractAddress': contractAddress });
-    if (!document) throw APIError.notFound("Document not found for the given contract address");
-
-    const template: ITemplate | null = await Template.findById(document.templateId).select('blockchain.abi variables');
-    if (!template || !template.blockchain.abi) {
-        throw APIError.notFound("Template or ABI not found");
-    }
-
-    const provider = getHardhatProvider();
-
-    const code = await provider.getCode(contractAddress);
-    if (code === "0x" || code === "0x0") throw APIError.notFound("Contract is not Deployed");
-
-    const contract = new ethers.Contract(contractAddress, template.blockchain.abi, provider);
-    const contractData: Record<string, string> = {};
-
-    for (const variable of template.variables) {
-        try {
-            const result = await contract[variable.key]();
-            contractData[variable.key] = String(result);
-        } catch {
-            throw APIError.validation(`Unable to read contract data for field "${variable.key}"`);
-        }
-    }
-
-    // The pre-save hook uses Object.values(this.data), so need to match that structure
-    const contractDataHash = crypto
-        .createHash('sha256')
-        .update(JSON.stringify(contractData))
-        .digest('hex');
-
-    if (document.blockchain.documentHash !== contractDataHash) {
-        throw APIError.validation("Document hash verification failed - data mismatch");
-    }
-
-    if (document.status !== 'valid') {
-        throw APIError.validation(`Document status is ${document.status}`);
-    }
-
-    return true;
-};
 
 const DocumentModel = (mongoose.models.Document as IDocumentModel) || mongoose.model<IDocument, IDocumentModel>('Document', documentSchema);
 
