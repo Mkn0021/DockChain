@@ -140,7 +140,7 @@ export default function IssueDocumentPage() {
             }
         }
         fetchTemplates();
-    }, []);
+    }, [showAlert]);
 
     useEffect(() => {
         const renderDocument = async () => {
@@ -167,7 +167,7 @@ export default function IssueDocumentPage() {
             }
         };
         renderDocument();
-    }, [currentStep]);
+    }, [currentStep, selectedTemplate, formValues, showAlert]);
     return (
         <Stepper
             steps={IssueDocumentSteps}

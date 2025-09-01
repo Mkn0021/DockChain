@@ -19,7 +19,7 @@ export default function Dashboard() {
       }
     }
     fetchStats();
-  }, []);
+  }, [showAlert]);
 
   const items = [
     { title: 'Templates', value: stats?.templates ?? 0 },
