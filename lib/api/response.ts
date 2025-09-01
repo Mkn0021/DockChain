@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { APIError } from './errors';
+import dbConnect from '../mongodb';
 
 interface SuccessResponse<T = unknown> {
   success: true;
@@ -46,6 +47,9 @@ export function asyncHandler<T = unknown>(
 ) {
   return async (req: NextRequest, context?: T): Promise<NextResponse> => {
     try {
+      // Ensure MongoDB is connected
+      await dbConnect();
+
       return await handler(req, context);
     } catch (error) {
       console.error('API Error:', error);
