@@ -1,4 +1,4 @@
-import type { InterfaceAbi } from 'ethers';
+import { TemplateBlockchainData } from './blockchain';
 
 export interface Template {
     id: string;
@@ -7,12 +7,7 @@ export interface Template {
     svgTemplate: string;
     variables: TemplateVariables[];
     createdBy: string;
-    blockchain: {
-        abi?: InterfaceAbi | null;
-        bytecode?: string;
-        contractSource?: string;
-        compilationStatus?: 'pending' | 'success' | 'failed';
-    };
+    blockchain: TemplateBlockchainData;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -26,24 +21,4 @@ export interface TemplateVariables {
 export interface TemplateAggregationResult {
     templates: Template[];
     totalCount: Array<{ count: number }>;
-}
-
-export interface SolcOutput {
-    contracts: {
-        [fileName: string]: {
-            [contractName: string]: {
-                abi: InterfaceAbi;
-                evm: {
-                    bytecode: {
-                        object: string;
-                    };
-                };
-            };
-        };
-    };
-    errors?: Array<{
-        severity: 'error' | 'warning';
-        message: string;
-        formattedMessage?: string;
-    }>;
 }

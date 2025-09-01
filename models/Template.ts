@@ -1,7 +1,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
-import type { Template, SolcOutput } from '../types/template';
-import * as solc from 'solc';
-import { APIError } from '../lib/api/errors';
+import type { Template } from '@/types/template';
+import { APIError } from '@/lib/api/errors';
+import { ContractCompiler } from '@/lib/blockchain/compiler';
+import { ContractDeployer } from '@/lib/blockchain/deployer';
 
 export interface ITemplate extends Document, Omit<Template, 'id' | 'createdBy'> {
     _id: mongoose.Types.ObjectId;
@@ -66,6 +67,10 @@ const templateSchema = new Schema<ITemplate>(
                 enum: ['pending', 'success', 'failed'],
                 default: 'pending',
             },
+            deployedAddress: {
+                type: String,
+                default: ''
+            },
         },
     },
     {
@@ -77,64 +82,45 @@ const templateSchema = new Schema<ITemplate>(
 templateSchema.pre('save', async function (next) {
     if (!this.isNew && !this.isModified('variables') && !this.isModified('name')) return next();
 
-    const requiredFields = this.variables.map(v => v.key);
-    const { contractSource, inputForSolc } = compileContract(this.name, requiredFields);
+    const allFields = this.variables.map(v => v.key);
+    const requiredFields = this.variables.filter(v => v.required).map(v => v.key);
 
-    const output: SolcOutput = JSON.parse(solc.compile(JSON.stringify(inputForSolc)));
-
-    if (output.errors) {
-        return next(APIError.validation("Smart contract compilation failed", output.errors));
+    if (allFields.length === 0) {
+        return next(APIError.validation('Template must have at least one variable'));
     }
 
-    const contractName = Object.keys(output.contracts['Contract.sol'])[0];
-    const contract = output.contracts['Contract.sol'][contractName];
+    // Validate field names (must be valid Solidity identifiers)
+    const invalidFields = allFields.filter(field => !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(field));
+    if (invalidFields.length > 0) {
+        return next(APIError.validation(`Invalid field names: ${invalidFields.join(', ')}. Use only letters, numbers, and underscores.`));
+    }
+    const contractSource = ContractCompiler.generateContractSource(
+        this.name,
+        allFields,
+        requiredFields
+    );
+
+    const compilationResult = ContractCompiler.compile(contractSource);
+
+    const deployedAddress = await ContractDeployer.deploy(
+        compilationResult.abi,
+        compilationResult.bytecode
+    );
+
+    const isVerified = await ContractDeployer.verifyDeployment(deployedAddress);
+    if (!isVerified) return next(APIError.validation('Contract deployment verification failed'));
+
 
     this.blockchain = {
         compilationStatus: 'success',
-        abi: contract.abi,
-        bytecode: contract.evm.bytecode.object,
-        contractSource
+        abi: compilationResult.abi,
+        bytecode: compilationResult.bytecode,
+        contractSource,
+        deployedAddress
     };
 
     next();
 });
-
-// Contract compilation utility
-function compileContract(templateName: string, requiredFields: string[]) {
-    const contractSource = `
-// SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.0;
-
-contract DocumentTemplate {
-    string public Document_Type = "${templateName}";
-    string public Issued_Time;
-    ${requiredFields.map(field => `string public ${field};`).join('\n    ')}
-
-    constructor(${requiredFields.map(field => `string memory _${field}`).join(', ')}, string memory _Issued_Time) {
-        ${requiredFields.map(field => `${field} = _${field};`).join('\n        ')}
-        Issued_Time = _Issued_Time;
-    }
-}`;
-
-    const inputForSolc = {
-        language: 'Solidity',
-        sources: {
-            'Contract.sol': {
-                content: contractSource,
-            },
-        },
-        settings: {
-            outputSelection: {
-                '*': {
-                    '*': ['*'],
-                },
-            },
-        },
-    };
-
-    return { contractSource, inputForSolc };
-}
 
 const TemplateModel = mongoose.models.Template || mongoose.model<ITemplate>('Template', templateSchema);
 
