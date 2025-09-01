@@ -1,5 +1,5 @@
 import { ethers, JsonRpcProvider, Wallet } from 'ethers';
-import { APIError } from './api/errors';
+import { APIError } from '../api/errors';
 
 const HARDHAT_CONFIG = {
     url: process.env.HARDHAT_URL || 'http://127.0.0.1:8545',
