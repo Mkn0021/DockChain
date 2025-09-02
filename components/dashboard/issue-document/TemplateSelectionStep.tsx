@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Template } from '@/types/template';
 import { Button } from '@/components/ui/Button';
 import { useAlert } from "@/components/providers/AlertProvider";
+import { useStepper } from '../StepperLayout';
 
 
 interface TemplateSelectionStepProps {
@@ -15,6 +15,11 @@ interface TemplateSelectionStepProps {
 export default function TemplateSelectionStep({ selectedTemplate, onSelectTemplate }: TemplateSelectionStepProps) {
     const [templates, setTemplates] = useState<Template[]>([]);
     const { showAlert } = useAlert();
+    const { setCanGoToNextStep } = useStepper();
+
+    useEffect(() => {
+        setCanGoToNextStep(!!selectedTemplate);
+    }, [selectedTemplate, setCanGoToNextStep]);
 
     useEffect(() => {
         async function fetchTemplates() {

@@ -1,8 +1,10 @@
 import { Template } from '@/types/template';
 import FormInput from '@/components/ui/FormInput';
+import { useStepper } from '../StepperLayout';
+import { useEffect } from 'react';
 
 interface FillFieldsStepProps {
-    selectedTemplate: Template | null;
+    selectedTemplate: Template;
     formValues: Record<string, string>;
     onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -12,6 +14,16 @@ export default function FillFieldsStep({
     formValues,
     onInputChange
 }: FillFieldsStepProps) {
+    const { setCanGoToNextStep } = useStepper();
+
+    useEffect(() => {
+        const allRequiredFilled = selectedTemplate.variables
+            .filter((field) => field.required)
+            .every((field) => formValues[field.key]?.trim());
+            
+        setCanGoToNextStep(allRequiredFilled);
+    }, [formValues, setCanGoToNextStep]);
+
     return (
         <div className="w-full max-w-3xl">
             <form className="grid grid-cols-1 md:grid-cols-2 gap-6">

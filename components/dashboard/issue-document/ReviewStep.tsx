@@ -7,9 +7,10 @@ import { Button } from '@/components/ui/Button';
 import FormInput from '@/components/ui/FormInput';
 import InfoBox from '@/components/dashboard/InfoBox';
 import { useAlert } from "@/components/providers/AlertProvider";
+import { useStepper } from '../StepperLayout';
 
 interface ReviewStepProps {
-    selectedTemplate: Template | null;
+    selectedTemplate: Template;
     formValues: Record<string, string>;
     onIssueComplete: () => void;
     renderedDocument: string | null;
@@ -32,6 +33,11 @@ export default function ReviewStep({
     const [isRendering, setIsRendering] = useState<boolean>(false);
     const [isIssuing, setIsIssuing] = useState<boolean>(false);
     const { showAlert } = useAlert();
+    const { setCanGoToNextStep } = useStepper();
+
+    useEffect(() => {
+        setCanGoToNextStep(!!recipient && !!renderedDocument);
+    }, [renderedDocument, setCanGoToNextStep]);
 
     useEffect(() => {
         const renderDocument = async () => {
@@ -62,6 +68,7 @@ export default function ReviewStep({
 
     const handleDocumentIssue = async () => {
         setIsIssuing(true);
+        setCanGoToNextStep(false);
         try {
             const documentData: Partial<Document> = {
                 templateId: selectedTemplate!.id,
@@ -79,11 +86,13 @@ export default function ReviewStep({
             });
             if (!res.ok) {
                 showAlert('Failed to issue document', 'error');
+                setCanGoToNextStep(false);
+                return;
             } else {
                 showAlert('Document issued successfully!', 'success');
+                setCanGoToNextStep(true);
+                onIssueComplete();
             }
-
-            onIssueComplete();
         } catch (error) {
             showAlert(`Failed to issue document : ${error}`, 'error');
         } finally {

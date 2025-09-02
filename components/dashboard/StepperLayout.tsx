@@ -1,6 +1,9 @@
+"use client";
+
+import { createContext, useContext, useState, ReactNode, FC } from 'react';
 import { BsCheck } from "react-icons/bs";
-import { Button } from '@/components/ui/Button';
 import { MdNavigateNext } from "react-icons/md";
+import { Button } from '@/components/ui/Button';
 
 interface Step {
     title: string;
@@ -11,11 +14,35 @@ interface StepperProps {
     steps: Step[];
     current: number;
     setCurrent: (step: number) => void;
-    children: React.ReactNode;
-    canGoToNextStep?: boolean;
+    children: ReactNode;
 }
 
-const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, children, canGoToNextStep }) => {
+interface StepperContextType {
+    canGoToNextStep: boolean;
+    setCanGoToNextStep: (value: boolean) => void;
+}
+
+const StepperContext = createContext<StepperContextType | undefined>(undefined);
+
+export const StepperProvider: FC<{ children: ReactNode }> = ({ children }) => {
+    const [canGoToNextStep, setCanGoToNextStep] = useState(true);
+
+    return (
+        <StepperContext.Provider value={{ canGoToNextStep, setCanGoToNextStep }}>
+            {children}
+        </StepperContext.Provider>
+    );
+};
+
+export const useStepper = () => {
+    const context = useContext(StepperContext);
+    if (!context) throw new Error("useStepper must be used within StepperProvider");
+    return context;
+};
+
+const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children }) => {
+    const { canGoToNextStep } = useStepper();
+
     return (
         <div>
             <div className="flex items-center justify-between w-full">
@@ -26,43 +53,31 @@ const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, chi
 
                     return (
                         <div key={i} className={`flex items-center pb-4 border-b border-border rounded-none ${isLast ? '' : 'flex-1'}`}>
-                            {/* Circle */}
-                            <div
-                                className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${isCompleted || isActive
-                                    ? "bg-primary text-white"
-                                    : "bg-gray-200 text-text-secondary"
-                                    }`}
-                            >
+                            <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 ${isCompleted || isActive ? "bg-primary text-white" : "bg-gray-200 text-text-secondary"}`}>
                                 {isCompleted ? <BsCheck size={24} /> : i + 1}
                             </div>
-
-                            {/* Label */}
                             {!isCompleted && <span className={`ml-2 ${isActive ? 'text-text-primary block' : 'text-text-secondary hidden sm:block'} whitespace-nowrap`}>{step.title}</span>}
-
-                            {/* Connector */}
-                            {!isLast && (
-                                <div
-                                    className={`flex-1 border-t mx-2 ${isCompleted ? "border-primary" : "border-border"
-                                        }`}
-                                ></div>
-                            )}
+                            {!isLast && <div className={`flex-1 border-t mx-2 ${isCompleted ? "border-primary" : "border-border"}`}></div>}
                         </div>
                     );
                 })}
             </div>
-            {/* Header and Sub-header */}
+
+            {/* Header & Description */}
             <div className="py-6">
                 <h3 className="text-left m-0 p-0">{steps[current].title}</h3>
                 <p className="text-text-secondary">{steps[current].description}</p>
             </div>
-            {/* Children (step content) */}
+
+            {/* Step content */}
             <div className="flex-1 flex flex-col justify-center items-center h-72 rounded-none">
                 {children}
             </div>
-            {/* Buttons at the bottom */}
+
+            {/* Navigation buttons */}
             <div className="flex items-center justify-between pt-2">
                 <Button
-                    variant='secondary'
+                    variant="secondary"
                     onClick={() => setCurrent(Math.max(current - 1, 0))}
                     disabled={current === 0}
                 >
@@ -70,13 +85,13 @@ const StepperLayout: React.FC<StepperProps> = ({ steps, current, setCurrent, chi
                 </Button>
                 <Button
                     onClick={() => setCurrent(Math.min(current + 1, steps.length - 1))}
-                    disabled={current === steps.length - 1 || (typeof canGoToNextStep !== 'undefined' && !canGoToNextStep)}
+                    disabled={current === steps.length - 1 || !canGoToNextStep}
                 >
                     <MdNavigateNext size={24} />
                 </Button>
             </div>
         </div>
     );
-}
+};
 
 export default StepperLayout;
