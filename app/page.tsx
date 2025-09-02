@@ -91,10 +91,10 @@ export default function Home() {
           <div className="max-w-full flex flex-col items-center text-center">
             <h4>#1 Blockchain-Based Document Platform</h4>
             <h1>Verify and Issue Documents Securely with Blockchain</h1>
-            <h5>
+            <p className="whitespace-break-spaces  text-base md:text-lg mb-lg">
               Streamline document verification and issuance using secure blockchain technology.
               Enable users to verify and issue documents with full transparency and trust.
-            </h5>
+            </p>
           </div>
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mt-2 w-full sm:w-auto">
             <Button variant="primary" href="/login" className="w-[80%] sm:w-auto">
@@ -161,7 +161,7 @@ export default function Home() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
           {testimonials.map((testimonial, index) => (
             <div key={index} className="bg-background-muted p-8">
-              <h4 className='mt-0'>{testimonial.title}</h4>
+              <h4 className="mt-0" role="heading" aria-level={3}>{testimonial.title}</h4>
               <p className="text-text-secondary">{testimonial.description}</p>
             </div>
           ))}

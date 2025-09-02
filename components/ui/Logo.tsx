@@ -7,7 +7,7 @@ interface LogoProps {
 
 const Logo: React.FC<LogoProps> = ({ className = '' }) => {
     return (
-        <Link href="/" className="m-0 p-0">
+        <Link href="/" className="m-0 p-0" aria-label="Home">
             <svg
                 viewBox="0 0 91 31"
                 fill="none"
