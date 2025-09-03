@@ -30,19 +30,20 @@ export const GET = asyncHandler(async (request: NextRequest) => {
                             localField: 'templateId',
                             foreignField: '_id',
                             as: 'template',
-                            pipeline: [{ $project: { name: 1, description: 1 } }]
+                            pipeline: [{ $project: { name: 1 } }]
                         }
                     },
                     { $unwind: '$template' },
                     {
-                        $addFields: {
+                        $project: {
                             id: { $toString: '$_id' },
-                            'templateId.id': { $toString: '$templateId._id' }
+                            recipientName: '$issuedTo.name',
+                            templateName: '$template.name',
+                            status: 1,
+                            createdAt: 1,
                         }
                     },
-                    {
-                        $unset: ['_id', 'templateId._id']
-                    }
+                    { $unset: ['_id'] },
                 ],
                 totalCount: [{ $count: 'count' }]
             }
