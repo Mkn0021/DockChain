@@ -18,6 +18,7 @@ export default function IssueDocumentPage() {
         {
             title: "Select Design",
             description: "Choose a template design for your document.",
+            nextButtonText: "Continue to Fields",
             component: (
                 <TemplateSelectionStep
                     selectedTemplate={selectedTemplate}
@@ -28,6 +29,7 @@ export default function IssueDocumentPage() {
         {
             title: "Fill Required Fields",
             description: "Enter all necessary information for the document.",
+            nextButtonText: "Review Details",
             component: (
                 <FillFieldsStep
                     selectedTemplate={selectedTemplate!}
@@ -41,11 +43,11 @@ export default function IssueDocumentPage() {
         {
             title: "Review All Details",
             description: "Check and confirm all entered details before issuing.",
+            nextButtonText: "Issue Document",
             component: (
                 <ReviewStep
                     selectedTemplate={selectedTemplate!}
                     formValues={formValues}
-                    onIssueComplete={() => setCurrentStep(3)}
                     renderedDocument={renderedDocument}
                     onRenderedDocumentChange={setRenderedDocument}
                 />

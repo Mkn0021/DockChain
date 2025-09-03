@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/Button';
 interface Step {
     title: string;
     description: string;
+    nextButtonText?: string;
 }
 
 interface StepperProps {
@@ -17,22 +18,17 @@ interface StepperProps {
     children: ReactNode;
 }
 
+type onNextType = (() => Promise<boolean>) | null;
+
+
 interface StepperContextType {
     canGoToNextStep: boolean;
     setCanGoToNextStep: (value: boolean) => void;
+    onNext: onNextType;
+    setOnNext: (fn: () => onNextType) => void;
 }
 
 const StepperContext = createContext<StepperContextType | undefined>(undefined);
-
-export const StepperProvider: FC<{ children: ReactNode }> = ({ children }) => {
-    const [canGoToNextStep, setCanGoToNextStep] = useState(true);
-
-    return (
-        <StepperContext.Provider value={{ canGoToNextStep, setCanGoToNextStep }}>
-            {children}
-        </StepperContext.Provider>
-    );
-};
 
 export const useStepper = () => {
     const context = useContext(StepperContext);
@@ -40,8 +36,38 @@ export const useStepper = () => {
     return context;
 };
 
+export const StepperProvider: FC<{ children: ReactNode }> = ({ children }) => {
+    const [canGoToNextStep, setCanGoToNextStep] = useState(true);
+    const [onNext, setOnNext] = useState<onNextType>(null);
+
+    return (
+        <StepperContext.Provider value={{ canGoToNextStep, setCanGoToNextStep, onNext, setOnNext }}>
+            {children}
+        </StepperContext.Provider>
+    );
+};
+
 const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children }) => {
-    const { canGoToNextStep } = useStepper();
+    const { canGoToNextStep, setCanGoToNextStep, onNext, setOnNext } = useStepper();
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleNext = async () => {
+        if (!canGoToNextStep) return;
+        setIsLoading(true);
+
+        try {
+            const isResponseOk = onNext ? await onNext() : true;
+
+            if (isResponseOk) {
+                setCurrent(Math.min(current + 1, steps.length - 1));
+            } else {
+                setCanGoToNextStep(false);
+            }
+        } finally {
+            setIsLoading(false);
+            setOnNext(() => null);
+        }
+    };
 
     return (
         <div>
@@ -70,7 +96,7 @@ const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children 
             </div>
 
             {/* Step content */}
-            <div className="flex-1 flex flex-col justify-center items-center h-72 rounded-none">
+            <div className="flex-1 flex flex-col justify-center items-center min-h-72 rounded-none">
                 {children}
             </div>
 
@@ -83,11 +109,8 @@ const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children 
                 >
                     <MdNavigateNext size={24} className="rotate-180" />
                 </Button>
-                <Button
-                    onClick={() => setCurrent(Math.min(current + 1, steps.length - 1))}
-                    disabled={current === steps.length - 1 || !canGoToNextStep}
-                >
-                    <MdNavigateNext size={24} />
+                <Button onClick={handleNext} disabled={isLoading || current === steps.length - 1 || !canGoToNextStep} className="flex items-center gap-2">
+                    {isLoading ? "Processing.." : steps[current].nextButtonText} <MdNavigateNext size={24} />
                 </Button>
             </div>
         </div>

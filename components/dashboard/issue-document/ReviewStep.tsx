@@ -8,11 +8,11 @@ import FormInput from '@/components/ui/FormInput';
 import InfoBox from '@/components/dashboard/InfoBox';
 import { useAlert } from "@/components/providers/AlertProvider";
 import { useStepper } from '../StepperLayout';
+import { APIError } from '@/lib/api/errors';
 
 interface ReviewStepProps {
     selectedTemplate: Template;
     formValues: Record<string, string>;
-    onIssueComplete: () => void;
     renderedDocument: string | null;
     onRenderedDocumentChange: (svg: string | null) => void;
 }
@@ -20,7 +20,6 @@ interface ReviewStepProps {
 export default function ReviewStep({
     selectedTemplate,
     formValues,
-    onIssueComplete,
     renderedDocument,
     onRenderedDocumentChange
 }: ReviewStepProps) {
@@ -31,13 +30,48 @@ export default function ReviewStep({
 
     const [recipient, setRecipient] = useState<string>('');
     const [isRendering, setIsRendering] = useState<boolean>(false);
-    const [isIssuing, setIsIssuing] = useState<boolean>(false);
     const { showAlert } = useAlert();
-    const { setCanGoToNextStep } = useStepper();
+    const { setCanGoToNextStep, setOnNext } = useStepper();
 
     useEffect(() => {
-        setCanGoToNextStep(!!recipient && !!renderedDocument);
-    }, [renderedDocument, setCanGoToNextStep]);
+        const handleDocumentIssue = async () => {
+            try {
+                const documentData: Partial<Document> = {
+                    templateId: selectedTemplate.id,
+                    issuedTo: {
+                        name: recipient,
+                    },
+                    data: formValues,
+                    fileName: `${recipient.toLowerCase()}_${selectedTemplate?.name}_${Date.now()}.svg`
+                }
+
+                console.log('Issuing document with data:', documentData);
+
+                const res = await fetch('/api/documents', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(documentData)
+                });
+
+                if (!res.ok) {
+                    showAlert("Document Issue API response not ok", 'error')
+                    return false;
+                }
+
+                showAlert('Document issued successfully!', 'success');
+                return true;
+            } catch (error) {
+                showAlert(`Document issue failed: ${error}`, 'error')
+                return false;
+            }
+        }
+
+        setOnNext(() => handleDocumentIssue)
+    }, [setOnNext, recipient])
+
+    useEffect(() => {
+        setCanGoToNextStep(!!recipient.trim() && !!renderedDocument);
+    }, [renderedDocument, recipient, setCanGoToNextStep]);
 
     useEffect(() => {
         const renderDocument = async () => {
@@ -66,40 +100,6 @@ export default function ReviewStep({
         renderDocument();
     }, [selectedTemplate, formValues, showAlert]);
 
-    const handleDocumentIssue = async () => {
-        setIsIssuing(true);
-        setCanGoToNextStep(false);
-        try {
-            const documentData: Partial<Document> = {
-                templateId: selectedTemplate!.id,
-                issuedTo: {
-                    name: recipient,
-                },
-                data: formValues,
-                fileName: `${recipient.toLowerCase()}_${selectedTemplate?.name}_${Date.now()}.svg`
-            }
-
-            const res = await fetch('/api/documents', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(documentData)
-            });
-            if (!res.ok) {
-                showAlert('Failed to issue document', 'error');
-                setCanGoToNextStep(false);
-                return;
-            } else {
-                showAlert('Document issued successfully!', 'success');
-                setCanGoToNextStep(true);
-                onIssueComplete();
-            }
-        } catch (error) {
-            showAlert(`Failed to issue document : ${error}`, 'error');
-        } finally {
-            setIsIssuing(false);
-        }
-    }
-
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full items-start">
             <div className="flex items-center justify-center w-full h-full">
@@ -126,9 +126,6 @@ export default function ReviewStep({
                     items={issuingInfoPoints}
                     className="w-full"
                 />
-                <Button onClick={handleDocumentIssue} disabled={isIssuing || !recipient.trim()} className="w-full">
-                    {isIssuing ? 'Issuing...' : 'Issue Document'}
-                </Button>
             </div>
         </div>
     );
