@@ -18,7 +18,7 @@ export const GET = asyncHandler(async () => {
 
     const [templates, documents] = await Promise.all([
         TemplateModel.countDocuments({ createdBy: session.user.id }),
-        DocumentModel.countDocuments({ createdBy: session.user.id })
+        DocumentModel.countDocuments({ issuerId: session.user.id })
     ]);
 
     const stats: DashboardStats = {
