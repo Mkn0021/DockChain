@@ -27,3 +27,13 @@ export interface SolcOutput {
     };
     errors?: SolcError[];
 }
+
+export interface ContractParts {
+    templateName: string;
+    validationCode: string;
+    allFieldsCode: string;
+    parameterCode: string;
+    assignmentCode: string;
+    getterReturnTypes: string;
+    getterReturnValues: string;
+}
