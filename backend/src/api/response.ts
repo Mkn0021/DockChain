@@ -1,6 +1,5 @@
 import APIError from "./errors";
 import { Request, Response, NextFunction } from "express";
-import { connectDB, isMongoConnected } from "../config/database";
 
 export interface SuccessResponse<T> {
     success: true;
@@ -39,12 +38,6 @@ export const asyncHandler = <T>(
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            connectDB();
-
-            if (!isMongoConnected()) {
-                throw APIError.internal('Database connection error');
-            }
-
             const result = await handler(req);
             return apiResponse.success(res, result.data, result.message);
         } catch (error) {

@@ -6,6 +6,7 @@ dotenv.config();
 export const EnvSchema = z.object({
     MONGODB_URI: z.url().nonempty("MONGODB_URI cannot be empty"),
     ALLOWED_ORIGINS: z.string().default("*"),
+    PORT: z.coerce.number().default(4000),
 });
 
 export const env = (() => {
