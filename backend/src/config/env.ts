@@ -9,6 +9,8 @@ export const EnvSchema = z.object({
     PORT: z.coerce.number().default(4000),
     JWT_ACCESS_SECRET: z.string().min(32, "JWT_ACCESS_SECRET must be at least 32 characters"),
     JWT_REFRESH_SECRET: z.string().min(32, "JWT_REFRESH_SECRET must be at least 32 characters"),
+    EMAIL_USER: z.email("Invalid EMAIL_USER").optional(),
+    EMAIL_PASS: z.string().optional(),
 });
 
 export const env = (() => {
