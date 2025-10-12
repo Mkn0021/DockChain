@@ -13,6 +13,7 @@ const UserSchema = new Schema<IUserDocument>(
         otp: { type: String },
         otpExpiry: { type: Date },
         role: { type: String, enum: ["admin", "user"], default: "user" },
+        refreshTokenHash: { type: String },
     },
     { timestamps: true }
 );

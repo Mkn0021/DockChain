@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-    name: z .string()
+    name: z.string()
         .min(2, "Name must be at least 2 characters")
         .max(50, "Name too long")
         .regex(/^[a-zA-Z0-9\s]+$/, "Name can only contain letters, numbers, and spaces"),
@@ -17,6 +17,8 @@ export const userSchema = z.object({
     otpExpiry: z.date().optional(),
 
     role: z.enum(["admin", "user"]).default("user"),
+
+    refreshTokenHash: z.string().optional(),
 
     createdAt: z.date().optional(),
     updatedAt: z.date().optional(),

@@ -1,0 +1,53 @@
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { env } from "../config/env";
+import { UserModel } from "../models/User.model";
+
+export class JWTService {
+    private static readonly ACCESS_EXPIRY = "15m";
+    private static readonly REFRESH_EXPIRY = "7d";
+
+    // Create short-lived access token (15 minutes)
+    static createAccessToken(userId: string): string {
+        return jwt.sign({ userId }, env.JWT_ACCESS_SECRET, {
+            expiresIn: this.ACCESS_EXPIRY
+        });
+    }
+
+    // Create long-lived refresh token (7 days)
+    static createRefreshToken(userId: string): string {
+        return jwt.sign({ userId }, env.JWT_REFRESH_SECRET, {
+            expiresIn: this.REFRESH_EXPIRY
+        });
+    }
+
+    // Verify access token
+    static verifyAccessToken(token: string): { userId: string } {
+        return jwt.verify(token, env.JWT_ACCESS_SECRET) as { userId: string };
+    }
+
+    // Verify refresh token
+    static verifyRefreshToken(token: string): { userId: string } {
+        return jwt.verify(token, env.JWT_REFRESH_SECRET) as { userId: string };
+    }
+
+    // Save refresh token hash to database
+    static async saveRefreshToken(userId: string, token: string): Promise<void> {
+        const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+        await UserModel.findByIdAndUpdate(userId, { refreshTokenHash: tokenHash });
+    }
+
+    // Remove refresh token from database (logout)
+    static async revokeRefreshToken(userId: string): Promise<void> {
+        await UserModel.findByIdAndUpdate(userId, { refreshTokenHash: null });
+    }
+
+    // Check if refresh token is valid by comparing hashes
+    static async isValidRefreshToken(userId: string, token: string): Promise<boolean> {
+        const user = await UserModel.findById(userId);
+        if (!user?.refreshTokenHash) return false;
+
+        const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+        return user.refreshTokenHash === tokenHash;
+    }
+}
