@@ -18,6 +18,4 @@ const UserSchema = new Schema<IUserDocument>(
     { timestamps: true }
 );
 
-UserSchema.index({ email: 1 }); // optimize lookups
-
 export const UserModel = mongoose.model<IUserDocument>("User", UserSchema);
