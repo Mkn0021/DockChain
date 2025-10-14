@@ -5,6 +5,7 @@ import mongoose, { Schema, Document } from "mongoose";
 export interface IUser extends Document, Omit<User, 'id'> {
     _id: mongoose.Types.ObjectId;
     isPasswordCorrect(providedPassword: string): Promise<boolean>;
+    toJSON(): Omit<User, 'password' | 'refreshTokenHash' | 'otp' | 'otpExpiry' | 'googleId'>;
 }
 
 const UserSchema = new Schema<IUser>(
@@ -37,6 +38,14 @@ UserSchema.methods.isPasswordCorrect = async function (providedPassword: string)
         return false;
     }
     return await bcrypt.compare(providedPassword, this.password);
+}
+
+UserSchema.methods.toJSON = function () {
+    const userObject = this.toObject();
+    const { password, refreshTokenHash, otp, otpExpiry, googleId, __v, ...safeUser } = userObject;
+    safeUser.id = safeUser._id.toString();
+    delete safeUser._id;
+    return safeUser;
 }
 
 const UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
