@@ -1,6 +1,7 @@
 import express from "express";
 import { errorHandler } from "./api/middlewares/errorHandler";
 import { securityMiddleware, rateLimiter, sanitizeInput } from "./api/middlewares/security";
+import routes from "./routes";
 
 const app = express();
 
@@ -11,7 +12,10 @@ app.use(...securityMiddleware);
 app.use(rateLimiter);
 app.use(sanitizeInput);
 
-// Example route
+// API routes
+app.use("/api", routes);
+
+// Health check route
 app.get("/", (_req, res) => res.json({ success: true, message: "API running" }));
 
 app.use(errorHandler);
