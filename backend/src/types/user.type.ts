@@ -1,6 +1,6 @@
 import { z } from "zod";
-
 export const userSchema = z.object({
+    id: z.string(),
     name: z.string()
         .min(2, "Name must be at least 2 characters")
         .max(50, "Name too long")
@@ -24,4 +24,4 @@ export const userSchema = z.object({
     updatedAt: z.date().optional(),
 });
 
-export type IUser = z.infer<typeof userSchema>;
+export type User = z.infer<typeof userSchema>;

@@ -7,13 +7,10 @@
     "dev:backend": "cd backend && npx ts-node-dev --respawn src/server.ts",
     "build:backend": "cd backend && npx tsc",
     "start:backend": "cd backend && node dist/server.js",
-
     "dev:frontend": "cd frontend && npx next dev",
     "build:frontend": "cd frontend && npx next build",
     "start:frontend": "cd frontend && npx next start",
-
     "dev:blockchain": "cd blockchain && npx hardhat node",
-    
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "test": "echo \"No tests specified\" && exit 0"
   },
@@ -21,8 +18,21 @@
     "type": "git",
     "url": "git@github-org:ArclaneSystem/DockChain.git"
   },
-  "keywords": ["blockchain", "documents", "typescript", "nextjs", "hardhat", "nodejs"],
+  "keywords": [
+    "blockchain",
+    "documents",
+    "typescript",
+    "nextjs",
+    "hardhat",
+    "nodejs"
+  ],
   "author": "Mkn0021",
   "license": "MIT",
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "bcrypt": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0"
+  }
 }
