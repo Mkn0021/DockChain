@@ -7,18 +7,49 @@ export class JWTService {
     private static readonly ACCESS_EXPIRY = "15m";
     private static readonly REFRESH_EXPIRY = "7d";
 
+    private static createPayload(userId: string, additionalData?: Record<string, any>) {
+        return {
+            userId,
+            ...(additionalData || {}),
+            iat: Math.floor(Date.now() / 1000)
+        };
+    }
+
     // Create short-lived access token (15 minutes)
-    static createAccessToken(userId: string): string {
-        return jwt.sign({ userId }, env.JWT_ACCESS_SECRET, {
+    static createAccessToken(userId: string, additionalData?: Record<string, any>): string {
+        const payload = this.createPayload(userId, additionalData);
+        return jwt.sign(payload, env.JWT_ACCESS_SECRET, {
             expiresIn: this.ACCESS_EXPIRY
         });
     }
 
     // Create long-lived refresh token (7 days)
-    static createRefreshToken(userId: string): string {
-        return jwt.sign({ userId }, env.JWT_REFRESH_SECRET, {
+    static createRefreshToken(userId: string, additionalData?: Record<string, any>): string {
+        const payload = this.createPayload(userId, additionalData);
+        return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
             expiresIn: this.REFRESH_EXPIRY
         });
+    }
+
+    // Generate both tokens and save refresh token in one operation
+    static async generateAuthTokens(userId: string, additionalData?: Record<string, any>): Promise<{
+        accessToken: string;
+        refreshToken: string;
+    }> {
+        const payload = this.createPayload(userId, additionalData);
+        const accessToken = jwt.sign(payload, env.JWT_ACCESS_SECRET, {
+            expiresIn: this.ACCESS_EXPIRY
+        });
+        const refreshToken = jwt.sign(payload, env.JWT_REFRESH_SECRET, {
+            expiresIn: this.REFRESH_EXPIRY
+        });
+
+        await this.saveRefreshToken(userId, refreshToken);
+
+        return {
+            accessToken,
+            refreshToken
+        };
     }
 
     // Verify access token
