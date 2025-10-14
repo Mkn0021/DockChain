@@ -11,4 +11,9 @@ router.post("/logout", ...AuthController.logout);
 router.post("/forgot-password", ...AuthController.forgotPassword);
 router.post("/reset-password", ...AuthController.resetPassword);
 
+// Google OAuth Routes
+router.get("/google/url", ...AuthController.getGoogleAuthUrl);
+router.post("/google", ...AuthController.googleLogin);
+router.post("/google/disconnect", ...AuthController.disconnectGoogle);
+
 export default router;

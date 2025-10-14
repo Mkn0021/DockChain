@@ -47,6 +47,12 @@ export const ForgotPasswordSchema = z.object({
     })
 });
 
+export const GoogleLoginSchema = z.object({
+    body: z.object({
+        code: z.string().min(1, "Authorization code is required")
+    })
+});
+
 export type RegisterData = z.infer<typeof RegisterSchema>['body'];
 export type LoginData = z.infer<typeof LoginSchema>['body'];
 export type VerifyEmailData = z.infer<typeof VerifyEmailSchema>['body'];

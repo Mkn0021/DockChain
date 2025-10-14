@@ -1,6 +1,7 @@
 import APIError from "../api/errors";
 import { OTPService } from "./otp.service";
 import { JWTService } from "./jwt.service";
+import { OAuthManager } from '../utils/oauth.util';
 import UserModel, { IUser } from "../models/User.model";
 import { RegisterData, VerifyEmailData, LoginData, ResetPasswordData } from "../types/auth.type";
 
@@ -116,6 +117,59 @@ class AuthService {
         await user.save();
 
         return true;
+    }
+
+    // Google OAuth Methods
+    async loginWithGoogle(code: string) {
+        const profile = await OAuthManager.handleCallback('google', code);
+
+        const googleUser = await UserModel.findOne({ googleId: profile.id });
+        if (googleUser) {
+            return await this.generateAuthResponse(googleUser);
+        }
+
+        const emailUser = await UserModel.findOne({ email: profile.email });
+        if (emailUser) {
+            emailUser.googleId = profile.id;
+            await emailUser.save();
+            return await this.generateAuthResponse(emailUser);
+        }
+
+        const newUser = await UserModel.create({
+            name: profile.name,
+            email: profile.email,
+            googleId: profile.id,
+            isVerified: true
+        });
+
+        return await this.generateAuthResponse(newUser);
+    }
+
+    async unlinkGoogle(userId: string) {
+        await UserModel.findByIdAndUpdate(userId, {
+            $unset: { googleId: 1 }
+        });
+        return { message: "Google account unlinked" };
+    }
+
+    private async generateAuthResponse(user: IUser) {
+        const { accessToken, refreshToken } = await JWTService.generateAuthTokens(
+            user._id.toString(),
+            {
+                email: user.email,
+                role: user.role,
+                isVerified: user.isVerified
+            }
+        );
+
+        return {
+            userData: {
+                ...user.toJSON(),
+                accessToken,
+                refreshToken
+            },
+            message: "Google login successful"
+        };
     }
 }
 
