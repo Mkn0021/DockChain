@@ -6,25 +6,33 @@ const passwordSchema = z.string()
     .max(100, "Password too long");
 
 export const RegisterSchema = z.object({
-    name: userSchema.shape.name,
-    email: userSchema.shape.email,
-    password: passwordSchema,
+    body: z.object({
+        name: userSchema.shape.name,
+        email: userSchema.shape.email,
+        password: passwordSchema,
+    })
 });
 
 export const LoginSchema = z.object({
-    email: userSchema.shape.email,
-    password: passwordSchema,
+    body: z.object({
+        email: userSchema.shape.email,
+        password: passwordSchema,
+    })
 });
 
 export const VerifyEmailSchema = z.object({
-    email: userSchema.shape.email,
-    otp: z.string().length(6, "OTP must be 6 digits"),
+    body: z.object({
+        email: userSchema.shape.email,
+        otp: z.string().length(6, "OTP must be 6 digits"),
+    })
 });
 
 export const ResetPasswordSchema = z.object({
-    email: userSchema.shape.email,
-    otp: z.string().length(6, "OTP must be 6 digits"),
-    newPassword: passwordSchema,
+    body: z.object({
+        email: userSchema.shape.email,
+        otp: z.string().length(6, "OTP must be 6 digits"),
+        newPassword: passwordSchema,
+    })
 });
 
 export const RefreshTokenSchema = z.object({
@@ -39,7 +47,7 @@ export const ForgotPasswordSchema = z.object({
     })
 });
 
-export type RegisterData = z.infer<typeof RegisterSchema>;
-export type LoginData = z.infer<typeof LoginSchema>;
-export type VerifyEmailData = z.infer<typeof VerifyEmailSchema>;
-export type ResetPasswordData = z.infer<typeof ResetPasswordSchema>;
+export type RegisterData = z.infer<typeof RegisterSchema>['body'];
+export type LoginData = z.infer<typeof LoginSchema>['body'];
+export type VerifyEmailData = z.infer<typeof VerifyEmailSchema>['body'];
+export type ResetPasswordData = z.infer<typeof ResetPasswordSchema>['body'];
