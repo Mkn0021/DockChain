@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import crypto from "crypto";
 import { env } from "../config/env";
 import UserModel from "../models/User.model";
+import { JWTPayload } from "../types/request.type";
 
 export class JWTService {
     private static readonly ACCESS_EXPIRY = "15m";
@@ -53,13 +54,13 @@ export class JWTService {
     }
 
     // Verify access token
-    static verifyAccessToken(token: string): { userId: string } {
-        return jwt.verify(token, env.JWT_ACCESS_SECRET) as { userId: string };
+    static verifyAccessToken(token: string): JWTPayload {
+        return jwt.verify(token, env.JWT_ACCESS_SECRET) as JWTPayload;
     }
 
     // Verify refresh token
-    static verifyRefreshToken(token: string): { userId: string } {
-        return jwt.verify(token, env.JWT_REFRESH_SECRET) as { userId: string };
+    static verifyRefreshToken(token: string): JWTPayload {
+        return jwt.verify(token, env.JWT_REFRESH_SECRET) as JWTPayload;
     }
 
     // Save refresh token hash to database
