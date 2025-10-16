@@ -1,7 +1,6 @@
 import { Template } from "@type/template.type";
 import mongoose, { Schema, Document } from "mongoose";
-import { ContractCompiler } from "@blockchain/compiler";
-import { ContractDeployer } from "@blockchain/deployer";
+import { ContractCompiler, ContractDeployer } from "blockchain";
 
 
 export interface ITemplate extends Document, Omit<Template, 'id' | 'createdBy'> {

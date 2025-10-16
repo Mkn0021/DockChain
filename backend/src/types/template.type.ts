@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { abiValidation } from "@blockchain/validation/deployer";
+import { abiValidation } from "blockchain";
 
 export const templateSchema = z.object({
     id: z.string().optional(),
