@@ -33,4 +33,39 @@ export const templateSchema = z.object({
     updatedAt: z.date().optional(),
 })
 
+export const CreateTemplateSchema = z.object({
+    body: templateSchema.omit({ id: true, createdAt: true, updatedAt: true, blockchain: true })
+});
+
+export const UpdateTemplateSchema = z.object({
+    params: z.object({
+        id: z.string().nonempty("Template ID is required")
+    }),
+    body: CreateTemplateSchema.shape.body.partial()
+});
+
+export const TemplateIdSchema = z.object({
+    params: z.object({
+        id: z.string().nonempty("Template ID is required")
+    })
+});
+
+export const TemplateQueryOptionsSchema = z.object({
+    query: z.object({
+        name: z.string().optional(),
+        createdBy: z.string().optional(),
+        page: z.coerce.number().int().min(1).default(1),
+        limit: z.coerce.number().int().min(1).max(100).default(10),
+        sort: z.record(z.string(), z.enum(['-1', '1', 'asc', 'desc'])).optional().default({ createdAt: '-1' })
+    })
+});
+
+export interface TemplateAggregationResult {
+    templates: Template[];
+    totalCount: Array<{ count: number }>;
+}
+
 export type Template = z.infer<typeof templateSchema>;
+export type CreateTemplateData = z.infer<typeof CreateTemplateSchema>['body'];
+export type UpdateTemplateData = z.infer<typeof UpdateTemplateSchema>['body'];
+export type TemplateQueryOptions = z.infer<typeof TemplateQueryOptionsSchema>['query'];
