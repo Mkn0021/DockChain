@@ -19,6 +19,6 @@
       "@blockchain/*": ["../blockchain/*"]
     }
   },
-  "include": [ "src/**/*", "../blockchain/**/*"],
-  "exclude": [ "node_modules", "dist", "jest.config.js"]
+  "include": [ "src/**/*", "../blockchain/compiler", "../blockchain/deploy", "../blockchain/validation"],
+  "exclude": [ "node_modules", "dist", "jest.config.js", "**/*.test.ts" ]
 }
