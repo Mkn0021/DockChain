@@ -53,7 +53,6 @@ export const TemplateIdSchema = z.object({
 export const TemplateQueryOptionsSchema = z.object({
     query: z.object({
         name: z.string().optional(),
-        createdBy: z.string().optional(),
         page: z.coerce.number().int().min(1).default(1),
         limit: z.coerce.number().int().min(1).max(100).default(10),
         sort: z.record(z.string(), z.enum(['-1', '1', 'asc', 'desc'])).optional().default({ createdAt: '-1' })

@@ -78,24 +78,24 @@ export class TemplateService {
         };
     }
 
-    static async getAllTemplates(options: TemplateQueryOptions) {
-        const { page, limit, createdBy, name, sort } = options;
+    static async getAllTemplates({ createdBy, options }: { createdBy: string; options: Partial<TemplateQueryOptions>; }) {
+        const page = options.page || 1;
+        const limit = options.limit || 10;
+        const sort = options.sort || { createdAt: "-1" };
         const skip = (page - 1) * limit;
 
         const matchStage: PipelineStage.Match = {
             $match: {
-                ...(createdBy && { createdBy }),
-                ...(name && { name: { $regex: name, $options: 'i' } })
+                createdBy,
+                ...(options.name && { name: { $regex: options.name, $options: 'i' } })
             }
         };
 
         const sortStage: PipelineStage.Sort = {
-            $sort: sort ?
-                Object.entries(sort).reduce((acc, [key, value]) => ({
-                    ...acc,
-                    [key]: value === 'asc' || value === '1' ? 1 : -1
-                }), {}) :
-                { createdAt: -1 }
+            $sort: Object.entries(sort).reduce((acc, [key, value]) => ({
+                ...acc,
+                [key]: value === 'asc' || value === '1' ? 1 : -1
+            }), {})
         };
 
         const result = await TemplateModel.aggregate<TemplateAggregationResult>([
@@ -136,9 +136,11 @@ export class TemplateService {
         const pages = Math.ceil(total / limit);
 
         return {
-            templates,
-            total,
-            pages,
+            data: {
+                templates,
+                total,
+                pages
+            },
             message: "Templates retrieved successfully"
         };
     }
