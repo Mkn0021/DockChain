@@ -65,6 +65,7 @@ export interface TemplateAggregationResult {
 }
 
 export type Template = z.infer<typeof templateSchema>;
+export type DeleteTemplateData = { id: string; ownerId: string };
 export type CreateTemplateData = z.infer<typeof CreateTemplateSchema>['body'];
-export type UpdateTemplateData = z.infer<typeof UpdateTemplateSchema>['body'];
+export type UpdateTemplateData = { id: string, updates: z.infer<typeof UpdateTemplateSchema>['body'], ownerId: string };
 export type TemplateQueryOptions = z.infer<typeof TemplateQueryOptionsSchema>['query'];

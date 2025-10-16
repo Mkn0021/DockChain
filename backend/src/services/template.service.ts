@@ -3,7 +3,8 @@ import { PipelineStage } from "mongoose";
 import TemplateModel, { ITemplate } from "@model/Template.model";
 import {
     CreateTemplateData, Template, UpdateTemplateData,
-    TemplateQueryOptions, TemplateAggregationResult
+    TemplateQueryOptions, TemplateAggregationResult,
+    DeleteTemplateData
 } from "@type/template.type";
 
 export class TemplateService {
@@ -31,7 +32,14 @@ export class TemplateService {
         };
     }
 
-    static async updateTemplate(id: string, updates: UpdateTemplateData): Promise<{ template: Template; message: string }> {
+    static async updateTemplate({id, updates, ownerId} : UpdateTemplateData): Promise<{ template: Template; message: string }> {
+        const existingTemplate = await TemplateModel.findById(id);
+        this.validateTemplate(existingTemplate);
+
+        if (existingTemplate.createdBy.toString() !== ownerId) {
+            throw APIError.forbidden("You don't have permission to update this template");
+        }
+
         if (updates.name) {
             const duplicateTemplate = await TemplateModel.findOne({
                 name: updates.name,
@@ -42,7 +50,7 @@ export class TemplateService {
             }
         }
 
-        const existingTemplate: ITemplate | null = await TemplateModel.findByIdAndUpdate(
+        const updatedTemplate: ITemplate | null = await TemplateModel.findByIdAndUpdate(
             id,
             {
                 ...updates,
@@ -51,19 +59,23 @@ export class TemplateService {
             { new: true, runValidators: true }
         );
 
-        this.validateTemplate(existingTemplate);
+        this.validateTemplate(updatedTemplate);
 
         return {
-            template: existingTemplate.toJSON(),
+            template: updatedTemplate.toJSON(),
             message: "Template updated successfully"
         };
     }
 
-    static async deleteTemplate(id: string): Promise<{ message: string }> {
-        const existingTemplate = await TemplateModel.findById(id);
+    static async deleteTemplate(data: DeleteTemplateData): Promise<{ message: string }> {
+        const existingTemplate = await TemplateModel.findById(data.id);
         this.validateTemplate(existingTemplate);
 
-        await TemplateModel.findByIdAndDelete(id);
+        if (existingTemplate.createdBy.toString() !== data.ownerId) {
+            throw APIError.forbidden("You don't have permission to delete this template");
+        }
+
+        await TemplateModel.findByIdAndDelete(data.id);
 
         return { message: "Template deleted successfully" };
     }

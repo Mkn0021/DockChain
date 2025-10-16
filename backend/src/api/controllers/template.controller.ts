@@ -34,7 +34,12 @@ export default class TemplateController {
         validateRequest(UpdateTemplateSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
-            const result = await TemplateService.updateTemplate(id, req.body);
+            const authenticatedReq = req as AuthenticatedRequest;
+            const result = await TemplateService.updateTemplate({
+                id,
+                updates: req.body,
+                ownerId: authenticatedReq.user.id
+            });
             return { data: result.template, message: result.message };
         })
     ];
@@ -46,7 +51,10 @@ export default class TemplateController {
         validateRequest(TemplateIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
-            const result = await TemplateService.deleteTemplate(id);
+            const authenticatedReq = req as AuthenticatedRequest;
+            const result = await TemplateService.deleteTemplate(
+                { id, ownerId: authenticatedReq.user.id }
+            );
             return { data: null, message: result.message };
         })
     ];
