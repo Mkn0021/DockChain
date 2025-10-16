@@ -1,10 +1,13 @@
 import { z } from 'zod';
 import type { InterfaceAbi } from 'ethers';
 
-const abiValidation = z.any().refine((val): val is InterfaceAbi => {
-    return Array.isArray(val) ||
-        (typeof val === 'object' && val !== null && !Array.isArray(val));
-}, 'ABI must be a valid InterfaceAbi (array or object)');
+export const abiValidation = z.custom<InterfaceAbi>(
+    (val): val is InterfaceAbi => {
+        return Array.isArray(val) ||
+            (typeof val === 'object' && val !== null && !Array.isArray(val));
+    },
+    'ABI must be a valid InterfaceAbi (array or object)'
+);
 
 export const ContractConfigSchema = z.object({
     contractAddress: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Invalid Ethereum address format'),
