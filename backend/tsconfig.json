@@ -2,11 +2,23 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "rootDir": "./src",
+    "rootDir": "../",
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@model/*": [ "./src/models/*" ],
+      "@controllers/*": ["./src/api/controllers/*"],
+      "@middlewares/*": ["./src/api/middlewares/*"],
+      "@routes/*": ["./src/api/routes/*"],
+      "@services/*": ["./src/services/*"],
+      "@api/*": ["./src/api/*"],
+      "@config/*": ["./src/config/*"],
+      "@utils/*": ["./src/utils/*"],
+      "@type/*": ["./src/types/*"],
+      "@blockchain/*": ["../blockchain/*"]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "jest.config.js"]
+  "include": [ "src/**/*", "../blockchain/**/*"],
+  "exclude": [ "node_modules", "dist", "jest.config.js"]
 }
