@@ -1,16 +1,14 @@
-
-
 import { Request } from "express";
-import { asyncHandler } from "../api/response";
-import { OAuthManager } from '../utils/oauth.util';
-import { authService } from "../services/auth.service";
-import { AuthenticatedRequest } from "../types/request.type";
-import { validateRequest } from "../api/middlewares/validation";
-import { validateAuth, validateVerified } from "../api/middlewares/auth";
+import { asyncHandler } from "@api/response";
+import { OAuthManager } from '@utils/oauth.util';
+import { authService } from "@services/auth.service";
+import { AuthenticatedRequest } from "@type/request.type";
+import { validateRequest } from "@middlewares/validation";
+import { validateAuth, validateVerified } from "@middlewares/auth";
 import {
     LoginSchema, RegisterSchema, ResetPasswordSchema,
     VerifyEmailSchema, RefreshTokenSchema, ForgotPasswordSchema, GoogleLoginSchema
-} from "../types/auth.type";
+} from "@type/auth.type";
 
 export default class AuthController {
 

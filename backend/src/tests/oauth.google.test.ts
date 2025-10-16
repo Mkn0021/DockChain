@@ -1,11 +1,11 @@
 import request from 'supertest';
-import { authService } from '../services/auth.service';
-import APIError from '../api/errors';
+import { authService } from '@services/auth.service';
+import APIError from '@api/errors';
 import app from '../app';
 
-jest.mock('../services/auth.service');
+jest.mock('@services/auth.service');
 
-jest.mock('../utils/oauth.util', () => ({
+jest.mock('@utils/oauth.util', () => ({
     OAuthManager: {
         getAuthUrl: jest.fn(() => 'https://accounts.google.com/o/oauth2/auth?mock=true'),
         handleCallback: jest.fn()
@@ -13,7 +13,7 @@ jest.mock('../utils/oauth.util', () => ({
 }));
 
 // Mock the authentication middlewares
-jest.mock('../api/middlewares/auth', () => ({
+jest.mock('@middlewares/auth', () => ({
     validateAuth: jest.fn((req: any, res: any, next: any) => {
         const authHeader = req.headers.authorization;
 

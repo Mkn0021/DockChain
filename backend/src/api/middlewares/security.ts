@@ -1,6 +1,6 @@
 import cors from "cors";
 import helmet from "helmet";
-import { env } from "../../config/env";
+import { env } from "@config/env";
 import rateLimit from "express-rate-limit";
 import { Request, Response, NextFunction } from "express";
 

@@ -1,7 +1,7 @@
 import express from "express";
-import { errorHandler } from "./api/middlewares/errorHandler";
-import { securityMiddleware, rateLimiter, sanitizeInput } from "./api/middlewares/security";
-import routes from "./routes";
+import { errorHandler } from "@middlewares/errorHandler";
+import { securityMiddleware, rateLimiter, sanitizeInput } from "@middlewares/security";
+import routes from "./api/routes";
 
 const app = express();
 

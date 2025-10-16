@@ -1,5 +1,5 @@
 import { z, ZodError } from "zod";
-import { validateRequest } from "../api/middlewares/validation";
+import { validateRequest } from "@middlewares/validation";
 
 describe("validateRequest middleware", () => {
     it("calls next() when request matches schema", () => {

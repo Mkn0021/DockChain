@@ -1,9 +1,9 @@
-import APIError from "../api/errors";
-import { OTPService } from "./otp.service";
-import { JWTService } from "./jwt.service";
-import { OAuthManager } from '../utils/oauth.util';
-import UserModel, { IUser } from "../models/User.model";
-import { RegisterData, VerifyEmailData, LoginData, ResetPasswordData } from "../types/auth.type";
+import APIError from "@api/errors";
+import { OTPService } from "@services/otp.service";
+import { JWTService } from "@services/jwt.service";
+import { OAuthManager } from "@utils/oauth.util";
+import UserModel, { IUser } from "@model/User.model";
+import { RegisterData, VerifyEmailData, LoginData, ResetPasswordData } from "@type/auth.type";
 
 class AuthService {
     async register(data: RegisterData) {

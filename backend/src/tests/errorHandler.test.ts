@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { ZodError } from "zod";
-import APIError from "../api/errors";
-import { errorHandler } from "../api/middlewares/errorHandler";
+import APIError from "@api/errors";
+import { errorHandler } from "@middlewares/errorHandler";
 
 describe("errorHandler", () => {
     const mockReq = {} as Request;

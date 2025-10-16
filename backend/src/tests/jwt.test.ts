@@ -1,9 +1,7 @@
-import jwt from "jsonwebtoken";
-import crypto from "crypto";
 import mongoose from "mongoose";
-import { JWTService } from "../services/jwt.service";
-import { UserModel } from "../models/User.model";
-import { env } from "../config/env";
+import { JWTService } from "@services/jwt.service";
+import UserModel from "@model/User.model";
+import { env } from "@config/env";
 
 describe("JWTService - Integration Tests", () => {
     let testUserId: string;

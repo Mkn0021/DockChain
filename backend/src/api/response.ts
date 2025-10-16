@@ -1,4 +1,4 @@
-import APIError from "./errors";
+import APIError from "@api/errors";
 import { Request, Response, NextFunction } from "express";
 
 export interface SuccessResponse<T> {

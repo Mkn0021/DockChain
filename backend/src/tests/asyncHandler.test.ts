@@ -2,12 +2,12 @@ import { Request, Response, NextFunction } from "express";
 
 // Prevent asyncHandler from attempting a real DB connection during tests.
 // The mock must be registered before importing the module that uses it.
-jest.mock("../config/database", () => ({
+jest.mock("@config/database", () => ({
     connectDB: jest.fn(),
     isMongoConnected: jest.fn(() => true),
 }));
 
-import { asyncHandler } from "../api/response";
+import { asyncHandler } from "@api/response";
 
 describe("asyncHandler", () => {
     const mockReq = {} as Request;

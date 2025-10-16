@@ -1,6 +1,6 @@
 import crypto from "crypto";
-import { MailService } from "./mail.service";
-import UserModel from "../models/User.model";
+import UserModel from "@model/User.model";
+import { MailService } from "@services/mail.service";
 
 export class OTPService {
     private static readonly OTP_EXPIRY_MINUTES = 10;

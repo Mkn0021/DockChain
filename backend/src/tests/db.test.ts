@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { connectDB, isMongoConnected } from "../config/database";
+import { connectDB, isMongoConnected } from "@config/database";
 
 type MongoConnection = mongoose.Connection;
 

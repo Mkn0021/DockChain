@@ -1,10 +1,10 @@
-import { OTPService } from "../services/otp.service";
-import { MailService } from "../services/mail.service";
-import { UserModel } from "../models/User.model";
+import { OTPService } from "@services/otp.service";
+import { MailService } from "@services/mail.service";
+import UserModel from "@model/User.model";
 
 // Mock dependencies
-jest.mock("../services/mail.service");
-jest.mock("../models/User.model");
+jest.mock("@services/mail.service");
+jest.mock("@model/User.model");
 
 const mockMailService = MailService as jest.Mocked<typeof MailService>;
 const mockUserModel = UserModel as jest.Mocked<typeof UserModel>;
