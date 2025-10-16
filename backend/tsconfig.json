@@ -2,23 +2,23 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
-    "rootDir": "../",
+    "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
+    "baseUrl": "./src",
     "paths": {
-      "@model/*": [ "./src/models/*" ],
-      "@controllers/*": ["./src/api/controllers/*"],
-      "@middlewares/*": ["./src/api/middlewares/*"],
-      "@routes/*": ["./src/api/routes/*"],
-      "@services/*": ["./src/services/*"],
-      "@api/*": ["./src/api/*"],
-      "@config/*": ["./src/config/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@type/*": ["./src/types/*"],
-      "@blockchain/*": ["../blockchain/*"]
+      "@model/*": ["models/*"],
+      "@controllers/*": ["api/controllers/*"],
+      "@middlewares/*": ["api/middlewares/*"],
+      "@routes/*": ["api/routes/*"],
+      "@services/*": ["services/*"],
+      "@api/*": ["api/*"],
+      "@config/*": ["config/*"],
+      "@utils/*": ["utils/*"],
+      "@type/*": ["types/*"]
     }
   },
-  "include": [ "src/**/*", "../blockchain/compiler", "../blockchain/deploy", "../blockchain/validation"],
+  "include": [ "src/**/*"],
   "exclude": [ "node_modules", "dist", "jest.config.js", "**/*.test.ts" ]
 }
