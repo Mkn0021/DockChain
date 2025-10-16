@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
-import { env } from "../config/env";
-import { SendMailSchema, SendMailData } from "../types/mail.type";
-import APIError from "../api/errors";
+import { env } from "@config/env";
+import { SendMailSchema, SendMailData } from "@type/mail.type";
+import APIError from "@api/errors";
 
 export class MailService {
     private static getTransporter() {

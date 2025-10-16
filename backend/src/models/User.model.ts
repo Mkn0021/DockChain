@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import { User } from "../types/user.type";
+import { User } from "@type/user.type";
 import mongoose, { Schema, Document } from "mongoose";
 
 export interface IUser extends Document, Omit<User, 'id'> {

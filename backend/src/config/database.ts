@@ -1,7 +1,7 @@
-import { env } from './env';
 import mongoose from 'mongoose';
+import { env } from '@config/env';
 import { MongoClient } from 'mongodb';
-import type { CachedConnection, MongoConnection } from '../types/database.type';
+import type { CachedConnection, MongoConnection } from '@type/database.type';
 
 
 const cached: CachedConnection = global.mongoose || { conn: null, promise: null };

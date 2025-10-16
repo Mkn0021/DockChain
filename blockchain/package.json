@@ -1,6 +1,16 @@
 {
-  "name": "dockchain-blockchain",
+  "name": "blockchain",
   "version": "1.0.0",
+  "description": "DockChain blockchain utilities for contract compilation and deployment",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "prepare": "npm run build"
+  },
   "type": "commonjs",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^6.1.0",

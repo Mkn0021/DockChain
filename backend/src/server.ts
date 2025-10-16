@@ -1,6 +1,7 @@
+import "module-alias/register";
 import app from "./app";
-import { connectDB } from "./config/database";
-import { env } from "./config/env";
+import { connectDB } from "@config/database";
+import { env } from "@config/env";
 
 async function server() {
     try {

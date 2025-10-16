@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import { env } from "../config/env";
-import UserModel from "../models/User.model";
-import { JWTPayload } from "../types/request.type";
+import { env } from "@config/env";
+import UserModel from "@model/User.model";
+import { JWTPayload } from "@type/request.type";
 
 export class JWTService {
     private static readonly ACCESS_EXPIRY = "15m";

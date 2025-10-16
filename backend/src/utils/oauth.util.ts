@@ -1,5 +1,5 @@
-import APIError from "../api/errors";
-import { OAuthProfile, OAuthProvider } from "../types/oauth.type";
+import APIError from "@api/errors";
+import { OAuthProfile, OAuthProvider } from "@type/oauth.type";
 
 export class OAuthManager {
     private static providers = new Map<string, OAuthProvider>();

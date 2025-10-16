@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import APIError from "../errors";
+import APIError from "@api/errors";
 import type { Request, Response, NextFunction } from "express";
 import mongoose from "mongoose";
 

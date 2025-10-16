@@ -5,8 +5,22 @@
     "rootDir": "./src",
     "outDir": "./dist",
     "strict": true,
-    "esModuleInterop": true
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "types": ["node", "jest"],
+    "paths": {
+      "@model/*": ["models/*"],
+      "@controllers/*": ["api/controllers/*"],
+      "@middlewares/*": ["api/middlewares/*"],
+      "@routes/*": ["api/routes/*"],
+      "@services/*": ["services/*"],
+      "@api/*": ["api/*"],
+      "@config/*": ["config/*"],
+      "@utils/*": ["utils/*"],
+      "@type/*": ["types/*"]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "jest.config.js"]
+  "include": [ "src/**/*"],
+  "exclude": [ "node_modules", "dist", "jest.config.js" ]
 }

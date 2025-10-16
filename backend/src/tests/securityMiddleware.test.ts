@@ -1,7 +1,7 @@
 import request from "supertest";
 import express, { Request, Response } from "express";
-import { env } from "../config/env";
-import { securityMiddleware, rateLimiter, sanitizeInput } from "../api/middlewares/security";
+import { env } from "@config/env";
+import { securityMiddleware, rateLimiter, sanitizeInput } from "@middlewares/security";
 
 const app = express();
 app.use(express.json());

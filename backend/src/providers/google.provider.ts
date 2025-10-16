@@ -1,7 +1,7 @@
-import { env } from '../config/env';
-import APIError from '../api/errors';
+import { env } from '@config/env';
+import APIError from '@api/errors';
 import { OAuth2Client } from 'google-auth-library';
-import { OAuthProfile, OAuthProvider, GoogleUserInfo } from '../types/oauth.type';
+import { OAuthProfile, OAuthProvider, GoogleUserInfo } from '@type/oauth.type';
 
 export class GoogleProvider extends OAuthProvider {
     private client: OAuth2Client;

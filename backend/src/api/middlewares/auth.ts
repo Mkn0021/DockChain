@@ -1,7 +1,7 @@
 import { Response, NextFunction, Request, RequestHandler } from "express";
-import { JWTService } from "../../services/jwt.service";
-import APIError from "../errors";
-import { AuthenticatedRequest } from "../../types/request.type";
+import { JWTService } from "@services/jwt.service";
+import APIError from "@api/errors";
+import { AuthenticatedRequest } from "@type/request.type";
 
 export const validateAuth: RequestHandler = (
     req: Request,

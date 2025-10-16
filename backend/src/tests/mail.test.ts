@@ -1,5 +1,5 @@
-import { MailService } from "../services/mail.service";
-import { SendMailData } from "../types/mail.type";
+import { MailService } from "@services/mail.service";
+import { SendMailData } from "@type/mail.type";
 import nodemailer from "nodemailer";
 
 // Mock nodemailer
