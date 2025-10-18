@@ -16,10 +16,9 @@
   },
   "include": [
     "src/**/*"
-, "tests/document.service.test.ts"  ],
+, "src/tests/**.test.ts"  ],
   "exclude": [
     "node_modules",
-    "dist",
-    "tests"
+    "dist"
   ]
 }

@@ -1,6 +1,6 @@
 import { ethers } from 'ethers';
-import { BlockchainDocumentService } from '../src/services/document.service';
-import { IssueDocumentParams } from '../src/validation/document';
+import { BlockchainDocumentService } from '../services/document.service';
+import { IssueDocumentParams } from '../validation/document';
 
 describe('BlockchainDocumentService', () => {
     let documentService: BlockchainDocumentService;
@@ -16,10 +16,10 @@ describe('BlockchainDocumentService', () => {
         it('should validate and issue a document successfully', async () => {
             const params: IssueDocumentParams = {
                 docHash: mockDocHash,
-                fields: [
-                    { key: 'name', type: 'string', required: true },
-                    { key: 'date', type: 'date', required: true }
-                ],
+                fields: {
+                    name: "John Doe",
+                    date: new Date("2025-10-19")
+                },
                 gasLimit: 500000
             };
 
@@ -43,7 +43,7 @@ describe('BlockchainDocumentService', () => {
         it('should throw error for invalid document hash', async () => {
             const params: IssueDocumentParams = {
                 docHash: 'invalid-hash',
-                fields: [{ key: 'name', type: 'string', required: true }],
+                fields: { name: "Test User" },
                 gasLimit: 500000
             };
 
@@ -104,7 +104,7 @@ describe('BlockchainDocumentService', () => {
         it('should generate consistent document hash', () => {
             const fields = {
                 name: 'John Doe',
-                date: '2025-10-19'
+                date: new Date('2025-10-19')
             };
 
             const hash = documentService.generateDocHash(fields);
@@ -116,7 +116,7 @@ describe('BlockchainDocumentService', () => {
 
             // Test order independence
             const fields2 = {
-                date: '2025-10-19',
+                date: new Date('2025-10-19'),
                 name: 'John Doe'
             };
             const hash3 = documentService.generateDocHash(fields2);
