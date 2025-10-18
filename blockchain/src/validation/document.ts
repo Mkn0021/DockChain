@@ -10,12 +10,13 @@ export interface DocumentField {
 
 export const IssueDocumentParamsSchema = z.object({
     docHash: z.string().regex(/^0x[a-fA-F0-9]{64}$/, "Invalid document hash format"),
-    fields: z.array(z.object({
-        key: z.string().min(1, "Field key is required")
-            .regex(/^[a-zA-Z0-9\s]+$/, "Field key must start with a letter or underscore"),
-        type: z.enum(['string', 'date'], "Field type must be either 'string' or 'date'"),
-        required: z.boolean().optional().default(true)
-    })).nonempty("At least one field is required"),
+    fields: z.record(
+        z.string().min(1),
+        z.union([
+            z.string().min(1, "Field value is required"),
+            z.date(),
+        ])
+    ).refine(obj => Object.keys(obj).length > 0, { message: "At least one field value must be provided" }),
     gasLimit: z.number().positive().optional().default(500000)
 });
 
