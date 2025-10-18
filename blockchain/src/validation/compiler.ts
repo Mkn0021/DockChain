@@ -7,7 +7,7 @@ export interface CompilationResult {
     contractName: string;
 }
 
-interface SolcError {
+export interface SolcError {
     severity: 'error' | 'warning';
     message: string;
     component: string;
