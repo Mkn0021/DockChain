@@ -34,4 +34,43 @@ export const documentSchema = z.object({
     status: z.enum(["valid", "revoked", "expired"]).default("valid"),
 });
 
+export const issueDocumentSchema = z.object({
+    body: documentSchema.omit({ id: true, blockchain: true, revokedAt: true, status: true })
+});
+
+export const documentIdSchema = z.object({
+    params: z.object({
+        id: z.string().nonempty("Document ID is required")
+    })
+});
+
+export const verifyDocumentSchema = z.object({
+    params: z.object({
+        templateId: z.string().nonempty("Template ID is required"),
+        documentHash: z.string().regex(/^0x([A-Fa-f0-9]{64})$/, "Invalid document hash")
+    })
+});
+
+export const documentQuerySchema = z.object({
+    query: z.object({
+        templateId: z.string().optional(),
+        issuerId: z.string().optional(),
+        recipentWallet: z.string().optional(),
+        status: z.enum(["valid", "revoked", "expired"]).optional(),
+        page: z.coerce.number().int().min(1).default(1),
+        limit: z.coerce.number().int().min(1).max(100).default(10),
+        sort: z.record(z.string(), z.enum(['-1', '1', 'asc', 'desc'])).optional().default({ issuedAt: '-1' })
+    })
+})
+
+export interface DocumentAggregationResult {
+    documents: Document[];
+    totalCount: number;
+}
+
+
 export type Document = z.infer<typeof documentSchema>;
+export type IssueDocumentInput = z.infer<typeof issueDocumentSchema>['body'];
+export type revokeDocumentInput = { id: string; ownerId: string };
+export type verifyDocumentInput = z.infer<typeof verifyDocumentSchema>['params'];
+export type DocumentQueryOptions = z.infer<typeof documentQuerySchema>['query'];
