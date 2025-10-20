@@ -2,9 +2,9 @@ import { Request } from "express";
 import { asyncHandler } from "@api/response";
 import { AuthenticatedRequest } from "@type/request.type";
 import { validateRequest } from "@middlewares/validation";
-import { validateAuth, validateVerified } from "@middlewares/auth";
-import { issueDocumentSchema, documentIdSchema, verifyDocumentSchema } from "@type/document.type";
 import { DocumentService } from "@services/document.service";
+import { validateAuth, validateVerified } from "@middlewares/auth";
+import { issueDocumentSchema, documentIdSchema, verifyDocumentSchema, documentQuerySchema } from "@type/document.type";
 
 export default class DocumentController {
     // POST /api/documents/issue
@@ -68,6 +68,22 @@ export default class DocumentController {
             const { id } = req.params;
             const result = await DocumentService.generateQrCode(id);
             return { data: result.qrCodeDataURL, message: result.message };
+        })
+    ];
+
+    // GET /api/documents
+    static getAllDocuments = [
+        validateAuth,
+        validateVerified,
+        validateRequest(documentQuerySchema),
+        asyncHandler(async (req: Request) => {
+            const authenticatedReq = req as AuthenticatedRequest;
+            const result = await DocumentService.getAllDocuments({
+                options: req.query,
+                createdBy: authenticatedReq.user.id
+            });
+
+            return { data: result.data, message: result.message };
         })
     ];
 }

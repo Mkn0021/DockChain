@@ -55,17 +55,16 @@ export const documentQuerySchema = z.object({
     query: z.object({
         templateId: z.string().optional(),
         issuerId: z.string().optional(),
-        recipentWallet: z.string().optional(),
         status: z.enum(["valid", "revoked", "expired"]).optional(),
         page: z.coerce.number().int().min(1).default(1),
         limit: z.coerce.number().int().min(1).max(100).default(10),
         sort: z.record(z.string(), z.enum(['-1', '1', 'asc', 'desc'])).optional().default({ issuedAt: '-1' })
     })
-})
+});
 
 export interface DocumentAggregationResult {
     documents: Document[];
-    totalCount: number;
+    totalCount: Array<{ count: number }>;
 }
 
 

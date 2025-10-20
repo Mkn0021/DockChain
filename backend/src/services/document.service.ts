@@ -1,10 +1,11 @@
 import QRCode from "qrcode";
 import { env } from "@config/env";
 import APIError from "@api/errors";
+import { PipelineStage } from "mongoose";
 import { BlockchainDocumentService } from "blockchain";
 import DocumentModel, { IDocument } from "@model/Document.model";
 import TemplateModel, { ITemplate } from "@model/Template.model";
-import { IssueDocumentInput, revokeDocumentInput, verifyDocumentInput } from "@type/document.type";
+import { IssueDocumentInput, revokeDocumentInput, verifyDocumentInput, DocumentQueryOptions, DocumentAggregationResult } from "@type/document.type";
 
 
 export class DocumentService {
@@ -125,4 +126,60 @@ export class DocumentService {
         };
     }
 
+    static async getAllDocuments({ createdBy, options }: { createdBy: string; options: Partial<DocumentQueryOptions>; }) {
+        const page = options.page || 1;
+        const limit = options.limit || 10;
+        const sort = options.sort || { issuedAt: "-1" };
+        const skip = (page - 1) * limit;
+
+        const matchStage: PipelineStage.Match = {
+            $match: {
+                createdBy,
+                ...(options.templateId && { templateId: options.templateId }),
+                ...(options.status && { status: options.status }),
+                ...(options.issuerId && { issuerId: options.issuerId })
+            }
+        };
+
+        const sortStage: PipelineStage.Sort = {
+            $sort: Object.entries(sort).reduce((acc, [key, value]) => ({
+                ...acc,
+                [key]: value === 'asc' || value === '1' ? 1 : -1
+            }), {})
+        };
+
+        const result = await DocumentModel.aggregate<DocumentAggregationResult>([
+            matchStage,
+            {
+                $facet: {
+                    documents: [
+                        sortStage,
+                        ...(limit > 0 ? [{ $skip: skip }, { $limit: limit }] : []),
+                        {
+                            $addFields: {
+                                id: { $toString: '$_id' }
+                            }
+                        },
+                        {
+                            $unset: ['_id']
+                        }
+                    ],
+                    totalCount: [{ $count: 'count' }]
+                }
+            }
+        ]);
+
+        const documents = result[0]?.documents || [];
+        const total = result[0]?.totalCount[0]?.count || 0;
+        const pages = Math.ceil(total / limit);
+
+        return {
+            data: {
+                documents,
+                total,
+                pages
+            },
+            message: "Documents retrieved successfully with blockchain status"
+        };
+    }
 }
