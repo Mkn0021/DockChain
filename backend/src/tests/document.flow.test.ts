@@ -250,4 +250,41 @@ describe('Document Routes', () => {
             });
         });
     });
+
+    describe('GET /api/documents', () => {
+        it('should get all documents with query params', async () => {
+            const mockDocuments: Document[] = [
+                mockDocument,
+                { ...mockDocument, id: '000000000000000000000002' }
+            ];
+
+            (DocumentService.getAllDocuments as jest.Mock).mockResolvedValue({
+                data: {
+                    documents: mockDocuments,
+                    total: 2,
+                    pages: 1
+                },
+                message: 'Documents retrieved successfully with blockchain status'
+            });
+
+            const response = await request(app)
+                .get('/api/documents')
+                .set('Authorization', 'Bearer valid-token')
+                .query({ page: 1, limit: 10 });
+
+            expect(response.status).toBe(200);
+            expect(response.body).toEqual({
+                success: true,
+                data: {
+                    documents: mockDocuments.map(doc => ({
+                        ...doc,
+                        issuedAt: expect.any(String)
+                    })),
+                    total: 2,
+                    pages: 1
+                },
+                message: 'Documents retrieved successfully with blockchain status'
+            });
+        });
+    });
 });
