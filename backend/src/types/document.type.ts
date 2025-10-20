@@ -45,7 +45,7 @@ export const documentIdSchema = z.object({
 });
 
 export const verifyDocumentSchema = z.object({
-    params: z.object({
+    body: z.object({
         templateId: z.string().nonempty("Template ID is required"),
         documentHash: z.string().regex(/^0x([A-Fa-f0-9]{64})$/, "Invalid document hash")
     })
@@ -72,5 +72,5 @@ export interface DocumentAggregationResult {
 export type Document = z.infer<typeof documentSchema>;
 export type IssueDocumentInput = z.infer<typeof issueDocumentSchema>['body'];
 export type revokeDocumentInput = { id: string; ownerId: string };
-export type verifyDocumentInput = z.infer<typeof verifyDocumentSchema>['params'];
+export type verifyDocumentInput = z.infer<typeof verifyDocumentSchema>['body'];
 export type DocumentQueryOptions = z.infer<typeof documentQuerySchema>['query'];
