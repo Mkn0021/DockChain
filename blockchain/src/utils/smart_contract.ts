@@ -1,4 +1,4 @@
-import { ContractParts } from "./types";
+import { ContractParts } from '../validation/compiler';
 
 export function generateContract(contractData: ContractParts): string {
     return `

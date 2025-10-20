@@ -1,7 +1,6 @@
 import * as solc from 'solc';
-import { generateContract } from './contract'
-import type { CompilationResult, SolcOutput } from './types';
-import { ContractCompileSchema, ContractCompileInput } from '../validation/compiler';
+import { generateContract } from '../utils/smart_contract';
+import { ContractCompileSchema, ContractCompileInput, CompilationResult, SolcOutput } from '../validation/compiler';
 
 export class ContractCompiler {
     static generateContractSource(contractData: ContractCompileInput): string {
