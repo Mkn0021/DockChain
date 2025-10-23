@@ -38,6 +38,16 @@ export const issueDocumentSchema = z.object({
     body: documentSchema.omit({ id: true, blockchain: true, revokedAt: true, status: true })
 });
 
+export const issueBulkDocumentSchema = z.object({
+    body: z.object({
+        templateId: z.string().nonempty("Template ID is required"),
+        issuerId: z.string().optional(),
+        documents: z.array(
+            documentSchema.pick({ fieldValues: true, recipent: true, issuedAt: true, expiresAt: true })
+        ).nonempty("At least one document must be provided")
+    })
+});
+
 export const documentIdSchema = z.object({
     params: z.object({
         id: z.string().nonempty("Document ID is required")
@@ -48,6 +58,13 @@ export const verifyDocumentSchema = z.object({
     body: z.object({
         templateId: z.string().nonempty("Template ID is required"),
         documentHash: z.string().regex(/^0x([A-Fa-f0-9]{64})$/, "Invalid document hash")
+    })
+});
+
+export const verifyBulkDocumentSchema = z.object({
+    body: z.object({
+        templateId: z.string().nonempty("Template ID is required"),
+        documentHashes: z.array(z.string().regex(/^0x([A-Fa-f0-9]{64})$/, "Invalid document hash")).nonempty("At least one document hash is required")
     })
 });
 
@@ -70,6 +87,8 @@ export interface DocumentAggregationResult {
 
 export type Document = z.infer<typeof documentSchema>;
 export type IssueDocumentInput = z.infer<typeof issueDocumentSchema>['body'];
+export type IssueBulkDocumentInput = z.infer<typeof issueBulkDocumentSchema>['body'];
 export type revokeDocumentInput = { id: string; ownerId: string };
 export type verifyDocumentInput = z.infer<typeof verifyDocumentSchema>['body'];
+export type verifyBulkDocumentInput = z.infer<typeof verifyBulkDocumentSchema>['body'];
 export type DocumentQueryOptions = z.infer<typeof documentQuerySchema>['query'];

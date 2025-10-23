@@ -4,7 +4,10 @@ import { AuthenticatedRequest } from "@type/request.type";
 import { validateRequest } from "@middlewares/validation";
 import { DocumentService } from "@services/document.service";
 import { validateAuth, validateVerified } from "@middlewares/auth";
-import { issueDocumentSchema, documentIdSchema, verifyDocumentSchema, documentQuerySchema } from "@type/document.type";
+import {
+    issueDocumentSchema, documentIdSchema, verifyDocumentSchema,
+    documentQuerySchema, verifyBulkDocumentSchema, issueBulkDocumentSchema
+} from "@type/document.type";
 
 export default class DocumentController {
     // POST /api/documents/issue
@@ -19,6 +22,21 @@ export default class DocumentController {
                 issuerId: authenticatedReq.user.id
             });
             return { data: result.document, message: result.message };
+        })
+    ];
+
+    // POST /api/documents/issue/bulk
+    static issueBulkDocuments = [
+        validateAuth,
+        validateVerified,
+        validateRequest(issueBulkDocumentSchema),
+        asyncHandler(async (req: Request) => {
+            const authenticatedReq = req as AuthenticatedRequest;
+            const result = await DocumentService.issueBulk({
+                ...req.body,
+                issuerId: authenticatedReq.user.id
+            });
+            return { data: result.documents, message: result.message };
         })
     ];
 
@@ -55,6 +73,15 @@ export default class DocumentController {
         validateRequest(verifyDocumentSchema),
         asyncHandler(async (req: Request) => {
             const result = await DocumentService.verify(req.body);
+            return { data: result.data, message: result.message };
+        })
+    ];
+
+    // POST /api/documents/verify/bulk
+    static verifyBulkDocuments = [
+        validateRequest(verifyBulkDocumentSchema),
+        asyncHandler(async (req: Request) => {
+            const result = await DocumentService.verifyBulk(req.body);
             return { data: result.data, message: result.message };
         })
     ];

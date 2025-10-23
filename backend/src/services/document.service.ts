@@ -6,7 +6,10 @@ import { PipelineStage } from "mongoose";
 import { BlockchainDocumentService } from "blockchain";
 import DocumentModel, { IDocument } from "@model/Document.model";
 import TemplateModel, { ITemplate } from "@model/Template.model";
-import { IssueDocumentInput, revokeDocumentInput, verifyDocumentInput, DocumentQueryOptions, DocumentAggregationResult } from "@type/document.type";
+import {
+    IssueDocumentInput, revokeDocumentInput, verifyDocumentInput, DocumentQueryOptions,
+    DocumentAggregationResult, verifyBulkDocumentInput, Document, IssueBulkDocumentInput
+} from "@type/document.type";
 
 
 export class DocumentService {
@@ -71,6 +74,39 @@ export class DocumentService {
         };
     }
 
+    static async issueBulk(data: IssueBulkDocumentInput) {
+        const issuedDocuments: Document[] = [];
+        const blockchain = await this.getBlockchain(data.templateId);
+
+        for (const document of data.documents) {
+            const documentHash = blockchain.generateDocHash(document.fieldValues);
+            const txHash = await blockchain.issueDocument({
+                docHash: documentHash,
+                fields: document.fieldValues,
+                gasLimit: 500000
+            });
+
+            const newDocument: IDocument = await DocumentModel.create({
+                ...document,
+                templateId: data.templateId,
+                issuerId: data.issuerId || "",
+                blockchain: {
+                    documentHash,
+                    txHash,
+                    contractAddress: this.contractAddress
+                },
+                status: "active"
+            });
+
+            issuedDocuments.push(newDocument.toJSON());
+        }
+
+        return {
+            documents: issuedDocuments,
+            message: "Bulk documents issued successfully"
+        };
+    }
+
     static async revoke({ id, ownerId }: revokeDocumentInput) {
         const document = await this.getDocumentOrThrow(id);
 
@@ -114,6 +150,19 @@ export class DocumentService {
         return {
             data: varifydata,
             message: "Document verification completed successfully"
+        };
+    }
+
+    static async verifyBulk(data: verifyBulkDocumentInput) {
+        const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
+        if (!template) throw APIError.notFound("Template not found");
+
+        const blockchain = await this.getBlockchain(template._id.toString());
+        const results = await blockchain.verifyDocumentsBatch(data.documentHashes);
+
+        return {
+            data: results,
+            message: "Bulk document verification completed successfully"
         };
     }
 
