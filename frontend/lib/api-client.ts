@@ -1,5 +1,11 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_BASE_URL) {
+    throw new Error('Environment variable: NEXT_PUBLIC_API_URL is not set.');
+}
+
 export interface SuccessResponse<T> {
     success: true;
     data: T;
@@ -16,13 +22,9 @@ type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 export class ApiClient {
     private client: AxiosInstance;
 
-    constructor(baseURL: string) {
-        if (!baseURL) {
-            throw new Error('Environment variable: NEXT_PUBLIC_API_URL is not set.');
-        }
-
+    constructor() {
         this.client = axios.create({
-            baseURL,
+            baseURL: API_BASE_URL,
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
@@ -135,6 +137,4 @@ export class ApiClient {
     }
 }
 
-export default new ApiClient(
-    process.env.NEXT_PUBLIC_API_BASE_URL!
-);
+export default new ApiClient();
