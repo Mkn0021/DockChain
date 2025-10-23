@@ -1,7 +1,9 @@
 import Image from "next/image";
+import Logo from "@/components/Logo";
 import { Button } from "@/components/Button";
 import { Navbar } from "@/components/Navbar";
 import { Section } from "./(components)/Section";
+import SocialIcon from "./(components)/SocialIcon";
 import { FeatureCard } from "./(components)/FeatureCard";
 import { heroImages, features, testimonials } from "./(data)/index";
 
@@ -99,6 +101,44 @@ export default function HomePage() {
           ))}
         </div>
       </Section>
+
+      {/* Footer Section */}
+      <footer>
+        <Section className="dark bg-background-dark rounded-bl-none rounded-br-none">
+          {/* Top part */}
+          <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center">
+            <h3 className="mb-6 sm:mb-0 text-center sm:text-left">
+              Ready to get started?
+            </h3>
+            <div className="flex justify-center sm:justify-start">
+              <Button variant="primary" href="/login">Sign up</Button>
+              <Button variant="secondary" href="/verify">Verify a Document</Button>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <hr className="w-full border-t border-border my-8"></hr>
+
+          {/* Bottom part */}
+          <div className="w-full flex flex-col sm:flex-row sm:justify-between sm:items-center gap-6">
+            <div className="flex items-center gap-4 justify-center sm:justify-start">
+              <Logo className='hidden sm:block' />
+              <p className="text-sm text-center sm:text-left">
+                © 2025 Blockchain-Based Document Verification
+              </p>
+            </div>
+
+            <div className="flex gap-4 justify-center sm:justify-end">
+              <SocialIcon platform="telegram" username="mkn0021" />
+              <SocialIcon platform="youtube" username="mkn0021" />
+              <SocialIcon platform="twitter" username="mkn0021" />
+              <SocialIcon platform="github" username="mkn0021" />
+              <SocialIcon platform="discord" username="mkn0021" />
+              <SocialIcon platform="linkedin" username="mkn0021" />
+            </div>
+          </div>
+        </Section>
+      </footer>
     </main>
   );
 }
