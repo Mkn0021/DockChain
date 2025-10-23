@@ -68,6 +68,24 @@ export default function HomePage() {
           ))}
         </div>
       </Section>
+
+      {/* How It Works Section */}
+      <Section>
+        <div id="how-it-works" className="dark w-full bg-background-dark flex flex-col gap-12 p-20">
+          <div className='text-left self-start'>
+            <h2>Blockchain-Based Verification</h2>
+            <p>API + WEB APP + NFC CARD</p>
+          </div>
+          <Image
+            src="/assets/how-it-works.webp"
+            loading="lazy"
+            alt="How it works"
+            width={800}
+            height={600}
+            className="w-full h-auto object-cover"
+          />
+        </div>
+      </Section>
     </main>
   );
 }
