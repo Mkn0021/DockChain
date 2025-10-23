@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { Button } from "@/components/Button";
 import { Navbar } from "@/components/Navbar";
-import { heroImages, features } from "./(data)";
 import { Section } from "./(components)/Section";
 import { FeatureCard } from "./(components)/FeatureCard";
+import { heroImages, features, testimonials } from "./(data)/index";
 
 export default function HomePage() {
   return (
@@ -84,6 +84,19 @@ export default function HomePage() {
             height={600}
             className="w-full h-auto object-cover"
           />
+        </div>
+      </Section>
+
+      {/* Testimonials Section */}
+      <Section>
+        <h2 className="text-left self-start">Verifiable credentials adoption worldwide</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="bg-background-muted p-8">
+              <h4 className="mt-0" role="heading" aria-level={3}>{testimonial.title}</h4>
+              <p className="text-text-secondary">{testimonial.description}</p>
+            </div>
+          ))}
         </div>
       </Section>
     </main>

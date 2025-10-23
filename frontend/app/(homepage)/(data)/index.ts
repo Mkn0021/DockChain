@@ -45,3 +45,19 @@ export const features = [
         description: 'The emergence of digital ID wallets and documents, underpinned by the eIDAS and mobile driver\'s licenses (mDLs), is redefining how we manage our digital identities.',
     },
 ];
+
+// TODO: Replace with real testimonials later
+export const testimonials = [
+    {
+        title: 'California prepares to issue birth, marriage and death certificates as VCs',
+        description: 'In 2022, the state of California adopted legislation to issue citizens\' vital records using blockchain and Verifiable Credentials to streamline administrative processes, reduce fraud, and empower individuals.',
+    },
+    {
+        title: 'Utah funds program to issue VCs using blockchain',
+        description: 'The pilot program focuses on preventing the unauthorized alteration of electronic records and securing private information for uses cases such as age verification.',
+    },
+    {
+        title: 'LinkedIn launches VC-based workplace verifications',
+        description: 'Enables employers to verify employee\'s workplace to ensure authenticity and trust. By using open standards, these credentials can be used to verify employment on other platforms such as ATSs and HR systems.',
+    },
+];
