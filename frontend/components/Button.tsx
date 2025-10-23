@@ -1,5 +1,4 @@
 import React from 'react';
-import clsx from 'clsx';
 import Link from 'next/link';
 
 type ButtonProps = {
@@ -21,27 +20,33 @@ export const Button: React.FC<ButtonProps> = ({
   onClick,
   disabled = false,
 }) => {
-  const baseClasses = clsx(
-    'text-center px-6 py-4 text-base font-medium leading-6 transition-all duration-150 no-underline m-2',
-    'hover:bg-primary-hover hover:text-white hover:-translate-y-1',
-    'dark:hover:bg-gray-50 dark:hover:text-zinc-900',
-    'active:outline active:outline-primary active:outline-offset-[3px] active:outline-2',
-    variant === 'primary' && 'bg-primary dark:bg-primary-dark text-white',
-    variant === 'secondary' && 'border border-primary dark:border-white text-primary dark:text-white self-center',
-    disabled && 'opacity-50 cursor-not-allowed hover:transform-none',
+  const baseClasses = 'text-center px-6 py-4 text-base font-medium leading-6 transition-all duration-150 no-underline m-2';
+  const hoverClasses = 'hover:bg-primary-hover hover:text-white hover:-translate-y-1 dark:hover:bg-gray-50 dark:hover:text-zinc-900';
+  const activeClasses = 'active:outline active:outline-primary active:outline-offset-[3px] active:outline-2';
+  const variantClasses = variant === 'primary'
+    ? 'bg-primary dark:bg-primary-dark text-white'
+    : 'border border-primary dark:border-white text-primary dark:text-white self-center';
+  const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed hover:transform-none' : '';
+
+  const combinedClasses = [
+    baseClasses,
+    hoverClasses,
+    activeClasses,
+    variantClasses,
+    disabledClasses,
     className
-  );
+  ].filter(Boolean).join(' ');
 
   if (href) {
     return (
-      <Link href={href} className={baseClasses}>
+      <Link href={href} className={combinedClasses}>
         {children}
       </Link>
     );
   }
 
   return (
-    <button type={type} className={baseClasses} onClick={onClick} disabled={disabled}>
+    <button type={type} className={combinedClasses} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );
