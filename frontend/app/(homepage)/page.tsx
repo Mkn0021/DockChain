@@ -1,8 +1,9 @@
+import Image from "next/image";
 import { Button } from "@/components/Button";
 import { Navbar } from "@/components/Navbar";
+import { heroImages, features } from "./(data)";
 import { Section } from "./(components)/Section";
-import { heroImages } from "./(data)";
-import Image from "next/image";
+import { FeatureCard } from "./(components)/FeatureCard";
 
 export default function HomePage() {
   return (
@@ -15,7 +16,7 @@ export default function HomePage() {
           Login
         </Button>
       </Navbar>
-      
+
       {/* Hero Section */}
       <Section>
         <div className="dark w-full max-w-3xl flex flex-col items-center gap-6 sm:gap-8">
@@ -48,6 +49,22 @@ export default function HomePage() {
                 alt={image.alt}
               />
             </div>
+          ))}
+        </div>
+      </Section>
+
+      {/* Why Blockchain Section */}
+      <Section>
+        <h2 className="text-left self-start">Why Choose Blockchain?</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
+          {features.map((feature, index) => (
+            <FeatureCard
+              key={index}
+              imageSrc={feature.imageSrc}
+              imageAlt={feature.imageAlt}
+              title={feature.title}
+              description={feature.description}
+            />
           ))}
         </div>
       </Section>
