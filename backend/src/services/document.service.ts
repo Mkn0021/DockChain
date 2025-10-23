@@ -1,0 +1,316 @@
+import QRCode from "qrcode";
+import { env } from "@config/env";
+import puppeteer from "puppeteer";
+import APIError from "@api/errors";
+import { PipelineStage } from "mongoose";
+import { BlockchainDocumentService } from "blockchain";
+import DocumentModel, { IDocument } from "@model/Document.model";
+import TemplateModel, { ITemplate } from "@model/Template.model";
+import {
+    IssueDocumentInput, revokeDocumentInput, verifyDocumentInput, DocumentQueryOptions,
+    DocumentAggregationResult, verifyBulkDocumentInput, Document, IssueBulkDocumentInput
+} from "@type/document.type";
+
+
+export class DocumentService {
+    private static contractAddress = "";
+    private static blockchainCache = new Map<string, BlockchainDocumentService>();
+
+    private static async getBlockchain(templateId: string) {
+        if (!this.blockchainCache.has(templateId)) {
+            const template: ITemplate | null = await TemplateModel.findById(templateId).lean();
+            if (!template) throw new Error("Template not found");
+
+            this.contractAddress = template.blockchain.contractAddress;
+
+            const instance = new BlockchainDocumentService(
+                template.blockchain.contractAddress,
+                template.blockchain.abi
+            );
+
+            this.blockchainCache.set(templateId, instance);
+        }
+
+        return this.blockchainCache.get(templateId)!;
+    }
+
+    private static async getDocumentOrThrow(id: string): Promise<IDocument> {
+        const document: IDocument | null = await DocumentModel.findById(id);
+        if (!document) throw APIError.notFound("Document not found");
+        return document;
+    }
+
+    static async issue(data: IssueDocumentInput) {
+        const existingDocument = await DocumentModel.findOne({
+            templateId: data.templateId,
+            fieldValues: data.fieldValues
+        })
+
+        if (existingDocument) {
+            throw new Error("Document with the same field values already exists");
+        }
+
+        const blockchain = await this.getBlockchain(data.templateId);
+        const documentHash = blockchain.generateDocHash(data.fieldValues);
+        const txHash = await blockchain.issueDocument({
+            docHash: documentHash,
+            fields: data.fieldValues,
+            gasLimit: 500000
+        });
+
+        const document: IDocument = await DocumentModel.create({
+            ...data,
+            blockchain: {
+                documentHash,
+                txHash,
+                contractAddress: this.contractAddress
+            },
+            status: "active"
+        });
+
+        return {
+            document: document.toJSON(),
+            message: "Document issued successfully"
+        };
+    }
+
+    static async issueBulk(data: IssueBulkDocumentInput) {
+        const issuedDocuments: Document[] = [];
+        const blockchain = await this.getBlockchain(data.templateId);
+
+        for (const document of data.documents) {
+            const documentHash = blockchain.generateDocHash(document.fieldValues);
+            const txHash = await blockchain.issueDocument({
+                docHash: documentHash,
+                fields: document.fieldValues,
+                gasLimit: 500000
+            });
+
+            const newDocument: IDocument = await DocumentModel.create({
+                ...document,
+                templateId: data.templateId,
+                issuerId: data.issuerId || "",
+                blockchain: {
+                    documentHash,
+                    txHash,
+                    contractAddress: this.contractAddress
+                },
+                status: "active"
+            });
+
+            issuedDocuments.push(newDocument.toJSON());
+        }
+
+        return {
+            documents: issuedDocuments,
+            message: "Bulk documents issued successfully"
+        };
+    }
+
+    static async revoke({ id, ownerId }: revokeDocumentInput) {
+        const document = await this.getDocumentOrThrow(id);
+
+        if (document.status === "revoked") {
+            throw APIError.badRequest("Document is already revoked");
+        }
+
+        if (document.issuerId.toString() !== ownerId) {
+            throw APIError.forbidden("You are not authorized to revoke this document");
+        }
+
+        const blockchain = await this.getBlockchain(document.templateId.toString());
+        await blockchain.revokeDocument(document.blockchain.documentHash);
+
+        document.status = "revoked";
+        document.revokedAt = new Date();
+        await document.save();
+
+        return {
+            document: document.toJSON(),
+            message: "Document revoked successfully"
+        };
+    }
+
+    static async getById(id: string) {
+        const document = await this.getDocumentOrThrow(id);
+
+        return {
+            document: document.toJSON(),
+            message: "Document retrieved successfully"
+        };
+    }
+
+    static async verify(data: verifyDocumentInput) {
+        const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
+        if (!template) throw APIError.notFound("Template not found");
+
+        const blockchain = await this.getBlockchain(template._id.toString());
+        const varifydata = await blockchain.verifyDocument(data.documentHash);
+
+        return {
+            data: varifydata,
+            message: "Document verification completed successfully"
+        };
+    }
+
+    static async verifyBulk(data: verifyBulkDocumentInput) {
+        const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
+        if (!template) throw APIError.notFound("Template not found");
+
+        const blockchain = await this.getBlockchain(template._id.toString());
+        const results = await blockchain.verifyDocumentsBatch(data.documentHashes);
+
+        return {
+            data: results,
+            message: "Bulk document verification completed successfully"
+        };
+    }
+
+    static async generateQrCode(id: string) {
+        const document = await this.getDocumentOrThrow(id);
+        const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+
+        return {
+            qrCodeDataURL: await QRCode.toDataURL(url),
+            message: "QR Code generated successfully"
+        };
+    }
+
+    static async getAllDocuments({ createdBy, options }: { createdBy: string; options: Partial<DocumentQueryOptions>; }) {
+        const page = options.page || 1;
+        const limit = options.limit || 10;
+        const sort = options.sort || { issuedAt: "-1" };
+        const skip = (page - 1) * limit;
+
+        const matchStage: PipelineStage.Match = {
+            $match: {
+                createdBy,
+                ...(options.templateId && { templateId: options.templateId }),
+                ...(options.status && { status: options.status }),
+                ...(options.issuerId && { issuerId: options.issuerId })
+            }
+        };
+
+        const sortStage: PipelineStage.Sort = {
+            $sort: Object.entries(sort).reduce((acc, [key, value]) => ({
+                ...acc,
+                [key]: value === 'asc' || value === '1' ? 1 : -1
+            }), {})
+        };
+
+        const result = await DocumentModel.aggregate<DocumentAggregationResult>([
+            matchStage,
+            {
+                $facet: {
+                    documents: [
+                        sortStage,
+                        ...(limit > 0 ? [{ $skip: skip }, { $limit: limit }] : []),
+                        {
+                            $addFields: {
+                                id: { $toString: '$_id' }
+                            }
+                        },
+                        {
+                            $unset: ['_id']
+                        }
+                    ],
+                    totalCount: [{ $count: 'count' }]
+                }
+            }
+        ]);
+
+        const documents = result[0]?.documents || [];
+        const total = result[0]?.totalCount[0]?.count || 0;
+        const pages = Math.ceil(total / limit);
+
+        return {
+            data: {
+                documents,
+                total,
+                pages
+            },
+            message: "Documents retrieved successfully with blockchain status"
+        };
+    }
+
+    static async generatePdf(id: string) {
+        const document = await this.getDocumentOrThrow(id);
+        const template = await TemplateModel.findById(document.templateId);
+        if (!template) throw APIError.notFound("Template not found");
+
+        // Generate QR code
+        const qrUrl = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(qrUrl);
+
+        // Replace field placeholders in SVG template
+        let documentSvg = template.svgTemplate;
+        for (const [key, value] of Object.entries(document.fieldValues)) {
+            const placeholder = `{${key}}`;
+            documentSvg = documentSvg.replace(new RegExp(placeholder, 'g'), value.toString());
+        }
+
+        // Create HTML with both pages
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { margin: 0; padding: 0; }
+                    .page { 
+                        page-break-after: always;
+                        width: 100vw;
+                        height: 100vh;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .qr-container {
+                        text-align: center;
+                    }
+                    .qr-title {
+                        font-family: Arial, sans-serif;
+                        margin-bottom: 20px;
+                    }
+                    .qr-code {
+                        width: 300px;
+                        height: 300px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="page">
+                    ${documentSvg}
+                </div>
+                <div class="page qr-container">
+                    <div>
+                        <h2 class="qr-title">Scan to verify this document</h2>
+                        <img src="${qrCodeDataUrl}" class="qr-code" />
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Launch browser and generate PDF
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+
+        const pdf = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            preferCSSPageSize: true
+        });
+
+        await browser.close();
+
+        return {
+            pdfBuffer: {
+                pdf,
+                fileName: `${template.name}-${document._id}.pdf`,
+                contentType: 'application/pdf',
+            },
+            message: "PDF generated successfully"
+        };
+    }
+}
