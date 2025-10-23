@@ -86,4 +86,17 @@ export default class DocumentController {
             return { data: result.data, message: result.message };
         })
     ];
+
+    // GET /api/documents/:id/pdf
+    static generatePdf = [
+        validateAuth,
+        validateVerified,
+        validateRequest(documentIdSchema),
+        asyncHandler(async (req: Request) => {
+            const { id } = req.params;
+            const result = await DocumentService.generatePdf(id);
+
+            return { data: result.pdfBuffer, message: result.message, };
+        })
+    ];
 }

@@ -9,5 +9,6 @@ router.get("/:id", ...DocumentController.getDocumentById);
 router.get("/", ...DocumentController.getAllDocuments);
 router.post("/verify", ...DocumentController.verifyDocument);
 router.get("/:id/qr", ...DocumentController.generateQrCode);
+router.get("/:id/pdf", ...DocumentController.generatePdf);
 
 export default router;

@@ -1,5 +1,6 @@
 import QRCode from "qrcode";
 import { env } from "@config/env";
+import puppeteer from "puppeteer";
 import APIError from "@api/errors";
 import { PipelineStage } from "mongoose";
 import { BlockchainDocumentService } from "blockchain";
@@ -180,6 +181,87 @@ export class DocumentService {
                 pages
             },
             message: "Documents retrieved successfully with blockchain status"
+        };
+    }
+
+    static async generatePdf(id: string) {
+        const document = await this.getDocumentOrThrow(id);
+        const template = await TemplateModel.findById(document.templateId);
+        if (!template) throw APIError.notFound("Template not found");
+
+        // Generate QR code
+        const qrUrl = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+        const qrCodeDataUrl = await QRCode.toDataURL(qrUrl);
+
+        // Replace field placeholders in SVG template
+        let documentSvg = template.svgTemplate;
+        for (const [key, value] of Object.entries(document.fieldValues)) {
+            const placeholder = `{${key}}`;
+            documentSvg = documentSvg.replace(new RegExp(placeholder, 'g'), value.toString());
+        }
+
+        // Create HTML with both pages
+        const html = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <style>
+                    body { margin: 0; padding: 0; }
+                    .page { 
+                        page-break-after: always;
+                        width: 100vw;
+                        height: 100vh;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    .qr-container {
+                        text-align: center;
+                    }
+                    .qr-title {
+                        font-family: Arial, sans-serif;
+                        margin-bottom: 20px;
+                    }
+                    .qr-code {
+                        width: 300px;
+                        height: 300px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="page">
+                    ${documentSvg}
+                </div>
+                <div class="page qr-container">
+                    <div>
+                        <h2 class="qr-title">Scan to verify this document</h2>
+                        <img src="${qrCodeDataUrl}" class="qr-code" />
+                    </div>
+                </div>
+            </body>
+            </html>
+        `;
+
+        // Launch browser and generate PDF
+        const browser = await puppeteer.launch({ headless: true });
+        const page = await browser.newPage();
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+
+        const pdf = await page.pdf({
+            format: 'A4',
+            printBackground: true,
+            preferCSSPageSize: true
+        });
+
+        await browser.close();
+
+        return {
+            pdfBuffer: {
+                pdf,
+                fileName: `${template.name}-${document._id}.pdf`,
+                contentType: 'application/pdf',
+            },
+            message: "PDF generated successfully"
         };
     }
 }
