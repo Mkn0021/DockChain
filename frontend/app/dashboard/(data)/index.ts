@@ -33,11 +33,7 @@ export const PROFILE_MENU_ITEMS = (setIsOpen: (isOpen: boolean) => void): MenuIt
 
 export const LOGOUT_BUTTON = {
     icon: FaSignOutAlt,
-    label: 'Log Out',
-    action: (setIsOpen: (isOpen: boolean) => void) => {
-        console.log('Logout clicked');
-        setIsOpen(false);
-    }
+    label: 'Log Out'
 };
 
 export const ROUTES = {

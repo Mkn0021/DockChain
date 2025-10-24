@@ -2,6 +2,8 @@
 
 import MenuItem from './MenuItem';
 import React, { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
+import { authService } from '@/lib/services/auth.service';
 import { User } from '@/types/auth.type';
 import { getInitialsAndColor } from '../(utils)/profileUtils';
 import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../(data)';
@@ -18,8 +20,20 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const avatarRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     const toggleDropdown = () => setIsOpen(!isOpen);
+
+    const handleLogout = async () => {
+        setIsOpen(false);
+        try {
+            await authService.logout();
+            router.push('/');
+        } catch (error) {
+            console.error('Logout failed:', error);
+            router.push('/login');
+        }
+    };
 
     const profileMenuItems = PROFILE_MENU_ITEMS(setIsOpen);
 
@@ -82,7 +96,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                         {/* Logout */}
                         <div className="border-t border-border dark:border-border-dark py-2 rounded-none">
                             <button
-                                onClick={() => LOGOUT_BUTTON.action(setIsOpen)}
+                                onClick={handleLogout}
                                 className="w-full flex items-center gap-4 px-6 py-4 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-150 border-none"
                             >
                                 <LOGOUT_BUTTON.icon className="w-5 h-5 flex-shrink-0" />
