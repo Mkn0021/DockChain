@@ -32,11 +32,9 @@ export default class AuthController {
 
     // POST /api/auth/verify
     static verifyEmail = [
-        validateAuth,
         validateRequest(VerifyEmailSchema),
         asyncHandler(async (req: Request) => {
-            const authenticatedReq = req as AuthenticatedRequest;
-            const isVerified = await authService.verifyEmail(authenticatedReq.body);
+            const isVerified = await authService.verifyEmail(req.body);
             return { data: { isVerified }, message: "Email verification successful" };
         })
     ];
