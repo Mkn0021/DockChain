@@ -4,7 +4,6 @@ import {
     FaHome, FaUpload, FaPaperPlane, FaCheckCircle, FaUserCog, FaQuestionCircle
 } from 'react-icons/fa';
 
-
 export const PROFILE_MENU_ITEMS = (setIsOpen: (isOpen: boolean) => void): MenuItem[] => [
     {
         icon: FaUser,
@@ -41,41 +40,50 @@ export const LOGOUT_BUTTON = {
     }
 };
 
-export const SIDEBAR_ITEMS = (navigateToRoute: (route: string) => void): MenuItem[] => [
-    {
-        id: 'dashboard',
-        label: 'Dashboard',
-        icon: FaHome,
-        action: () => navigateToRoute('/dashboard')
+export const ROUTES = {
+    dashboard: {
+        path: '/dashboard',
+        title: 'Dashboard',
+        icon: FaHome
     },
-    {
-        id: 'upload-template',
-        label: 'Upload Template',
-        icon: FaUpload,
-        action: () => navigateToRoute('/dashboard/upload-template')
+    uploadTemplate: {
+        path: '/dashboard/upload-template',
+        title: 'Upload Template',
+        icon: FaUpload
     },
-    {
-        id: 'issue-document',
-        label: 'Issue Document',
-        icon: FaPaperPlane,
-        action: () => navigateToRoute('/dashboard/issue-document')
+    issueDocument: {
+        path: '/dashboard/issue-document',
+        title: 'Issue Document',
+        icon: FaPaperPlane
     },
-    {
-        id: 'issued-documents',
-        label: 'Issued Documents',
-        icon: FaCheckCircle,
-        action: () => navigateToRoute('/dashboard/issued-documents')
+    issuedDocuments: {
+        path: '/dashboard/issued-documents',
+        title: 'Issued Documents',
+        icon: FaCheckCircle
     },
-    {
-        id: 'user-management',
-        label: 'User Management',
-        icon: FaUserCog,
-        action: () => navigateToRoute('/dashboard/user-management')
+    userManagement: {
+        path: '/dashboard/user-management',
+        title: 'User Management',
+        icon: FaUserCog
     },
-    {
-        id: 'help-support',
-        label: 'Help & Support',
-        icon: FaQuestionCircle,
-        action: () => navigateToRoute('/dashboard/help-support')
+    helpSupport: {
+        path: '/dashboard/help-support',
+        title: 'Help & Support',
+        icon: FaQuestionCircle
     }
-]
+} as const;
+
+export const SIDEBAR_ITEMS = (navigateToRoute: (route: string) => void): MenuItem[] => 
+    Object.entries(ROUTES).map(([id, route]) => ({
+        id,
+        label: route.title,
+        icon: route.icon,
+        action: () => navigateToRoute(route.path)
+    }));
+
+export const PAGE_PATH = Object.values(ROUTES).reduce((acc, route) => {
+    acc[route.path] = { title: route.title };
+    return acc;
+}, {} as Record<string, { title: string }>);
+
+export type PagePath = keyof typeof PAGE_PATH;
