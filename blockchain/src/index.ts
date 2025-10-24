@@ -33,4 +33,4 @@ export type {
 // Validation Schemas
 export { ContractCompileSchema } from './validation/compiler';
 export { IssueDocumentParamsSchema } from './validation/document';
-export { DeploymentConfigSchema, ContractConfigSchema } from './validation/deployer';
+export { DeploymentConfigSchema, ContractConfigSchema, abiValidation } from './validation/deployer';
