@@ -7,13 +7,8 @@ export interface MenuItem {
     action?: () => void;
 }
 
-export interface SidebarMenuItem extends MenuItem {
-    id: string;
-}
-
 interface MenuItemProps {
     item: MenuItem;
-    onClick?: () => void;
     isActive?: boolean;
     variant?: 'sidebar' | 'dropdown';
     className?: string;
@@ -21,7 +16,6 @@ interface MenuItemProps {
 
 const MenuItem: React.FC<MenuItemProps> = ({
     item,
-    onClick,
     isActive = false,
     variant = 'sidebar',
     className = ''
@@ -29,9 +23,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
     const Icon = item.icon;
 
     const handleClick = () => {
-        if (onClick) {
-            onClick();
-        } else if (item.action) {
+        if (item.action) {
             item.action();
         }
     };
