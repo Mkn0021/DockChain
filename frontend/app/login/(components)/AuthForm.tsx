@@ -1,80 +1,197 @@
 "use client";
-import React, { useState } from 'react';
+
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/Button';
 import InputBox from '@/components/InputBox';
+import { FormData } from '@/types/auth.type';
+import React, { useState, useEffect } from 'react';
+import { authService } from '@/lib/services/auth.service';
 
 const AuthForm: React.FC = () => {
-    const [mode, setMode] = useState<'login' | 'signup' | 'otp' | 'setPassword'>('login');
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [confirmPassword, setConfirmPassword] = useState('');
-    const [fullName, setFullName] = useState('');
-    const [otp, setOtp] = useState('');
+    const router = useRouter();
+    const [mode, setMode] = useState<'login' | 'signup' | 'setPassword' | 'otp'>('login');
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] = useState('');
+    const [formData, setFormData] = useState<FormData>({
+        name: '',
+        email: '',
+        password: '',
+        confirmPassword: '',
+        otp: ''
+    });
 
-    const handleSubmit = (e: React.FormEvent) => {
+    useEffect(() => {
+        setError('');
+        setSuccess('');
+    }, [mode]);
+
+    const updateFormData = (field: keyof FormData, value: string) => {
+        setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
+        setSuccess('');
 
         // Signup - Step 1: Name and Email
         if (mode === 'signup') {
-            if (!fullName.trim()) {
-                setError('Please enter your full name');
+            if (!formData.name.trim()) {
+                setError('Please enter your name');
                 return;
             }
-            if (!email.trim()) {
+            if (!formData.email.trim()) {
                 setError('Please enter your email');
                 return;
             }
-            // Move to OTP verification
-            setMode('otp');
-        }
-
-        // Signup - Step 2: OTP Verification
-        else if (mode === 'otp') {
-            if (otp.length !== 6) {
-                setError('Please enter a valid 6-digit OTP');
-                return;
-            }
-            // Move to password setup
+            // Move to Set Password step
             setMode('setPassword');
         }
 
-        // Signup - Step 3: Set Password
+        // Signup - Step 2: Set Password
         else if (mode === 'setPassword') {
-            if (password.length < 6) {
+            if (formData.password.length < 6) {
                 setError('Password must be at least 6 characters');
                 return;
             }
-            if (password !== confirmPassword) {
+            if (formData.password !== formData.confirmPassword) {
                 setError('Passwords do not match');
                 return;
             }
-            // Complete signup
-            alert('Signup complete!');
+
+            setLoading(true);
+            try {
+                const res = await authService.register({
+                    name: formData.name,
+                    email: formData.email,
+                    password: formData.password,
+                });
+
+                if (!res.success) {
+                    setError(res.error || 'Registration failed. Please try again.');
+                    return;
+                }
+
+                setSuccess(res.message || 'Registration successful! Please check your email for the OTP.');
+                // Move to OTP verification
+                setTimeout(() => {
+                    setMode('otp');
+                    setSuccess('');
+                }, 2000);
+            } catch (err) {
+                setError('An unexpected error occurred. Please try again.');
+                console.error('Registration error:', err);
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // Signup - Step 3: OTP Verification
+        else if (mode === 'otp') {
+            if (formData.otp.length !== 6) {
+                setError('Please enter a valid 6-digit OTP');
+                return;
+            }
+
+            setLoading(true);
+            try {
+                const res = await authService.verifyEmail({
+                    email: formData.email,
+                    otp: formData.otp,
+                });
+
+                if (!res.success) {
+                    setError(res.error || 'Invalid OTP. Please try again.');
+                    return;
+                }
+
+                setSuccess(res.message || 'Email verified successfully! Redirecting...');
+                setTimeout(() => {
+                    setMode('login');
+                    updateFormData('otp', '');
+                    setSuccess('');
+                }, 2000);
+            } catch (err) {
+                setError('An unexpected error occurred. Please try again.');
+                console.error('Verification error:', err);
+            } finally {
+                setLoading(false);
+            }
         }
 
         // Login
         else if (mode === 'login') {
-            if (!email.trim()) {
+            if (!formData.email.trim()) {
                 setError('Please enter your email');
                 return;
             }
-            if (!password.trim()) {
+            if (!formData.password.trim()) {
                 setError('Please enter your password');
                 return;
             }
-            // Process login
-            alert('Login successful!');
+
+            setLoading(true);
+            try {
+                const res = await authService.login({
+                    email: formData.email,
+                    password: formData.password,
+                });
+
+                if (!res.success) {
+                    setError(res.error || 'Login failed. Please check your credentials.');
+                    return;
+                }
+
+                setSuccess(res.message || 'Login successful! Redirecting...');
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 1500);
+            } catch (err) {
+                setError('An unexpected error occurred. Please try again.');
+                console.error('Login error:', err);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
-    const handleForgotPassword = () => {
-        alert('Forgot password clicked');
+    const handleForgotPassword = async () => {
+        if (!formData.email.trim()) {
+            setError('Please enter your email address first');
+            return;
+        }
+
+        setLoading(true);
+        setError('');
+        try {
+            const res = await authService.forgotPassword({ email: formData.email });
+
+            if (!res.success) {
+                setError(res.error || 'Failed to send reset OTP.');
+                return;
+            }
+
+            setSuccess(res.message || 'Password reset OTP sent to your email!');
+            setTimeout(() => setSuccess(''), 3000);
+        } catch (err) {
+            setError('An unexpected error occurred. Please try again.');
+            console.error('Forgot password error:', err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleGoogleLogin = () => {
-        alert('Google login clicked');
+        // TODO: Implement Google OAuth login functionality
+        setError('Google login is not available at this time');
+        setTimeout(() => setError(''), 3000);
+    };
+
+    const handleResendOTP = async () => {
+        // TODO: Implement resend OTP functionality
+        setError('Resend OTP functionality is not implemented yet');
+        setTimeout(() => setError(''), 3000);
     };
 
     return (
@@ -107,6 +224,12 @@ const AuthForm: React.FC = () => {
                     </div>
                 )}
 
+                {success && (
+                    <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
+                        {success}
+                    </div>
+                )}
+
                 {/* OTP Verification Step */}
                 {mode === 'otp' ? (
                     <>
@@ -114,19 +237,21 @@ const AuthForm: React.FC = () => {
                             label="OTP Code"
                             type="text"
                             placeholder="Enter 6-digit code"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
+                            value={formData.otp}
+                            onChange={(e) => updateFormData('otp', e.target.value.replace(/\D/g, ''))}
                             maxLength={6}
+                            disabled={loading}
                         />
-                        <Button type="submit" variant="primary" className="w-full">
-                            Verify OTP
+                        <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+                            {loading ? 'Verifying...' : 'Verify OTP'}
                         </Button>
                         <button
                             type="button"
-                            onClick={() => alert('Resend OTP')}
-                            className="w-full text-center text-sm text-blue-600 hover:underline"
+                            onClick={handleResendOTP}
+                            disabled={loading}
+                            className="w-full text-center text-sm text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Resend OTP
+                            {loading ? 'Sending...' : 'Resend OTP'}
                         </button>
                     </>
                 ) : mode === 'setPassword' ? (
@@ -135,18 +260,20 @@ const AuthForm: React.FC = () => {
                             label="Password"
                             type="password"
                             placeholder="Create a password"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
+                            value={formData.password}
+                            onChange={(e) => updateFormData('password', e.target.value)}
+                            disabled={loading}
                         />
                         <InputBox
                             label="Confirm Password"
                             type="password"
                             placeholder="Confirm your password"
-                            value={confirmPassword}
-                            onChange={(e) => setConfirmPassword(e.target.value)}
+                            value={formData.confirmPassword}
+                            onChange={(e) => updateFormData('confirmPassword', e.target.value)}
+                            disabled={loading}
                         />
-                        <Button type="submit" variant="primary" className="w-full">
-                            Complete Signup
+                        <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+                            {loading ? 'Creating Account...' : 'Complete Signup'}
                         </Button>
                     </>
                 ) : (
@@ -156,8 +283,9 @@ const AuthForm: React.FC = () => {
                                 label="Full Name"
                                 type="text"
                                 placeholder="Enter your full name"
-                                value={fullName}
-                                onChange={(e) => setFullName(e.target.value)}
+                                value={formData.name}
+                                onChange={(e) => updateFormData('name', e.target.value)}
+                                disabled={loading}
                             />
                         )}
 
@@ -165,8 +293,9 @@ const AuthForm: React.FC = () => {
                             label="Email Address"
                             type="email"
                             placeholder="Enter your email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            value={formData.email}
+                            onChange={(e) => updateFormData('email', e.target.value)}
+                            disabled={loading}
                         />
 
                         {mode === 'login' && (
@@ -175,15 +304,17 @@ const AuthForm: React.FC = () => {
                                     label="Password"
                                     type="password"
                                     placeholder="Enter your password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    value={formData.password}
+                                    onChange={(e) => updateFormData('password', e.target.value)}
+                                    disabled={loading}
                                 />
 
                                 <div className="text-right">
                                     <button
                                         type="button"
                                         onClick={handleForgotPassword}
-                                        className="text-sm text-blue-600 hover:underline"
+                                        disabled={loading}
+                                        className="text-sm text-blue-600 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Forgot Password?
                                     </button>
@@ -191,8 +322,11 @@ const AuthForm: React.FC = () => {
                             </>
                         )}
 
-                        <Button type="submit" variant="primary" className="w-full">
-                            {mode === 'login' ? 'Sign In' : 'Continue'}
+                        <Button type="submit" variant="primary" className="w-full" disabled={loading}>
+                            {loading
+                                ? (mode === 'login' ? 'Signing In...' : 'Processing...')
+                                : (mode === 'login' ? 'Sign In' : 'Continue')
+                            }
                         </Button>
 
                         <div className="relative my-6">
@@ -264,7 +398,7 @@ const AuthForm: React.FC = () => {
                         onClick={() => setMode('otp')}
                         className="text-sm text-gray-600 hover:underline"
                     >
-                        ← Back to OTP
+                        ← Change Email Address
                     </button>
                 </div>
             )}
