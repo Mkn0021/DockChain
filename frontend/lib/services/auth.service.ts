@@ -11,12 +11,6 @@ class AuthService {
 
         if (response.success && response.data) {
             const userData = response.data as LoginResponse;
-            if (userData.accessToken) {
-                localStorage.setItem('accessToken', userData.accessToken);
-            }
-            if (userData.refreshToken) {
-                localStorage.setItem('refreshToken', userData.refreshToken);
-            }
 
             localStorage.setItem('user', JSON.stringify({
                 id: userData.id,
@@ -38,19 +32,40 @@ class AuthService {
         return await ApiClient.post('/auth/forgot-password', payload);
     }
 
-    logout() {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+    async refreshToken(): Promise<boolean> {
+        try {
+            const response = await ApiClient.post('/auth/refresh', {});
+            return response.success;
+        } catch (error) {
+            console.error('Failed to refresh token:', error);
+            return false;
+        }
+    }
+
+    async logout() {
+        try {
+            await ApiClient.post('/auth/logout', {});
+        } catch (error) {
+            console.error('Logout error:', error);
+        } finally {
+            this.clearAuthData();
+        }
     }
 
     isAuthenticated(): boolean {
-        return !!localStorage.getItem('accessToken');
+        if (typeof window === 'undefined') return false;
+        return !!localStorage.getItem('user');
     }
 
     getUser() {
+        if (typeof window === 'undefined') return null;
         const userStr = localStorage.getItem('user');
         return userStr ? JSON.parse(userStr) : null;
+    }
+
+    clearAuthData() {
+        if (typeof window === 'undefined') return;
+        localStorage.removeItem('user');
     }
 }
 

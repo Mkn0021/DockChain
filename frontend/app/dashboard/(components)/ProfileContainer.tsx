@@ -2,12 +2,12 @@
 
 import MenuItem from './MenuItem';
 import React, { useState, useRef } from 'react';
-import { LoginResponse } from '@/types/auth.type';
+import { User } from '@/types/auth.type';
 import { getInitialsAndColor } from '../(utils)/profileUtils';
 import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../(data)';
 
 interface ProfileContainerProps {
-    user: LoginResponse;
+    user: User;
     className?: string;
 }
 
