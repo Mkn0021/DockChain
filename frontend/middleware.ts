@@ -10,6 +10,17 @@ if (!API_BASE_URL) {
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
+    const accessToken = request.cookies.get('accessToken')?.value;
+    const isAuthenticated = !!accessToken;
+
+    if (pathname === '/login' && isAuthenticated) {
+        return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+
+    if (pathname.startsWith('/dashboard') && !isAuthenticated) {
+        return NextResponse.redirect(new URL('/login', request.url));
+    }
+
     if (pathname.startsWith('/api/')) {
         const backendPath = pathname.replace('/api', '');
         const backendUrl = `${API_BASE_URL}${backendPath}${request.nextUrl.search}`;
@@ -21,11 +32,6 @@ export async function middleware(request: NextRequest) {
             const accessToken = request.cookies.get('accessToken')?.value;
             if (accessToken) {
                 headers.set('Authorization', `Bearer ${accessToken}`);
-            }
-
-            const forwardedFor = request.headers.get('x-forwarded-for');
-            if (forwardedFor) {
-                headers.set('x-forwarded-for', forwardedFor);
             }
 
             const backendResponse = await fetch(backendUrl, {
@@ -149,6 +155,8 @@ export async function middleware(request: NextRequest) {
     }
 
     return NextResponse.next();
-} export const config = {
-    matcher: '/api/:path*',
+}
+
+export const config = {
+    matcher: ['/api/:path*', '/login', '/dashboard/:path*'],
 };
