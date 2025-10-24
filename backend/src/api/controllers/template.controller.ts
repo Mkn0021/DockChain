@@ -2,7 +2,7 @@ import { Request } from "express";
 import { asyncHandler } from "@api/response";
 import { AuthenticatedRequest } from "@type/request.type";
 import { validateRequest } from "@middlewares/validation";
-import { validateAuth, validateVerified } from "@middlewares/auth";
+import validateAuth from "@middlewares/auth";
 import {
     CreateTemplateSchema,
     UpdateTemplateSchema,
@@ -15,7 +15,6 @@ export default class TemplateController {
     // POST /api/templates
     static createTemplate = [
         validateAuth,
-        validateVerified,
         validateRequest(CreateTemplateSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
@@ -30,7 +29,6 @@ export default class TemplateController {
     // PUT /api/templates/:id
     static updateTemplate = [
         validateAuth,
-        validateVerified,
         validateRequest(UpdateTemplateSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -47,7 +45,6 @@ export default class TemplateController {
     // DELETE /api/templates/:id
     static deleteTemplate = [
         validateAuth,
-        validateVerified,
         validateRequest(TemplateIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -62,7 +59,6 @@ export default class TemplateController {
     // GET /api/templates/:id
     static getTemplateById = [
         validateAuth,
-        validateVerified,
         validateRequest(TemplateIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -74,7 +70,6 @@ export default class TemplateController {
     // GET /api/templates
     static getAllTemplates = [
         validateAuth,
-        validateVerified,
         validateRequest(TemplateQueryOptionsSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;

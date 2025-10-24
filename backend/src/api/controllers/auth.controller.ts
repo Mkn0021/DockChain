@@ -4,7 +4,7 @@ import { OAuthManager } from '@utils/oauth.util';
 import { authService } from "@services/auth.service";
 import { AuthenticatedRequest } from "@type/request.type";
 import { validateRequest } from "@middlewares/validation";
-import { validateAuth, validateVerified } from "@middlewares/auth";
+import validateAuth from "@middlewares/auth";
 import {
     LoginSchema, RegisterSchema, ResetPasswordSchema,
     VerifyEmailSchema, RefreshTokenSchema, ForgotPasswordSchema, GoogleLoginSchema
@@ -42,7 +42,6 @@ export default class AuthController {
     // POST /api/auth/refresh
     static refresh = [
         validateAuth,
-        validateVerified,
         validateRequest(RefreshTokenSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
@@ -54,7 +53,6 @@ export default class AuthController {
     // POST /api/auth/logout
     static logout = [
         validateAuth,
-        validateVerified,
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
             const result = await authService.logout(authenticatedReq.user.id);
@@ -109,7 +107,6 @@ export default class AuthController {
     // POST /api/auth/google/disconnect
     static disconnectGoogle = [
         validateAuth,
-        validateVerified,
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
             const result = await authService.unlinkGoogle(authenticatedReq.user.id);
