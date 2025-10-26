@@ -1,11 +1,12 @@
 "use client";
 
+import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
 import InputBox from '@/components/InputBox';
+import { ISSUING_INSTRACTIONS } from '../(data)';
 import { Template } from '@/types/template.type';
 import InfoBox from '@/app/dashboard/(components)/InfoBox';
 import { useStepper } from '@/app/dashboard/(components)/StepperLayout';
-import { ISSUING_INSTRACTIONS } from '../(data)';
 
 interface ReviewStepProps {
     selectedTemplate: Template;
@@ -21,12 +22,21 @@ export default function ReviewStep({
     onRenderedDocumentChange
 }: ReviewStepProps) {
     const [recipient, setRecipient] = useState<string>('');
-    const [isRendering, setIsRendering] = useState<boolean>(false);
     const { setCanGoToNextStep, setOnNext } = useStepper();
 
     useEffect(() => {
         const handleDocumentIssue = async () => {
             try {
+                const response = await ApiClient.post('/documents/issue', {
+                    templateId: selectedTemplate.id,
+                    recipent: { name: recipient },
+                    fieldValues: formValues,
+                    issuedAt: new Date().toISOString()
+                });
+
+                if (!response.success) {
+                    throw new Error(response.error || 'Document issuance failed');
+                }
                 return true;
             } catch (error) {
                 console.error(`Document issue failed: ${error}`, 'error')
@@ -42,29 +52,27 @@ export default function ReviewStep({
     }, [renderedDocument, recipient, setCanGoToNextStep]);
 
     useEffect(() => {
-        const renderDocument = async () => {
-            if (selectedTemplate) {
-                setIsRendering(true);
-                try {
+        const renderDocument = (svgTemplate: string, data: Record<string, string> | Map<string, string>) => {
+            const dataEntries = data instanceof Map
+                ? data.entries()
+                : Object.entries(data);
 
-                } catch (error) {
-                    console.error(`Error rendering document: ${error}`, 'error');
-                    onRenderedDocumentChange(null);
-                } finally {
-                    setIsRendering(false);
-                }
+            for (const [key, value] of dataEntries) {
+                const regex = new RegExp(`{{\\s*${key}\\s*}}`, 'g');
+                svgTemplate = svgTemplate.replace(regex, value || '');
             }
+            return svgTemplate.replace(/{{\s*\w+\s*}}/g, '');
         };
-        renderDocument();
+
+        const rendered = renderDocument(selectedTemplate.svgTemplate, formValues);
+        onRenderedDocumentChange(rendered);
     }, [selectedTemplate, formValues, onRenderedDocumentChange]);
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full items-start">
             <div className="flex items-center justify-center w-full h-full">
                 <div className="w-96 h-72 border rounded-lg p-2 bg-background-muted shadow-md mx-auto flex items-center justify-center">
-                    {isRendering ? (
-                        <p>Rendering document...</p>
-                    ) : renderedDocument ? (
+                    {renderedDocument ? (
                         <div className="[&_svg]:rounded-lg [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto" dangerouslySetInnerHTML={{ __html: renderedDocument }} />
                     ) : (
                         <p>No document preview available.</p>
