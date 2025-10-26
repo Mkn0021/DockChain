@@ -36,6 +36,9 @@ export const documentSchema = z.object({
 
 export const issueDocumentSchema = z.object({
     body: documentSchema.omit({ id: true, blockchain: true, revokedAt: true, status: true })
+        .extend({
+            issuerId: z.string().optional()
+        })
 });
 
 export const issueBulkDocumentSchema = z.object({

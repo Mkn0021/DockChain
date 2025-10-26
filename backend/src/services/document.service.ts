@@ -2,7 +2,7 @@ import QRCode from "qrcode";
 import { env } from "@config/env";
 import puppeteer from "puppeteer";
 import APIError from "@api/errors";
-import { PipelineStage } from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 import { BlockchainDocumentService } from "blockchain";
 import DocumentModel, { IDocument } from "@model/Document.model";
 import TemplateModel, { ITemplate } from "@model/Template.model";
@@ -65,7 +65,7 @@ export class DocumentService {
                 txHash,
                 contractAddress: this.contractAddress
             },
-            status: "active"
+            status: "valid"
         });
 
         return {
@@ -95,7 +95,7 @@ export class DocumentService {
                     txHash,
                     contractAddress: this.contractAddress
                 },
-                status: "active"
+                status: "valid"
             });
 
             issuedDocuments.push(newDocument.toJSON());
@@ -170,8 +170,9 @@ export class DocumentService {
         const document = await this.getDocumentOrThrow(id);
         const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
 
+        const qrCodeBuffer = await QRCode.toBuffer(url);
         return {
-            qrCodeDataURL: await QRCode.toDataURL(url),
+            qrCodeBuffer,
             message: "QR Code generated successfully"
         };
     }
@@ -184,7 +185,7 @@ export class DocumentService {
 
         const matchStage: PipelineStage.Match = {
             $match: {
-                createdBy,
+                createdBy: new mongoose.Types.ObjectId(createdBy), // Convert to ObjectId
                 ...(options.templateId && { templateId: options.templateId }),
                 ...(options.status && { status: options.status }),
                 ...(options.issuerId && { issuerId: options.issuerId })
