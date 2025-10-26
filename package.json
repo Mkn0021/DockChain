@@ -10,6 +10,7 @@
     "dev:frontend": "cd frontend && npx next dev",
     "build:frontend": "cd frontend && npx next build",
     "start:frontend": "cd frontend && npx next start",
+    "build:blockchain": "cd blockchain && npx tsc",
     "dev:blockchain": "cd blockchain && npx hardhat node",
     "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
     "test": "echo \"No tests specified\" && exit 0"
