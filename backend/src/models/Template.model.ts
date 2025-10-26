@@ -21,9 +21,9 @@ const TemplateSchema = new Schema<ITemplate>(
             required: { type: Boolean, default: true }
         }],
         blockchain: {
-            abi: { type: Schema.Types.Mixed, required: true },
-            bytecode: { type: String, required: true },
-            contractSource: { type: String, required: true },
+            abi: { type: Schema.Types.Mixed, required: false },
+            bytecode: { type: String, required: false },
+            contractSource: { type: String, required: false },
             compilationStatus: { type: String, enum: ['pending', 'success', 'failed'], default: 'pending' },
             contractAddress: { type: String, default: null },
             deployedAddress: { type: String, default: null },
@@ -52,9 +52,11 @@ TemplateSchema.pre<ITemplate>('save', async function (next) {
             throw new Error('Compilation did not produce ABI or bytecode');
         }
 
+        const bytecode = compilationResult.bytecode.startsWith('0x') ? compilationResult.bytecode : `0x${compilationResult.bytecode}`;
+
         const deployedAddress = await ContractDeployer.deploy({
             abi: compilationResult.abi,
-            bytecode: compilationResult.bytecode
+            bytecode,
         });
 
         const isVerified = ContractDeployer.verifyDeployment(deployedAddress);
