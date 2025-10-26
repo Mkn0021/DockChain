@@ -11,7 +11,7 @@ export const templateSchema = z.object({
 
     fields: z.array(z.object({
         key: z.string().min(1, "Template Field key is required")
-            .regex(/^[a-zA-Z0-9\s]+$/, "Template Field key must start with a letter or underscore and contain only letters, numbers, or underscores"),
+            .regex(/^[a-z0-9_]+$/, "Template Field key can only contain lowercase letters, numbers, and underscores"),
         type: z.enum(['string', 'date'], "Template Field type must be either 'string' or 'date'"),
         required: z.boolean().optional().default(true)
     })).nonempty("At least one field is required"),
@@ -35,6 +35,15 @@ export const templateSchema = z.object({
 
 export const CreateTemplateSchema = z.object({
     body: templateSchema.omit({ id: true, createdAt: true, updatedAt: true, blockchain: true })
+        .extend({
+            fields: z.array(z.object({
+                key: z.string().min(1, "Template Field key is required")
+                    .regex(/^[a-z0-9_]+$/, "Template Field key can only contain lowercase letters, numbers, and underscores"),
+                type: z.enum(['string', 'date'], "Template Field type must be either 'string' or 'date'"),
+                required: z.boolean().optional().default(true)
+            })).optional(),
+            createdBy: z.string().optional()
+        })
 });
 
 export const UpdateTemplateSchema = z.object({
