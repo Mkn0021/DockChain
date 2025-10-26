@@ -26,12 +26,15 @@ export interface ForgotPasswordPayload {
     email: string;
 }
 
-export interface LoginResponse {
+export interface User {
     id: string;
     name: string;
     email: string;
     role: string;
     isVerified: boolean;
+}
+
+export interface LoginResponse extends User {
     accessToken: string;
     refreshToken: string;
 }

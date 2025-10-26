@@ -3,7 +3,7 @@ import { asyncHandler } from "@api/response";
 import { AuthenticatedRequest } from "@type/request.type";
 import { validateRequest } from "@middlewares/validation";
 import { DocumentService } from "@services/document.service";
-import { validateAuth, validateVerified } from "@middlewares/auth";
+import validateAuth from "@middlewares/auth";
 import {
     issueDocumentSchema, documentIdSchema, verifyDocumentSchema,
     documentQuerySchema, verifyBulkDocumentSchema, issueBulkDocumentSchema
@@ -13,7 +13,6 @@ export default class DocumentController {
     // POST /api/documents/issue
     static issueDocument = [
         validateAuth,
-        validateVerified,
         validateRequest(issueDocumentSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
@@ -28,7 +27,6 @@ export default class DocumentController {
     // POST /api/documents/issue/bulk
     static issueBulkDocuments = [
         validateAuth,
-        validateVerified,
         validateRequest(issueBulkDocumentSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
@@ -43,7 +41,6 @@ export default class DocumentController {
     // POST /api/documents/:id/revoke
     static revokeDocument = [
         validateAuth,
-        validateVerified,
         validateRequest(documentIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -59,7 +56,6 @@ export default class DocumentController {
     // GET /api/documents/:id
     static getDocumentById = [
         validateAuth,
-        validateVerified,
         validateRequest(documentIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -89,7 +85,6 @@ export default class DocumentController {
     // GET /api/documents/:id/qr
     static generateQrCode = [
         validateAuth,
-        validateVerified,
         validateRequest(documentIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
@@ -101,7 +96,6 @@ export default class DocumentController {
     // GET /api/documents
     static getAllDocuments = [
         validateAuth,
-        validateVerified,
         validateRequest(documentQuerySchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
@@ -117,7 +111,6 @@ export default class DocumentController {
     // GET /api/documents/:id/pdf
     static generatePdf = [
         validateAuth,
-        validateVerified,
         validateRequest(documentIdSchema),
         asyncHandler(async (req: Request) => {
             const { id } = req.params;

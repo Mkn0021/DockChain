@@ -1,11 +1,5 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_BASE_URL) {
-    throw new Error('Environment variable: NEXT_PUBLIC_API_URL is not set.');
-}
-
 export interface SuccessResponse<T> {
     success: true;
     data: T;
@@ -24,11 +18,12 @@ export class ApiClient {
 
     constructor() {
         this.client = axios.create({
-            baseURL: API_BASE_URL,
+            baseURL: '/api',
             timeout: 10000,
             headers: {
                 'Content-Type': 'application/json',
             },
+            withCredentials: true,
         });
 
         this.setupInterceptors();
@@ -37,15 +32,6 @@ export class ApiClient {
     private setupInterceptors() {
         this.client.interceptors.request.use(
             (config) => {
-                if (config.headers && !config.headers.Authorization && typeof window !== 'undefined') {
-                    const needsAuth = (config as any).requireAuth === true;
-                    if (needsAuth) {
-                        const token = localStorage.getItem('accessToken');
-                        if (token) {
-                            config.headers.Authorization = `Bearer ${token}`;
-                        }
-                    }
-                }
                 return config;
             },
             (error) => {
@@ -55,7 +41,27 @@ export class ApiClient {
 
         this.client.interceptors.response.use(
             (response) => response,
-            (error) => {
+            async (error) => {
+                const originalRequest = error.config;
+
+                if (error.response?.status === 401 && !originalRequest._retry) {
+                    originalRequest._retry = true;
+
+                    try {
+                        const refreshResponse = await this.client.post('/auth/refresh', {});
+
+                        if (refreshResponse.data.success) {
+                            return this.client(originalRequest);
+                        }
+                    } catch (refreshError) {
+                        if (typeof window !== 'undefined') {
+                            localStorage.removeItem('user');
+                            window.location.href = '/login';
+                        }
+                        return Promise.reject(refreshError);
+                    }
+                }
+
                 if (error.response?.data) {
                     return Promise.reject(error.response.data);
                 }

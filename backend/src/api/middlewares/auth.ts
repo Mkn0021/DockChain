@@ -3,7 +3,7 @@ import { JWTService } from "@services/jwt.service";
 import APIError from "@api/errors";
 import { AuthenticatedRequest } from "@type/request.type";
 
-export const validateAuth: RequestHandler = (
+const validateAuth: RequestHandler = (
     req: Request,
     _res: Response,
     next: NextFunction
@@ -28,6 +28,11 @@ export const validateAuth: RequestHandler = (
                 role: decoded.role,
                 isVerified: decoded.isVerified
             };
+
+            if (!authenticatedReq.user.isVerified) {
+                throw APIError.forbidden("Email verification required");
+            }
+
             next();
         } catch (error) {
             if (error instanceof Error) {
@@ -65,23 +70,4 @@ export const validateAdmin: RequestHandler = (
     }
 };
 
-export const validateVerified: RequestHandler = (
-    req: Request,
-    _res: Response,
-    next: NextFunction
-) => {
-    try {
-        const authenticatedReq = req as AuthenticatedRequest;
-        if (!authenticatedReq.user) {
-            throw APIError.unauthorized("Authentication required");
-        }
-
-        if (!authenticatedReq.user.isVerified) {
-            throw APIError.forbidden("Email verification required");
-        }
-
-        next();
-    } catch (error) {
-        next(error);
-    }
-};
+export default validateAuth;
