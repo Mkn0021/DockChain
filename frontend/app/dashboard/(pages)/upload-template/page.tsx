@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
+import ApiClient from '@/lib/api-client';
 import { Button } from '@/components/Button';
-import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
 import InputBox from '@/components/InputBox';
 import InfoBox from '../../(components)/InfoBox';
+import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
 import { UPLOAD_TEMPLATE, DEPLOYMENT_INSTRUCTIONS } from './(data)';
 
 export default function UploadTemplatePage() {
@@ -44,6 +45,20 @@ export default function UploadTemplatePage() {
 
         setIsDeploying(true);
         try {
+            if (!svgTemplate) throw new Error('SVG template is empty');
+
+            const response = await ApiClient.post('/templates/', {
+                name: title,
+                description: description || '',
+                svgTemplate,
+            });
+
+            if (!response.success) {
+                throw new Error(response.error || 'Failed to deploy template');
+            }
+
+            window.location.href = '/dashboard';
+
         } catch (error) {
             console.error('Template deployment failed:', error);
         } finally {
