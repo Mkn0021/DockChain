@@ -13,13 +13,15 @@ interface ReviewStepProps {
     formValues: Record<string, string>;
     renderedDocument: string | null;
     onRenderedDocumentChange: (svg: string | null) => void;
+    onDocumentIssued: (docId: string) => void;
 }
 
 export default function ReviewStep({
     selectedTemplate,
     formValues,
     renderedDocument,
-    onRenderedDocumentChange
+    onRenderedDocumentChange,
+    onDocumentIssued
 }: ReviewStepProps) {
     const [recipient, setRecipient] = useState<string>('');
     const { setCanGoToNextStep, setOnNext } = useStepper();
@@ -37,6 +39,12 @@ export default function ReviewStep({
                 if (!response.success) {
                     throw new Error(response.error || 'Document issuance failed');
                 }
+
+                const doc = response.data as { id: string };
+
+                if (doc.id) {
+                    onDocumentIssued(doc.id);
+                }
                 return true;
             } catch (error) {
                 console.error(`Document issue failed: ${error}`, 'error')
@@ -45,7 +53,7 @@ export default function ReviewStep({
         }
 
         setOnNext(() => handleDocumentIssue)
-    }, [setOnNext, recipient])
+    }, [setOnNext, recipient, onDocumentIssued])
 
     useEffect(() => {
         setCanGoToNextStep(!!recipient.trim() && !!renderedDocument);
