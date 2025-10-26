@@ -7,6 +7,7 @@ import type { User } from '@/types/auth.type';
 import ProfileContainer from "./(components)/ProfileContainer";
 import { Sidebar } from "./(components)/Sidebar";
 import { HamburgerMenu } from "./(components)/HamburgerMenu";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { PAGE_PATH, type PagePath } from './(data)';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -37,8 +38,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-screen">
-                <div className="text-lg">Loading...</div>
+            <div className="bg-white flex items-center justify-center h-screen rounded-none">
+                <LoadingSpinner />
             </div>
         );
     }
