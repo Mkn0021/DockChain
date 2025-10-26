@@ -170,8 +170,9 @@ export class DocumentService {
         const document = await this.getDocumentOrThrow(id);
         const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
 
+        const qrCodeBuffer = await QRCode.toBuffer(url);
         return {
-            qrCodeDataURL: await QRCode.toDataURL(url),
+            qrCodeBuffer,
             message: "QR Code generated successfully"
         };
     }
