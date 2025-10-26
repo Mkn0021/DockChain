@@ -65,7 +65,7 @@ export class DocumentService {
                 txHash,
                 contractAddress: this.contractAddress
             },
-            status: "active"
+            status: "valid"
         });
 
         return {
@@ -95,7 +95,7 @@ export class DocumentService {
                     txHash,
                     contractAddress: this.contractAddress
                 },
-                status: "active"
+                status: "valid"
             });
 
             issuedDocuments.push(newDocument.toJSON());
