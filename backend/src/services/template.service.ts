@@ -1,5 +1,5 @@
 import APIError from "@api/errors";
-import { PipelineStage } from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 import TemplateModel, { ITemplate } from "@model/Template.model";
 import {
     CreateTemplateData, Template, UpdateTemplateData,
@@ -16,7 +16,7 @@ export class TemplateService {
         const fieldRegex = /\{\{([^}]+)\}\}/g;
         const matches = [...svgTemplate.matchAll(fieldRegex)];
         const uniqueFields = new Set<string>();
-        
+
         return matches
             .map(match => match[1].trim())
             .filter(field => {
@@ -40,10 +40,10 @@ export class TemplateService {
         if (existingTemplate) APIError.badRequest("Template with this name already exists");
 
         const extractedFields = this.extractFieldsFromSVG(data.svgTemplate);
-        const fields = data.fields 
-            ? [...extractedFields, ...data.fields.filter(field => 
+        const fields = data.fields
+            ? [...extractedFields, ...data.fields.filter(field =>
                 !extractedFields.some(ef => ef.key === field.key)
-              )]
+            )]
             : extractedFields;
 
         const template: ITemplate = await TemplateModel.create({
@@ -59,7 +59,7 @@ export class TemplateService {
         };
     }
 
-    static async updateTemplate({id, updates, ownerId} : UpdateTemplateData): Promise<{ template: Template; message: string }> {
+    static async updateTemplate({ id, updates, ownerId }: UpdateTemplateData): Promise<{ template: Template; message: string }> {
         const existingTemplate = await TemplateModel.findById(id);
         this.validateTemplate(existingTemplate);
 
@@ -125,7 +125,7 @@ export class TemplateService {
 
         const matchStage: PipelineStage.Match = {
             $match: {
-                createdBy,
+                createdBy: new mongoose.Types.ObjectId(createdBy), // Convert to ObjectId
                 ...(options.name && { name: { $regex: options.name, $options: 'i' } })
             }
         };
