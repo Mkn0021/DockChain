@@ -173,6 +173,7 @@ export class DocumentService {
         const qrCodeBuffer = await QRCode.toBuffer(url);
         return {
             qrCodeBuffer,
+            url,
             message: "QR Code generated successfully"
         };
     }
