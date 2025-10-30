@@ -43,7 +43,10 @@ class AuthService {
             }
         );
 
+        const cookies = JWTService.generateCookies({ accessToken, refreshToken });
+
         return {
+            cookies,
             userData: {
                 ...user.toJSON(),
                 accessToken,
@@ -73,12 +76,23 @@ class AuthService {
             }
         );
 
-        return { accessToken, refreshToken };
+        const cookies = [JWTService.refreshCookie(accessToken)];
+
+        return {
+            cookies,
+            tokens: { accessToken, refreshToken },
+            message: "Tokens refreshed successfully"
+        };
     }
 
     async logout(userId: string) {
         await JWTService.revokeRefreshToken(userId);
-        return { message: "Logged out successfully" };
+        const cookies = JWTService.clearCookies();
+
+        return {
+            cookies,
+            message: "Logged out successfully"
+        };
     }
 
     async forgotPassword(email: string) {

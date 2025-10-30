@@ -26,7 +26,12 @@ export default class AuthController {
         validateRequest(LoginSchema),
         asyncHandler(async (req: Request) => {
             const result = await authService.login(req.body);
-            return { data: result.userData, message: result.message };
+
+            return {
+                cookies: result.cookies,
+                data: result.userData,
+                message: result.message
+            };
         })
     ];
 
@@ -45,8 +50,13 @@ export default class AuthController {
         validateRequest(RefreshTokenSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
-            const tokens = await authService.refresh(authenticatedReq.body.refreshToken);
-            return { data: tokens, message: "Tokens refreshed successfully" };
+            const result = await authService.refresh(authenticatedReq.body.refreshToken);
+            
+            return {
+                cookies: result.cookies,
+                data: result.tokens,
+                message: "Tokens refreshed successfully"
+            };
         })
     ];
 
@@ -56,7 +66,11 @@ export default class AuthController {
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
             const result = await authService.logout(authenticatedReq.user.id);
-            return { data: null, message: result.message };
+
+            return {
+                cookies: result.cookies,
+                message: result.message
+            };
         })
     ];
 
