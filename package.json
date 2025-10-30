@@ -29,12 +29,5 @@
   ],
   "author": "Mkn0021",
   "license": "MIT",
-  "type": "module",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "lottie-react": "^2.4.1"
-  },
-  "devDependencies": {
-    "@types/bcrypt": "^6.0.0"
-  }
+  "type": "module"
 }
