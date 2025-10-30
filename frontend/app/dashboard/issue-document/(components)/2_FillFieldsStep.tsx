@@ -22,7 +22,7 @@ export default function FillFieldsStep({
             .every((field) => formValues[field.key]?.trim());
 
         setCanGoToNextStep(allRequiredFilled);
-    }, [formValues, setCanGoToNextStep]);
+    }, [formValues, setCanGoToNextStep, selectedTemplate.fields]);
 
     return (
         <div className="w-full max-w-3xl">

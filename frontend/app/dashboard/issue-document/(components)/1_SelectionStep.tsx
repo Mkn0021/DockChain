@@ -20,8 +20,6 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
             try {
                 const response = await ApiClient.get('/templates/');
 
-                console.log(response);
-
                 if (!response.success) {
                     throw new Error(response.error || 'Failed to fetch templates');
                 }
