@@ -5,7 +5,7 @@ import { Navbar } from "@/components/_ui/Navbar";
 import { Section } from "../../components/homepage/Section";
 import SocialIcon from "../../components/homepage/SocialIcon";
 import { FeatureCard } from "../../components/homepage/FeatureCard";
-import { heroImages, features, testimonials } from "./(data)/index";
+import { HERO_IMAGES, TESTIMONIALS, WHY_BLOCKCHAIN } from "@/data/homepage.data";
 
 export default function HomePage() {
   return (
@@ -40,7 +40,7 @@ export default function HomePage() {
           </div>
         </div>
         <div className="w-full max-w-6xl relative">
-          {heroImages.map((image, index) => (
+          {HERO_IMAGES.map((image, index) => (
             <div key={index} className={image.position}>
               <Image
                 src={image.src}
@@ -59,7 +59,7 @@ export default function HomePage() {
       <Section>
         <h2 className="text-left self-start">Why Choose Blockchain?</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-          {features.map((feature, index) => (
+          {WHY_BLOCKCHAIN.map((feature, index) => (
             <FeatureCard
               key={index}
               imageSrc={feature.imageSrc}
@@ -93,7 +93,7 @@ export default function HomePage() {
       <Section>
         <h2 className="text-left self-start">Verifiable credentials adoption worldwide</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8">
-          {testimonials.map((testimonial, index) => (
+          {TESTIMONIALS.map((testimonial, index) => (
             <div key={index} className="bg-background-muted p-8">
               <h4 className="mt-0" role="heading" aria-level={3}>{testimonial.title}</h4>
               <p className="text-text-secondary">{testimonial.description}</p>

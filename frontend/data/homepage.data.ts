@@ -1,4 +1,4 @@
-export const heroImages = [
+export const HERO_IMAGES = [
     {
         src: '/assets/key-features.avif',
         width: 200,
@@ -25,7 +25,7 @@ export const heroImages = [
     }
 ];
 
-export const features = [
+export const WHY_BLOCKCHAIN = [
     {
         imageSrc: '/assets/why-blockchain-1.webp',
         imageAlt: 'Feature 1',
@@ -47,7 +47,7 @@ export const features = [
 ];
 
 // TODO: Replace with real testimonials later
-export const testimonials = [
+export const TESTIMONIALS = [
     {
         title: 'California prepares to issue birth, marriage and death certificates as VCs',
         description: 'In 2022, the state of California adopted legislation to issue citizens\' vital records using blockchain and Verifiable Credentials to streamline administrative processes, reduce fraud, and empower individuals.',
