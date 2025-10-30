@@ -11,6 +11,6 @@ router.get("/", ...DocumentController.getAllDocuments);
 router.post("/verify", ...DocumentController.verifyDocument);
 router.post("/verify/bulk", ...DocumentController.verifyBulkDocuments);
 router.get("/:id/qr", ...DocumentController.generateQrCode);
-router.get("/:id/pdf", ...DocumentController.generatePdf);
+router.post("/:id/pdf", ...DocumentController.generatePdf);
 
 export default router;

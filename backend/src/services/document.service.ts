@@ -240,7 +240,7 @@ export class DocumentService {
     static async generatePdf(data: GeneratePdfInput) {
         const { id, renderedDocument } = data;
         // Generate QR code
-        const qrUrl = (await this.generateQrCode(id)).data.url;
+        const qrBase64 = (await this.generateQrCode(id)).data.qrCode;
 
         // Create HTML with both pages
         const html = `
@@ -277,7 +277,7 @@ export class DocumentService {
                 <div class="page qr-container">
                     <div>
                         <h2 class="qr-title">Scan to verify this document</h2>
-                        <img src="${qrUrl}" class="qr-code" />
+                        <img src="data:image/png;base64,${qrBase64}" class="qr-code" />
                     </div>
                 </div>
             </body>

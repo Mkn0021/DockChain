@@ -109,9 +109,8 @@ export default class DocumentController {
         })
     ];
 
-    // GET /api/documents/:id/pdf
+    // POST /api/documents/:id/pdf
     static generatePdf = [
-        validateAuth,
         validateRequest(generatePdfSchema),
         asyncHandler(async (req: Request) => {
             const result = await DocumentService.generatePdf({
