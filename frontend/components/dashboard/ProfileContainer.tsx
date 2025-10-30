@@ -1,7 +1,7 @@
 'use client';
 
 import MenuItem from './MenuItem';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/auth.type';
 import { getInitialsAndColor } from '@/lib/utils/profileUtils';
@@ -22,6 +22,24 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const avatarRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && avatarRef.current) {
+                const clickedOutsideDropdown = !dropdownRef.current.contains(event.target as Node);
+                const clickedOutsideAvatar = !avatarRef.current.contains(event.target as Node);
+
+                if (isOpen && clickedOutsideDropdown && clickedOutsideAvatar) {
+                    setIsOpen(false);
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
