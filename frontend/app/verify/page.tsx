@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { Button } from "@/components/Button";
 import { Navbar } from "@/components/Navbar";
-import VerifyFormSection from "./VerifyFormSection";
+import VerifyFormSection from "./(components)/VerifyFormSection";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 

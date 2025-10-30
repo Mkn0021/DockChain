@@ -1,6 +1,6 @@
 import InputBox from "@/components/InputBox";
-import InfoBox from "../dashboard/(components)/InfoBox";
-import { VERIFY_INSTRUCTIONS } from "./(data)";
+import InfoBox from "../../dashboard/(components)/InfoBox";
+import { VERIFY_INSTRUCTIONS } from "../(data)";
 import { Button } from "@/components/Button";
 import { useState } from "react";
 
