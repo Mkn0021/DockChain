@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Template } from '@/types/template.type';
-import StepperLayout, { StepperProvider } from '../../../../components/dashboard/StepperLayout';
+import StepperLayout, { StepperProvider } from '../../../components/dashboard/StepperLayout';
 import SelectionStep from './(components)/1_SelectionStep';
 import FillFieldsStep from './(components)/2_FillFieldsStep';
 import ReviewStep from './(components)/3_ReviewStep';
