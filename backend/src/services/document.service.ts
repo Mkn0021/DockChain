@@ -172,11 +172,9 @@ export class DocumentService {
         const buffer = await QRCode.toBuffer(url);
 
         return {
-            data: { url },
-            file: {
-                buffer: Buffer.from(buffer),
-                fileName: `qr_${id}.png`,
-                contentType: 'image/png'
+            data: {
+                url,
+                qrCode: buffer.toString('base64') // Convert to base64 in JSON
             },
             message: "QR Code generated successfully"
         };

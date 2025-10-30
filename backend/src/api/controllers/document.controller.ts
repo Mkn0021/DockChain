@@ -89,11 +89,8 @@ export default class DocumentController {
         asyncHandler(async (req: Request) => {
             const { id } = req.params;
             const result = await DocumentService.generateQrCode(id);
-            return {
-                data: result.data,
-                file: result.file,
-                message: result.message
-            };
+
+            return { data: result.data, message: result.message };
         })
     ];
 

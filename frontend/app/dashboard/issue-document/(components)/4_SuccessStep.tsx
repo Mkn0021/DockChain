@@ -5,10 +5,7 @@ import { useState, useEffect } from 'react';
 import { DOCUMENT_ACTION_BUTTONS } from '@/data/dashboard.data';
 
 interface QRBuffer {
-    buffer: {
-        png: ArrayBuffer;
-        contentType: string;
-    }
+    qrCode: string;
     url: string;
 }
 
@@ -31,8 +28,8 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
                     setQrImage(null);
                     return;
                 }
-                const { buffer, url } = response.data as QRBuffer;
-                setQrImage(`data:${buffer.contentType};base64,${buffer.png}`);
+                const { qrCode, url } = response.data as QRBuffer;
+                setQrImage(`data:image/png;base64,${qrCode}`);
                 setQrUrl(url ?? null);
             } catch {
                 setQrImage(null);
