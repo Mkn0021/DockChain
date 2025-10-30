@@ -11,7 +11,7 @@ export class JWTService {
     private static readonly REFRESH_EXPIRY = "7d";
     private static readonly DEFAULT_COOKIE_OPTIONS: CookieOptions = {
         httpOnly: true,
-        secure: true,
+        secure: false, // Set to true if using HTTPS
     };
 
     private static createPayload(userId: string, additionalData?: Record<string, any>) {

@@ -46,7 +46,6 @@ export default class AuthController {
 
     // POST /api/auth/refresh
     static refresh = [
-        validateAuth,
         validateRequest(RefreshTokenSchema),
         asyncHandler(async (req: Request) => {
             const authenticatedReq = req as AuthenticatedRequest;
