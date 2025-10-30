@@ -2,7 +2,7 @@
 
 import MenuItem from './MenuItem';
 import Logo from '@/components/_ui/Logo';
-import { SIDEBAR_ITEMS } from "../../app/dashboard/(data)";
+import { SIDEBAR_ITEMS } from '@/data/dashboard.data';
 import { usePathname, useRouter } from 'next/navigation';
 
 

@@ -3,10 +3,10 @@
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
 import InputBox from '@/components/_ui/InputBox';
-import { ISSUING_INSTRACTIONS } from '../(data)';
 import { Template } from '@/types/template.type';
 import InfoBox from '@/components/dashboard/InfoBox';
 import { useStepper } from '@/components/dashboard/StepperLayout';
+import { DOCUMENT_ISSUING_INSTRACTIONS } from '@/data/dashboard.data';
 
 interface ReviewStepProps {
     selectedTemplate: Template;
@@ -97,7 +97,7 @@ export default function ReviewStep({
                 />
                 <InfoBox
                     title="Issuing Information"
-                    items={ISSUING_INSTRACTIONS}
+                    items={DOCUMENT_ISSUING_INSTRACTIONS}
                     className="w-full"
                 />
             </div>

@@ -6,7 +6,8 @@ import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/services/auth.service';
 import { User } from '@/types/auth.type';
 import { getInitialsAndColor } from '../../app/dashboard/(utils)/profileUtils';
-import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../../app/dashboard/(data)';
+import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
+
 
 interface ProfileContainerProps {
     user: User;

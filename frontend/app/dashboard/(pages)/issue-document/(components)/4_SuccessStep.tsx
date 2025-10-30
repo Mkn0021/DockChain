@@ -2,7 +2,7 @@
 
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
-import { ACTION_BUTTONS } from '../(data)';
+import { DOCUMENT_ACTION_BUTTONS } from '@/data/dashboard.data';
 
 interface QRBuffer {
     buffer: {
@@ -52,10 +52,10 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
             </div>
             <div className="flex w-full justify-center items-center py-6">
                 <div className="flex gap-8">
-                    {ACTION_BUTTONS.map(action => (
-                            <div key={action.key} className="flex flex-col items-center cursor-pointer">
-                                <action.Icon className="w-6 h-6 rounded-none text-border-dark" />
-                            <span className="text-sm mt-2">{action.title}</span>
+                    {DOCUMENT_ACTION_BUTTONS.map(button => (
+                        <div key={button.key} className="flex flex-col items-center cursor-pointer">
+                            <button.Icon className="w-6 h-6 rounded-none text-border-dark" />
+                            <span className="text-sm mt-2">{button.title}</span>
                         </div>
                     ))}
                 </div>
