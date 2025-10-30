@@ -3,10 +3,10 @@
 import MenuItem from './MenuItem';
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/lib/services/auth.service';
 import { User } from '@/types/auth.type';
-import { getInitialsAndColor } from '../../utils/profileUtils';
+import { getInitialsAndColor } from '@/lib/utils/profileUtils';
 import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
+import ApiClient from '@/lib/api-client';
 
 
 interface ProfileContainerProps {
@@ -28,7 +28,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const handleLogout = async () => {
         setIsOpen(false);
         try {
-            await authService.logout();
+            await ApiClient.post('/auth/logout');
             router.push('/');
         } catch (error) {
             console.error('Logout failed:', error);
