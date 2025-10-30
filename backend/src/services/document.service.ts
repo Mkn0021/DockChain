@@ -172,12 +172,11 @@ export class DocumentService {
         const buffer = await QRCode.toBuffer(url);
 
         return {
-            data: {
-                buffer: {
-                    png: buffer.toString('base64'),
-                    contentType: 'image/png',
-                },
-                url
+            data: { url },
+            file: {
+                buffer: Buffer.from(buffer),
+                fileName: `qr_${id}.png`,
+                contentType: 'image/png'
             },
             message: "QR Code generated successfully"
         };
@@ -303,7 +302,7 @@ export class DocumentService {
         const page = await browser.newPage();
         await page.setContent(html, { waitUntil: 'networkidle0' });
 
-        const pdf = await page.pdf({
+        const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
             preferCSSPageSize: true
@@ -312,12 +311,12 @@ export class DocumentService {
         await browser.close();
 
         return {
-            pdfBuffer: {
-                pdf,
-                fileName: `${template.name}-${document._id}.pdf`,
-                contentType: 'application/pdf',
+            file: {
+                buffer: Buffer.from(pdfBuffer),
+                fileName: `document_${id}.pdf`,
+                contentType: 'application/pdf'
             },
-            message: "PDF generated successfully"
+            message: "PDF generated successfully",
         };
     }
 }

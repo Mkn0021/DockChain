@@ -91,6 +91,7 @@ export default class DocumentController {
             const result = await DocumentService.generateQrCode(id);
             return {
                 data: result.data,
+                file: result.file,
                 message: result.message
             };
         })
@@ -119,7 +120,7 @@ export default class DocumentController {
             const { id } = req.params;
             const result = await DocumentService.generatePdf(id);
 
-            return { data: result.pdfBuffer, message: result.message, };
+            return { file: result.file, message: result.message, };
         })
     ];
 }
