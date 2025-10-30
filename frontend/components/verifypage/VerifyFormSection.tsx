@@ -41,7 +41,7 @@ const VerifyFormSection: React.FC<VerifyFormSectionProps> = ({ onSubmit }) => {
                         className="mt-2"
                     />
                     <div className="flex items-center justify-center mt-2">
-                        <span className="text-gray-500 text-sm">Can't find the link?</span>
+                        <span className="text-gray-500 text-sm">{'Can\'t find the link?'}</span>
                         <button
                             type="button"
                             className="ml-2 text-primary font-semibold hover:underline text-sm"
