@@ -1,7 +1,7 @@
-import InputBox from "@/components/InputBox";
-import InfoBox from "../../dashboard/(components)/InfoBox";
+import InputBox from "@/components/_ui/InputBox";
+import InfoBox from "../../../components/dashboard/InfoBox";
 import { VERIFY_INSTRUCTIONS } from "../(data)";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/_ui/Button";
 import { useState } from "react";
 
 interface VerifyFormSectionProps {

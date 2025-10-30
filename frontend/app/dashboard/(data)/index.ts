@@ -1,4 +1,4 @@
-import { MenuItem } from '../(components)/MenuItem';
+import { MenuItem } from '../../../components/dashboard/MenuItem';
 import {
     FaUser, FaCog, FaBell, FaSignOutAlt,
     FaHome, FaUpload, FaPaperPlane, FaCheckCircle, FaUserCog, FaQuestionCircle

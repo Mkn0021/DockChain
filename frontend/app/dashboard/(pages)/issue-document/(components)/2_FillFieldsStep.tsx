@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { Template } from '@/types/template.type';
-import InputBox from '@/components/InputBox';
-import { useStepper } from '@/app/dashboard/(components)/StepperLayout';
+import InputBox from '@/components/_ui/InputBox';
+import { useStepper } from '@/components/dashboard/StepperLayout';
 
 interface FillFieldsStepProps {
     selectedTemplate: Template;

@@ -1,4 +1,4 @@
-import AuthForm from "./(components)/AuthForm";
+import AuthForm from "../../components/loginpage/AuthForm";
 import { featureList } from "./(data)";
 import { BsCheckCircle } from "react-icons/bs";
 

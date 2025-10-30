@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { authService } from '@/lib/services/auth.service';
 import type { User } from '@/types/auth.type';
-import ProfileContainer from "./(components)/ProfileContainer";
-import { Sidebar } from "./(components)/Sidebar";
-import { HamburgerMenu } from "./(components)/HamburgerMenu";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import ProfileContainer from "../../components/dashboard/ProfileContainer";
+import { Sidebar } from "../../components/dashboard/Sidebar";
+import { HamburgerMenu } from "../../components/dashboard/HamburgerMenu";
+import LoadingSpinner from "@/components/_ui/LoadingSpinner";
 import { PAGE_PATH, type PagePath } from './(data)';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

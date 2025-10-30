@@ -2,11 +2,11 @@
 
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
-import InputBox from '@/components/InputBox';
+import InputBox from '@/components/_ui/InputBox';
 import { ISSUING_INSTRACTIONS } from '../(data)';
 import { Template } from '@/types/template.type';
-import InfoBox from '@/app/dashboard/(components)/InfoBox';
-import { useStepper } from '@/app/dashboard/(components)/StepperLayout';
+import InfoBox from '@/components/dashboard/InfoBox';
+import { useStepper } from '@/components/dashboard/StepperLayout';
 
 interface ReviewStepProps {
     selectedTemplate: Template;

@@ -1,10 +1,10 @@
 import Image from "next/image";
-import Logo from "@/components/Logo";
-import { Button } from "@/components/Button";
-import { Navbar } from "@/components/Navbar";
-import { Section } from "./(components)/Section";
-import SocialIcon from "./(components)/SocialIcon";
-import { FeatureCard } from "./(components)/FeatureCard";
+import Logo from "@/components/_ui/Logo";
+import { Button } from "@/components/_ui/Button";
+import { Navbar } from "@/components/_ui/Navbar";
+import { Section } from "../../components/homepage/Section";
+import SocialIcon from "../../components/homepage/SocialIcon";
+import { FeatureCard } from "../../components/homepage/FeatureCard";
 import { heroImages, features, testimonials } from "./(data)/index";
 
 export default function HomePage() {

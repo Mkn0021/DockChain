@@ -1,9 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Button } from "@/components/Button";
-import { Navbar } from "@/components/Navbar";
-import VerifyFormSection from "./(components)/VerifyFormSection";
+import { Button } from "@/components/_ui/Button";
+import { Navbar } from "@/components/_ui/Navbar";
+import VerifyFormSection from "@/components/verifypage/VerifyFormSection";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 

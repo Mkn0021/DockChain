@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/Button';
-import InputBox from '@/components/InputBox';
+import { Button } from '@/components/_ui/Button';
+import InputBox from '@/components/_ui/InputBox';
 import { FormData } from '@/types/auth.type';
 import React, { useState, useEffect } from 'react';
 import { authService } from '@/lib/services/auth.service';

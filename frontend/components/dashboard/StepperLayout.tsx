@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, ReactNode, FC } from 'react';
 import { BsCheck } from "react-icons/bs";
 import { MdNavigateNext } from "react-icons/md";
-import { Button } from '@/components/Button';
+import { Button } from '@/components/_ui/Button';
 
 interface Step {
     title: string;

@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Button } from '@/components/Button';
-import { useStepper } from '@/app/dashboard/(components)/StepperLayout';
+import { Button } from '@/components/_ui/Button';
+import { useStepper } from '@/components/dashboard/StepperLayout';
 import { Template, TemplateSelectionStepProps } from '@/types/template.type';
 import ApiClient from '@/lib/api-client';
 

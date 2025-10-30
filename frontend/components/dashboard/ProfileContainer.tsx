@@ -5,8 +5,8 @@ import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/services/auth.service';
 import { User } from '@/types/auth.type';
-import { getInitialsAndColor } from '../(utils)/profileUtils';
-import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../(data)';
+import { getInitialsAndColor } from '../../app/dashboard/(utils)/profileUtils';
+import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../../app/dashboard/(data)';
 
 interface ProfileContainerProps {
     user: User;
