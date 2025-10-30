@@ -169,11 +169,16 @@ export class DocumentService {
     static async generateQrCode(id: string) {
         const document = await this.getDocumentOrThrow(id);
         const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+        const buffer = await QRCode.toBuffer(url);
 
-        const qrCodeBuffer = await QRCode.toBuffer(url);
         return {
-            qrCodeBuffer,
-            url,
+            data: {
+                buffer: {
+                    png: buffer.toString('base64'),
+                    contentType: 'image/png',
+                },
+                url
+            },
             message: "QR Code generated successfully"
         };
     }

@@ -90,10 +90,7 @@ export default class DocumentController {
             const { id } = req.params;
             const result = await DocumentService.generateQrCode(id);
             return {
-                data: {
-                    qrCodeBuffer: result.qrCodeBuffer,
-                    url: result.url
-                },
+                data: result.data,
                 message: result.message
             };
         })
