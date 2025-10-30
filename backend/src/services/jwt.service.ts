@@ -1,12 +1,18 @@
-import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import { env } from "@config/env";
+import { CookieOptions } from "express";
 import UserModel from "@model/User.model";
 import { JWTPayload } from "@type/request.type";
+import { GenerateCookies } from "@type/auth.type";
 
 export class JWTService {
     private static readonly ACCESS_EXPIRY = "15m";
     private static readonly REFRESH_EXPIRY = "7d";
+    private static readonly DEFAULT_COOKIE_OPTIONS: CookieOptions = {
+        httpOnly: true,
+        secure: true,
+    };
 
     private static createPayload(userId: string, additionalData?: Record<string, any>) {
         return {
@@ -51,6 +57,51 @@ export class JWTService {
             accessToken,
             refreshToken
         };
+    }
+
+    // Prepare cookies for tokens
+    static generateCookies(data: GenerateCookies) {
+        const { accessToken, refreshToken, customOptions } = data;
+
+        const accessTokenOptions: CookieOptions = {
+            ...this.DEFAULT_COOKIE_OPTIONS,
+            maxAge: 15 * 60 * 1000, // 15 minutes
+            ...customOptions?.accessTokenOptions
+        };
+
+        const refreshTokenOptions: CookieOptions = {
+            ...this.DEFAULT_COOKIE_OPTIONS,
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+            ...customOptions?.refreshTokenOptions
+        };
+
+        return [
+            { name: 'access_token', value: accessToken, options: accessTokenOptions },
+            { name: 'refresh_token', value: refreshToken, options: refreshTokenOptions }
+        ];
+    }
+
+    // Clear token cookies
+    static clearCookies() {
+        const clearOptions: CookieOptions = {
+            ...this.DEFAULT_COOKIE_OPTIONS,
+            maxAge: 0
+        };
+
+        return [
+            { name: 'access_token', value: '', options: clearOptions },
+            { name: 'refresh_token', value: '', options: clearOptions }
+        ];
+    }
+
+    static refreshCookie(accessToken: string, options?: CookieOptions) {
+        const cookieOptions: CookieOptions = {
+            ...this.DEFAULT_COOKIE_OPTIONS,
+            maxAge: 15 * 60 * 1000, // 15 minutes
+            ...options
+        };
+
+        return { name: 'access_token', value: accessToken, options: cookieOptions };
     }
 
     // Verify access token

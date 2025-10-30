@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { userSchema } from "./user.type";
+import { CookieOptions } from "express";
 
 const passwordSchema = z.string()
     .min(6, "Password must be at least 6 characters")
@@ -52,6 +53,15 @@ export const GoogleLoginSchema = z.object({
         code: z.string().min(1, "Authorization code is required")
     })
 });
+
+export interface GenerateCookies {
+    accessToken: string;
+    refreshToken: string;
+    customOptions?: {
+        accessTokenOptions?: CookieOptions;
+        refreshTokenOptions?: CookieOptions;
+    };
+}
 
 export type RegisterData = z.infer<typeof RegisterSchema>['body'];
 export type LoginData = z.infer<typeof LoginSchema>['body'];
