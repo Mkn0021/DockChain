@@ -1,6 +1,6 @@
-import AuthForm from "../../components/loginpage/AuthForm";
-import { featureList } from "./(data)";
 import { BsCheckCircle } from "react-icons/bs";
+import { FEATURE_LIST } from "@/data/loginpage.data";
+import AuthForm from "../../components/loginpage/AuthForm";
 
 export default function LoginPage() {
     return (
@@ -14,7 +14,7 @@ export default function LoginPage() {
             <div className="hidden lg:flex w-1/2 h-full flex-col justify-center items-center my-auto">
                 <div className="w-full">
                     <h2 className="self-start text-left text-white mb-6 text-3xl xl:text-4xl">Start Issuing Verified and Immutable Records</h2>
-                    {featureList.map((feature, idx) => (
+                    {FEATURE_LIST.map((feature, idx) => (
                         <div key={idx} className="flex gap-2 items-center mb-3">
                             <BsCheckCircle size={24} className="text-accent" />
                             <h4 className="m-0 p-0 text-accent text-base xl:text-lg">{feature}</h4>
