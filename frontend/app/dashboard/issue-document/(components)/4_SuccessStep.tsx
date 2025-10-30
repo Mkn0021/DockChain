@@ -1,6 +1,7 @@
 "use client";
 
 import axios from 'axios';
+import Image from 'next/image';
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
 import { DOCUMENT_ACTION_BUTTONS } from '@/data/dashboard.data';
@@ -76,7 +77,7 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
         <div className="flex flex-col items-center justify-center w-full max-w-lg text-center gap-2">
             <div className="border-2 p-4 rounded-md">
                 {qrImage ? (
-                    <img src={qrImage} alt="Document QR Code" width={200} height={200} />
+                    <Image src={qrImage} alt="Document QR Code" width={200} height={200} unoptimized />
                 ) : (
                     <div className="w-[128px] h-[128px] bg-gray-200 flex items-center justify">QR not available</div>
                 )}
