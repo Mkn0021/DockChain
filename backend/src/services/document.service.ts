@@ -8,7 +8,7 @@ import DocumentModel, { IDocument } from "@model/Document.model";
 import TemplateModel, { ITemplate } from "@model/Template.model";
 import {
     IssueDocumentInput, revokeDocumentInput, verifyDocumentInput, DocumentQueryOptions,
-    DocumentAggregationResult, verifyBulkDocumentInput, Document, IssueBulkDocumentInput
+    DocumentAggregationResult, verifyBulkDocumentInput, Document, IssueBulkDocumentInput, GeneratePdfInput
 } from "@type/document.type";
 
 
@@ -239,21 +239,10 @@ export class DocumentService {
         };
     }
 
-    static async generatePdf(id: string) {
-        const document = await this.getDocumentOrThrow(id);
-        const template = await TemplateModel.findById(document.templateId);
-        if (!template) throw APIError.notFound("Template not found");
-
+    static async generatePdf(data: GeneratePdfInput) {
+        const { id, renderedDocument } = data;
         // Generate QR code
-        const qrUrl = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
-        const qrCodeDataUrl = await QRCode.toDataURL(qrUrl);
-
-        // Replace field placeholders in SVG template
-        let documentSvg = template.svgTemplate;
-        for (const [key, value] of Object.entries(document.fieldValues)) {
-            const placeholder = `{${key}}`;
-            documentSvg = documentSvg.replace(new RegExp(placeholder, 'g'), value.toString());
-        }
+        const qrUrl = (await this.generateQrCode(id)).data.url;
 
         // Create HTML with both pages
         const html = `
@@ -285,12 +274,12 @@ export class DocumentService {
             </head>
             <body>
                 <div class="page">
-                    ${documentSvg}
+                    ${renderedDocument}
                 </div>
                 <div class="page qr-container">
                     <div>
                         <h2 class="qr-title">Scan to verify this document</h2>
-                        <img src="${qrCodeDataUrl}" class="qr-code" />
+                        <img src="${qrUrl}" class="qr-code" />
                     </div>
                 </div>
             </body>

@@ -5,8 +5,8 @@ import { validateRequest } from "@middlewares/validation";
 import { DocumentService } from "@services/document.service";
 import validateAuth from "@middlewares/auth";
 import {
-    issueDocumentSchema, documentIdSchema, verifyDocumentSchema,
-    documentQuerySchema, verifyBulkDocumentSchema, issueBulkDocumentSchema
+    issueDocumentSchema, documentIdSchema, verifyDocumentSchema, documentQuerySchema,
+    generatePdfSchema, verifyBulkDocumentSchema, issueBulkDocumentSchema
 } from "@type/document.type";
 
 export default class DocumentController {
@@ -115,10 +115,12 @@ export default class DocumentController {
     // GET /api/documents/:id/pdf
     static generatePdf = [
         validateAuth,
-        validateRequest(documentIdSchema),
+        validateRequest(generatePdfSchema),
         asyncHandler(async (req: Request) => {
-            const { id } = req.params;
-            const result = await DocumentService.generatePdf(id);
+            const result = await DocumentService.generatePdf({
+                id: req.params.id,
+                renderedDocument: req.body.renderedDocument
+            });
 
             return { file: result.file, message: result.message, };
         })
