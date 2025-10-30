@@ -1,5 +1,6 @@
 "use client";
 
+import axios from 'axios';
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
 import { DOCUMENT_ACTION_BUTTONS } from '@/data/dashboard.data';
@@ -38,6 +39,39 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
         fetchQr();
     }, [documentId]);
 
+    async function downloadPdf() {
+        try {
+            const response = await axios.post(
+                `${process.env.NEXT_PUBLIC_API_URL}/documents/${documentId}/pdf`, // Direct backend call
+                { renderedDocument },
+                {
+                    responseType: 'blob',
+                    withCredentials: true,
+                }
+            );
+
+            const blob = response.data;
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `document_${documentId}.pdf`;
+            link.click();
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+        }
+    }
+
+    async function handleActions(action: string) {
+        if (action == 'copy' && qrUrl) {
+            await navigator.clipboard.writeText(qrUrl);
+        } else if (action == 'finish') {
+            onNewDocument();
+        } else if (action == 'download' && renderedDocument) {
+            await downloadPdf();
+        }
+    }
+
     return (
         <div className="flex flex-col items-center justify-center w-full max-w-lg text-center gap-2">
             <div className="border-2 p-4 rounded-md">
@@ -50,7 +84,10 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
             <div className="flex w-full justify-center items-center py-6">
                 <div className="flex gap-8">
                     {DOCUMENT_ACTION_BUTTONS.map(button => (
-                        <div key={button.key} className="flex flex-col items-center cursor-pointer">
+                        <div key={button.key}
+                            className="flex flex-col items-center cursor-pointer"
+                            onClick={() => handleActions(button.key)}
+                        >
                             <button.Icon className="w-6 h-6 rounded-none text-border-dark" />
                             <span className="text-sm mt-2">{button.title}</span>
                         </div>
