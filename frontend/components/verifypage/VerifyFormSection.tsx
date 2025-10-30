@@ -1,8 +1,8 @@
-import InputBox from "@/components/_ui/InputBox";
-import InfoBox from "../../../components/dashboard/InfoBox";
-import { VERIFY_INSTRUCTIONS } from "../(data)";
-import { Button } from "@/components/_ui/Button";
 import { useState } from "react";
+import InfoBox from "../dashboard/InfoBox";
+import { Button } from "@/components/_ui/Button";
+import InputBox from "@/components/_ui/InputBox";
+import { VERIFY_INSTRUCTIONS } from "@/data/verifypage.data";
 
 interface VerifyFormSectionProps {
     onSubmit?: (data: { link?: string; templateId?: string; documentHash?: string }) => void;
