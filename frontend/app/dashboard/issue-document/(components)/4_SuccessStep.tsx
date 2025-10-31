@@ -5,6 +5,7 @@ import Image from 'next/image';
 import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
 import { DOCUMENT_ACTION_BUTTONS } from '@/data/dashboard.data';
+import { useAlert } from '@/components/providers/AlertProvider';
 
 interface QRBuffer {
     qrCode: string;
@@ -20,6 +21,7 @@ interface SuccessStepProps {
 export default function SuccessStep({ documentId, renderedDocument, onNewDocument }: SuccessStepProps) {
     const [qrImage, setQrImage] = useState<string | null>(null);
     const [qrUrl, setQrUrl] = useState<string | null>(null);
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         async function fetchQr() {
@@ -59,16 +61,18 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
             link.click();
             URL.revokeObjectURL(url);
         } catch (error) {
-            console.error('Download failed:', error);
+            showAlert(`Download failed: ${error}`, 'error');
         }
     }
 
     async function handleActions(action: string) {
         if (action == 'copy' && qrUrl) {
             await navigator.clipboard.writeText(qrUrl);
+            showAlert('QR URL copied to clipboard!', 'success');
         } else if (action == 'finish') {
             onNewDocument();
         } else if (action == 'download' && renderedDocument) {
+            showAlert('Download process started', 'info');
             await downloadPdf();
         }
     }

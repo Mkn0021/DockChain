@@ -7,6 +7,7 @@ import { Template } from '@/types/template.type';
 import InfoBox from '@/components/dashboard/InfoBox';
 import { useStepper } from '@/components/dashboard/StepperLayout';
 import { DOCUMENT_ISSUING_INSTRACTIONS } from '@/data/dashboard.data';
+import { useAlert } from '@/components/providers/AlertProvider';
 
 interface ReviewStepProps {
     selectedTemplate: Template;
@@ -25,6 +26,7 @@ export default function ReviewStep({
 }: ReviewStepProps) {
     const [recipient, setRecipient] = useState<string>('');
     const { setCanGoToNextStep, setOnNext } = useStepper();
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         const handleDocumentIssue = async () => {
@@ -47,7 +49,7 @@ export default function ReviewStep({
                 }
                 return true;
             } catch (error) {
-                console.error(`Document issue failed: ${error}`, 'error')
+                showAlert(`Document issue failed: ${error}`, 'error')
                 return false;
             }
         }

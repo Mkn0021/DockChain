@@ -7,6 +7,7 @@ import { User } from '@/types/auth.type';
 import { getInitialsAndColor } from '@/lib/utils/profileUtils';
 import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
 import ApiClient from '@/lib/api-client';
+import { useAlert } from '../providers/AlertProvider';
 
 
 interface ProfileContainerProps {
@@ -22,6 +23,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const avatarRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const { showAlert } = useAlert();
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -49,7 +51,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
             await ApiClient.post('/auth/logout');
             router.push('/');
         } catch (error) {
-            console.error('Logout failed:', error);
+            showAlert(`Logout failed: ${error}`, 'error')
             router.push('/login');
         }
     };

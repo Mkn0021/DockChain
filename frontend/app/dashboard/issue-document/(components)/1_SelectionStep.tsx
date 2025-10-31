@@ -1,17 +1,19 @@
 "use client";
 
+import ApiClient from '@/lib/api-client';
 import { useState, useEffect } from 'react';
+import { MdNavigateNext } from 'react-icons/md';
 import { Button } from '@/components/_ui/Button';
+import { useAlert } from '@/components/providers/AlertProvider';
 import { useStepper } from '@/components/dashboard/StepperLayout';
 import { Template, TemplateSelectionStepProps } from '@/types/template.type';
-import ApiClient from '@/lib/api-client';
-import { MdNavigateNext } from 'react-icons/md';
 
 
 export default function SelectionStep({ selectedTemplate, onSelectTemplate }: TemplateSelectionStepProps) {
     const [allTemplates, setAllTemplates] = useState<Template[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
+    const { showAlert } = useAlert();
     const { setCanGoToNextStep, setMiddleContent } = useStepper();
     const limit = 3;
 
@@ -67,7 +69,7 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
                 setAllTemplates(data.templates);
                 setTotalPages(Math.ceil(data.total / limit));
             } catch (error) {
-                console.error(`Error fetching templates: ${error}`, 'error');
+                showAlert(`Error fetching templates: ${error}`, 'error');
             }
         }
         fetchTemplates();
