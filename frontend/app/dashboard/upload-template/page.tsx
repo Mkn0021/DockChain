@@ -6,6 +6,7 @@ import { Button } from '@/components/_ui/Button';
 import InputBox from '@/components/_ui/InputBox';
 import InfoBox from '../../../components/dashboard/InfoBox';
 import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
+import { useAlert } from '@/components/providers/AlertProvider';
 import { UPLOAD_TEMPLATE, DEPLOYMENT_INSTRUCTIONS } from '@/data/dashboard.data';
 
 export default function UploadTemplatePage() {
@@ -16,6 +17,8 @@ export default function UploadTemplatePage() {
     const [description, setDescription] = useState('');
     const [isDeploying, setIsDeploying] = useState(false);
     const canDeploy = selectedFile && title.trim() !== '';
+
+    const { showAlert } = useAlert();
 
 
     const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,10 +60,11 @@ export default function UploadTemplatePage() {
                 throw new Error(response.error || 'Failed to deploy template');
             }
 
-            window.location.href = '/dashboard';
+            showAlert(UPLOAD_TEMPLATE.alerts.deploySuccess, 'success');
+            window.location.href = '/dashboard/issue-document';
 
         } catch (error) {
-            console.error('Template deployment failed:', error);
+            showAlert(UPLOAD_TEMPLATE.alerts.deployError((error as Error).message), 'error');
         } finally {
             setIsDeploying(false);
         }
