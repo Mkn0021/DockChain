@@ -6,9 +6,11 @@ import InputBox from '@/components/_ui/InputBox';
 import { FormData } from '@/types/auth.type';
 import React, { useState, useEffect } from 'react';
 import { authService } from '@/lib/services/auth.service';
+import { useAlert } from '@/components/providers/AlertProvider';
 
 const AuthForm: React.FC = () => {
     const router = useRouter();
+    const { showAlert } = useAlert();
     const [mode, setMode] = useState<'login' | 'signup' | 'setPassword' | 'otp'>('login');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
@@ -73,15 +75,12 @@ const AuthForm: React.FC = () => {
                     return;
                 }
 
-                setSuccess(res.message || 'Registration successful! Please check your email for the OTP.');
+                showAlert('Registration successful! Please verify your email.', 'success');
                 // Move to OTP verification
-                setTimeout(() => {
-                    setMode('otp');
-                    setSuccess('');
-                }, 2000);
+                setMode('otp');
+                setSuccess('');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
-                console.error('Registration error:', err);
             } finally {
                 setLoading(false);
             }
@@ -106,15 +105,12 @@ const AuthForm: React.FC = () => {
                     return;
                 }
 
-                setSuccess(res.message || 'Email verified successfully! Redirecting...');
-                setTimeout(() => {
-                    setMode('login');
-                    updateFormData('otp', '');
-                    setSuccess('');
-                }, 2000);
+                showAlert('Email verified successfully! You can now log in.', 'success');
+                setMode('login');
+                updateFormData('otp', '');
+                setSuccess('');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
-                console.error('Verification error:', err);
             } finally {
                 setLoading(false);
             }
@@ -143,13 +139,10 @@ const AuthForm: React.FC = () => {
                     return;
                 }
 
-                setSuccess(res.message || 'Login successful! Redirecting...');
-                setTimeout(() => {
-                    router.push('/dashboard');
-                }, 1500);
+                showAlert('Login successful! Redirecting to dashboard...', 'success');
+                router.push('/dashboard');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
-                console.error('Login error:', err);
             } finally {
                 setLoading(false);
             }
@@ -172,11 +165,10 @@ const AuthForm: React.FC = () => {
                 return;
             }
 
-            setSuccess(res.message || 'Password reset OTP sent to your email!');
-            setTimeout(() => setSuccess(''), 3000);
+            showAlert('Password reset OTP sent to your email.', 'success');
+            setSuccess('');
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
-            console.error('Forgot password error:', err);
         } finally {
             setLoading(false);
         }
@@ -184,14 +176,12 @@ const AuthForm: React.FC = () => {
 
     const handleGoogleLogin = () => {
         // TODO: Implement Google OAuth login functionality
-        setError('Google login is not available at this time');
-        setTimeout(() => setError(''), 3000);
+        showAlert('Google login is not implemented yet', 'info');
     };
 
     const handleResendOTP = async () => {
         // TODO: Implement resend OTP functionality
-        setError('Resend OTP functionality is not implemented yet');
-        setTimeout(() => setError(''), 3000);
+        showAlert('Resend OTP is not implemented yet', 'info');
     };
 
     return (
