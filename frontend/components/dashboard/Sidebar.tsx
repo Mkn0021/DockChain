@@ -2,7 +2,7 @@
 
 import MenuItem from './MenuItem';
 import Logo from '@/components/_ui/Logo';
-import { SIDEBAR_ITEMS } from '@/data/dashboard.data';
+import { SIDEBAR_ITEMS, DASHBOARD_ROUTES } from '@/data/dashboard.data';
 import { usePathname, useRouter } from 'next/navigation';
 
 
@@ -40,7 +40,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }: SidebarProps) {
                     </div>
                     <div className="flex flex-col">
                         {sidebarItems.map((item) => {
-                            const itemPath = item.id === 'dashboard' ? '/dashboard' : `/dashboard/${item.id}`;
+                            const itemPath = DASHBOARD_ROUTES[item.id as keyof typeof DASHBOARD_ROUTES]?.path || '';
                             return (
                                 <MenuItem
                                     key={item.id}
