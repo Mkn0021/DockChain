@@ -30,7 +30,9 @@ const AlertItem: React.FC<{
     onDismiss: (id: string) => void;
 }> = ({ alert, onDismiss }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const [progress, setProgress] = useState(100);
     const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     React.useEffect(() => {
         const enterTimer = setTimeout(() => setIsVisible(true), 10);
@@ -39,14 +41,20 @@ const AlertItem: React.FC<{
             handleDismiss();
         }, 5000);
 
+        intervalRef.current = setInterval(() => {
+            setProgress(prev => Math.max(0, prev - 2));
+        }, 100);
+
         return () => {
             clearTimeout(enterTimer);
             if (timerRef.current) clearTimeout(timerRef.current);
+            if (intervalRef.current) clearInterval(intervalRef.current);
         };
     }, []);
 
     const handleDismiss = useCallback(() => {
         setIsVisible(false);
+        if (intervalRef.current) clearInterval(intervalRef.current);
         setTimeout(() => onDismiss(alert.id), 300);
     }, [alert.id, onDismiss]);
 
@@ -61,14 +69,17 @@ const AlertItem: React.FC<{
     return (
         <div className={containerClasses} role="alert" aria-live="polite">
             <styles.iconComponent className={`${BASE_STYLES.icon} ${styles.icon}`} />
-            <span className="whitespace-pre-line leading-tight flex-1">{alert.message}</span>
+            <span className="whitespace-pre-line leading-tight flex-1 text-text-primary">{alert.message}</span>
             <button
                 onClick={handleDismiss}
-                className="ml-2 text-lg font-semibold opacity-60 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current rounded transition-opacity flex-shrink-0"
+                className="ml-2 text-2xl font-semibold opacity-60 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current rounded transition-opacity flex-shrink-0"
                 aria-label="Dismiss alert"
             >
                 ×
             </button>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-b-lg overflow-hidden">
+                <div className={`h-full ${styles.progressBg} transition-all duration-100`} style={{ width: `${progress}%` }}></div>
+            </div>
         </div>
     );
 };
