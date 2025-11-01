@@ -1,8 +1,16 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Button } from '@/components/Button';
 import ApiClient from '@/lib/api-client';
+import { useState, useEffect } from 'react';
+import { ACTION_BUTTONS } from '../(data)';
+
+interface QRBuffer {
+    buffer: {
+        png: ArrayBuffer;
+        contentType: string;
+    }
+    url: string;
+}
 
 interface SuccessStepProps {
     documentId: string;
@@ -11,6 +19,7 @@ interface SuccessStepProps {
 }
 
 export default function SuccessStep({ documentId, renderedDocument, onNewDocument }: SuccessStepProps) {
+    const [qrImage, setQrImage] = useState<string | null>(null);
     const [qrUrl, setQrUrl] = useState<string | null>(null);
 
     useEffect(() => {
@@ -19,73 +28,37 @@ export default function SuccessStep({ documentId, renderedDocument, onNewDocumen
             try {
                 const response = await ApiClient.get(`/documents/${documentId}/qr`);
                 if (!response.success) {
-                    setQrUrl(null);
+                    setQrImage(null);
                     return;
                 }
-
-                const byteArray = new Uint8Array((response.data as any).data);
-                const blob = new Blob([byteArray], { type: 'image/png' });
-                setQrUrl(URL.createObjectURL(blob));
+                const { buffer, url } = response.data as QRBuffer;
+                setQrImage(`data:${buffer.contentType};base64,${buffer.png}`);
+                setQrUrl(url ?? null);
             } catch {
-                setQrUrl(null);
+                setQrImage(null);
             }
         }
         fetchQr();
     }, [documentId]);
 
-    function downloadDocument(svgString: string) {
-        try {
-            const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-            const url = URL.createObjectURL(svgBlob);
-
-            const img = new window.Image();
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                canvas.width = img.width;
-                canvas.height = img.height;
-                const ctx = canvas.getContext('2d');
-                if (ctx) {
-                    ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((blob) => {
-                        if (blob) {
-                            const filename = `document_template.png`;
-                            const link = document.createElement('a');
-                            link.href = URL.createObjectURL(blob);
-                            link.download = filename;
-                            document.body.appendChild(link);
-                            link.click();
-                            document.body.removeChild(link);
-                        }
-                    }, 'image/png');
-                }
-                URL.revokeObjectURL(url);
-            };
-            img.src = url;
-        } catch (error) {
-            console.error(`Error downloading PNG: ${error}`, 'error');
-        }
-    }
     return (
         <div className="flex flex-col items-center justify-center w-full max-w-lg text-center gap-2">
-            <div className="mb-4">
-                {qrUrl ? (
-                    <img src={qrUrl} alt="Document QR Code" width={128} height={128} />
+            <div className="border-2 p-4 rounded-md">
+                {qrImage ? (
+                    <img src={qrImage} alt="Document QR Code" width={200} height={200} />
                 ) : (
                     <div className="w-[128px] h-[128px] bg-gray-200 flex items-center justify">QR not available</div>
                 )}
             </div>
-            <h4 className="text-primary m-0 p-0">Document Issued!</h4>
-            <p>Your document has been issued successfully. The issued document is securely stored and can be verified on the blockchain.</p>
             <div className="flex w-full justify-center items-center py-6">
-                <Button
-                    onClick={() =>
-                        renderedDocument &&
-                        downloadDocument(renderedDocument)
-                    }
-                >
-                    Download Document
-                </Button>
-                <Button variant="secondary" onClick={onNewDocument}>Issue Another Document</Button>
+                <div className="flex gap-8">
+                    {ACTION_BUTTONS.map(action => (
+                            <div key={action.key} className="flex flex-col items-center cursor-pointer">
+                                <action.Icon className="w-6 h-6 rounded-none text-border-dark" />
+                            <span className="text-sm mt-2">{action.title}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
     );

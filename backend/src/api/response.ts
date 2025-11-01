@@ -17,8 +17,15 @@ export const apiResponse = {
         res: Response,
         data: T,
         message?: string,
-        statusCode = 200
-    ): Response<SuccessResponse<T>> => {
+        statusCode = 200,
+        options?: { file?: { buffer: Buffer; fileName: string; contentType: string } }
+    ): Response<any> => {
+        if (options?.file) {
+            const { buffer, fileName, contentType } = options.file;
+            res.setHeader('Content-Type', contentType);
+            res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+            return res.status(statusCode).send(buffer);
+        }
         return res.status(statusCode).json({ success: true, data, message });
     },
 
@@ -34,12 +41,12 @@ export const apiResponse = {
 };
 
 export const asyncHandler = <T>(
-    handler: (req: Request) => Promise<{ data: T; message?: string }>
+    handler: (req: Request) => Promise<{ data?: T; message?: string; file?: { buffer: Buffer; fileName: string; contentType: string } }>
 ) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             const result = await handler(req);
-            return apiResponse.success(res, result.data, result.message);
+            return apiResponse.success(res, result.data ?? null, result.message, 200, result.file ? { file: result.file } : undefined);
         } catch (error) {
             next(error);
         }

@@ -57,8 +57,8 @@ export default function IssueDocumentPage() {
             )
         },
         {
-            title: "Issue Document",
-            description: "Finalize and issue your document.",
+            title: "QR Code & Finish",
+            description: "Document issued successfully! Here is your QR code.",
             component: (
                 <SuccessStep
                     documentId={documentId}

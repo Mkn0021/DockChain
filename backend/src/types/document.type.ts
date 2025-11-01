@@ -82,6 +82,15 @@ export const documentQuerySchema = z.object({
     })
 });
 
+export const generatePdfSchema = z.object({
+    params: z.object({
+        id: z.string().nonempty("Document ID is required")
+    }),
+    body: z.object({
+        renderedDocument: z.string().nonempty("Rendered document is required")
+    })
+});
+
 export interface DocumentAggregationResult {
     documents: Document[];
     totalCount: Array<{ count: number }>;
@@ -95,3 +104,4 @@ export type revokeDocumentInput = { id: string; ownerId: string };
 export type verifyDocumentInput = z.infer<typeof verifyDocumentSchema>['body'];
 export type verifyBulkDocumentInput = z.infer<typeof verifyBulkDocumentSchema>['body'];
 export type DocumentQueryOptions = z.infer<typeof documentQuerySchema>['query'];
+export type GeneratePdfInput = { id: string; renderedDocument: string };
