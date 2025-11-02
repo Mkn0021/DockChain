@@ -1,11 +1,11 @@
 "use client";
 
+import ApiClient from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
+import { FormData } from '@/types/auth.type';
 import { Button } from '@/components/_ui/Button';
 import InputBox from '@/components/_ui/InputBox';
-import { FormData } from '@/types/auth.type';
 import React, { useState, useEffect } from 'react';
-import { authService } from '@/lib/services/auth.service';
 import { useAlert } from '@/components/providers/AlertProvider';
 
 const AuthForm: React.FC = () => {
@@ -64,7 +64,7 @@ const AuthForm: React.FC = () => {
 
             setLoading(true);
             try {
-                const res = await authService.register({
+                const res = await ApiClient.post('/auth/register', {
                     name: formData.name,
                     email: formData.email,
                     password: formData.password,
@@ -95,7 +95,7 @@ const AuthForm: React.FC = () => {
 
             setLoading(true);
             try {
-                const res = await authService.verifyEmail({
+                const res = await ApiClient.post('/auth/verify', {
                     email: formData.email,
                     otp: formData.otp,
                 });
@@ -129,7 +129,7 @@ const AuthForm: React.FC = () => {
 
             setLoading(true);
             try {
-                const res = await authService.login({
+                const res = await ApiClient.post('/auth/login', {
                     email: formData.email,
                     password: formData.password,
                 });
@@ -158,7 +158,11 @@ const AuthForm: React.FC = () => {
         setLoading(true);
         setError('');
         try {
-            const res = await authService.forgotPassword({ email: formData.email });
+            const res = await ApiClient.post('/auth/forgot-password', {
+                email: formData.email,
+            });
+
+            // TODO: Implement forgot password flow
 
             if (!res.success) {
                 setError(res.error || 'Failed to send reset OTP.');

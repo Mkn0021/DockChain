@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import type { User } from '@/types/auth.type';
 import { usePathname, useRouter } from 'next/navigation';
-import { authService } from '@/lib/services/auth.service';
 import { DashboardPagePath } from '@/types/document.type';
 import { DASHBOARD_PAGE_PATH } from '@/data/dashboard.data';
 import { Sidebar } from "../../components/dashboard/Sidebar";
@@ -20,12 +19,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     useEffect(() => {
         const fetchUser = () => {
-            if (!authService.isAuthenticated()) {
-                router.push('/login');
-                return;
-            }
+            const userData = typeof window === 'undefined' ? null
+                : JSON.parse(
+                    localStorage.getItem('user') ||
+                    'null'
+                ) as User | null;
 
-            const userData = authService.getUser();
             if (userData) {
                 setUser(userData);
             } else {
