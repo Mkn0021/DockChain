@@ -2,7 +2,7 @@
 
 import ApiClient from '@/lib/api-client';
 import { useRouter } from 'next/navigation';
-import { FormData } from '@/types/auth.type';
+import { FormData, User } from '@/types/auth.type';
 import { Button } from '@/components/_ui/Button';
 import InputBox from '@/components/_ui/InputBox';
 import React, { useState, useEffect } from 'react';
@@ -140,6 +140,18 @@ const AuthForm: React.FC = () => {
                     setError(res.error || 'Login failed. Please check your credentials.');
                     return;
                 }
+
+                const userData = res.data as User;
+
+                localStorage.setItem('user', JSON.stringify({
+                    id: userData.id,
+                    name: userData.name,
+                    email: userData.email,
+                    role: userData.role,
+                    isVerified: userData.isVerified
+                }));
+
+                // TODO: Switch to Server-side
 
                 showAlert('Login successful! Redirecting to dashboard...', 'success');
                 router.push('/dashboard');
