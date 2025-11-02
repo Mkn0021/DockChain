@@ -10,40 +10,14 @@ const validateAuth: RequestHandler = (
 ) => {
     const authenticatedReq = req as AuthenticatedRequest;
     try {
-        const authHeader = authenticatedReq.headers.authorization;
-        if (!authHeader?.startsWith("Bearer ")) {
-            throw APIError.unauthorized("No token provided");
+        const user = getDecodedUser(req);
+        authenticatedReq.user = user;
+
+        if (!authenticatedReq.user.isVerified) {
+            throw APIError.forbidden("Email verification required");
         }
 
-        const token = authHeader.split(" ")[1];
-        if (!token) {
-            throw APIError.unauthorized("Invalid token format");
-        }
-
-        try {
-            const decoded = JWTService.verifyAccessToken(token);
-            authenticatedReq.user = {
-                id: decoded.userId,
-                email: decoded.email,
-                role: decoded.role,
-                isVerified: decoded.isVerified
-            };
-
-            if (!authenticatedReq.user.isVerified) {
-                throw APIError.forbidden("Email verification required");
-            }
-
-            next();
-        } catch (error) {
-            if (error instanceof Error) {
-                throw APIError.unauthorized(
-                    error.message === "jwt expired"
-                        ? "Token expired"
-                        : "Invalid token"
-                );
-            }
-            throw error;
-        }
+        next();
     } catch (error) {
         next(error);
     }
@@ -54,11 +28,10 @@ export const validateAdmin: RequestHandler = (
     _res: Response,
     next: NextFunction
 ) => {
+    const authenticatedReq = req as AuthenticatedRequest;
     try {
-        const authenticatedReq = req as AuthenticatedRequest;
-        if (!authenticatedReq.user) {
-            throw APIError.unauthorized("Authentication required");
-        }
+        const user = getDecodedUser(req);
+        authenticatedReq.user = user;
 
         if (authenticatedReq.user.role !== "admin") {
             throw APIError.forbidden("Admin access required");
@@ -68,6 +41,26 @@ export const validateAdmin: RequestHandler = (
     } catch (error) {
         next(error);
     }
+};
+
+const getDecodedUser = (req: Request) => {
+    const token = req.cookies?.access_token ||
+        (req.headers.authorization?.startsWith("Bearer ")
+            ? req.headers.authorization.split(" ")[1]
+            : null);
+
+    if (!token) {
+        throw APIError.unauthorized("No token provided");
+    }
+
+    const decoded = JWTService.verifyAccessToken(token);
+
+    return {
+        id: decoded.userId,
+        email: decoded.email,
+        role: decoded.role,
+        isVerified: decoded.isVerified
+    };
 };
 
 export default validateAuth;

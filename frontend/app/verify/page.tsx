@@ -1,9 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Button } from "@/components/Button";
-import { Navbar } from "@/components/Navbar";
-import VerifyFormSection from "./(components)/VerifyFormSection";
+import { Button } from "@/components/_ui/Button";
+import { Navbar } from "@/components/_ui/Navbar";
+import blockchainAnimation from "@/public/assets/blockchain.json";
+import VerifyFormSection from "@/components/verifypage/VerifyFormSection";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
@@ -32,7 +33,7 @@ export default function VerifyPage() {
                         <Lottie
                             autoplay
                             loop
-                            animationData={require("@/public/assets/blockchain.json")}
+                            animationData={blockchainAnimation}
                             style={{ height: "100%", width: "100%" }}
                         />
                     </div>

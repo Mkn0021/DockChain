@@ -1,8 +1,8 @@
-import InputBox from "@/components/InputBox";
-import InfoBox from "../../dashboard/(components)/InfoBox";
-import { VERIFY_INSTRUCTIONS } from "../(data)";
-import { Button } from "@/components/Button";
 import { useState } from "react";
+import InfoBox from "../dashboard/InfoBox";
+import { Button } from "@/components/_ui/Button";
+import InputBox from "@/components/_ui/InputBox";
+import { VERIFY_INSTRUCTIONS } from "@/data/verifypage.data";
 
 interface VerifyFormSectionProps {
     onSubmit?: (data: { link?: string; templateId?: string; documentHash?: string }) => void;
@@ -41,7 +41,7 @@ const VerifyFormSection: React.FC<VerifyFormSectionProps> = ({ onSubmit }) => {
                         className="mt-2"
                     />
                     <div className="flex items-center justify-center mt-2">
-                        <span className="text-gray-500 text-sm">Can't find the link?</span>
+                        <span className="text-gray-500 text-sm">{'Can\'t find the link?'}</span>
                         <button
                             type="button"
                             className="ml-2 text-primary font-semibold hover:underline text-sm"

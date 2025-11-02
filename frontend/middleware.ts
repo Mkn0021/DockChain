@@ -11,7 +11,8 @@ export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     const accessToken = request.cookies.get('accessToken')?.value;
-    const isAuthenticated = !!accessToken;
+    const refreshToken = request.cookies.get('refreshToken')?.value;
+    const isAuthenticated = !!accessToken || !!refreshToken;
 
     if (pathname === '/login' && isAuthenticated) {
         return NextResponse.redirect(new URL('/dashboard', request.url));

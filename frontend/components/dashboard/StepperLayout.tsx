@@ -3,7 +3,7 @@
 import { createContext, useContext, useState, ReactNode, FC } from 'react';
 import { BsCheck } from "react-icons/bs";
 import { MdNavigateNext } from "react-icons/md";
-import { Button } from '@/components/Button';
+import { Button } from '@/components/_ui/Button';
 
 interface Step {
     title: string;
@@ -26,6 +26,8 @@ interface StepperContextType {
     setCanGoToNextStep: (value: boolean) => void;
     onNext: onNextType;
     setOnNext: (fn: () => onNextType) => void;
+    middleContent: ReactNode;
+    setMiddleContent: (content: ReactNode) => void;
 }
 
 const StepperContext = createContext<StepperContextType | undefined>(undefined);
@@ -39,16 +41,17 @@ export const useStepper = () => {
 export const StepperProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [canGoToNextStep, setCanGoToNextStep] = useState(true);
     const [onNext, setOnNext] = useState<onNextType>(null);
+    const [middleContent, setMiddleContent] = useState<ReactNode>(null);
 
     return (
-        <StepperContext.Provider value={{ canGoToNextStep, setCanGoToNextStep, onNext, setOnNext }}>
+        <StepperContext.Provider value={{ canGoToNextStep, setCanGoToNextStep, onNext, setOnNext, middleContent, setMiddleContent }}>
             {children}
         </StepperContext.Provider>
     );
 };
 
 const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children }) => {
-    const { canGoToNextStep, setCanGoToNextStep, onNext, setOnNext } = useStepper();
+    const { canGoToNextStep, setCanGoToNextStep, onNext, setOnNext, middleContent } = useStepper();
     const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = async () => {
@@ -109,6 +112,7 @@ const StepperLayout: FC<StepperProps> = ({ steps, current, setCurrent, children 
                 >
                     <MdNavigateNext size={24} className="rotate-180" />
                 </Button>
+                {middleContent}
                 <Button onClick={handleNext} disabled={isLoading || current === steps.length - 1 || !canGoToNextStep} className="flex items-center gap-2">
                     {isLoading ? "Processing.." : steps[current].nextButtonText} <MdNavigateNext size={24} />
                 </Button>

@@ -1,12 +1,14 @@
 'use client';
 
 import MenuItem from './MenuItem';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { authService } from '@/lib/services/auth.service';
 import { User } from '@/types/auth.type';
-import { getInitialsAndColor } from '../(utils)/profileUtils';
-import { PROFILE_MENU_ITEMS, LOGOUT_BUTTON } from '../(data)';
+import { getInitialsAndColor } from '@/lib/utils/profileUtils';
+import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
+import ApiClient from '@/lib/api-client';
+import { useAlert } from '../providers/AlertProvider';
+
 
 interface ProfileContainerProps {
     user: User;
@@ -21,16 +23,35 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const dropdownRef = useRef<HTMLDivElement>(null);
     const avatarRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const { showAlert } = useAlert();
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && avatarRef.current) {
+                const clickedOutsideDropdown = !dropdownRef.current.contains(event.target as Node);
+                const clickedOutsideAvatar = !avatarRef.current.contains(event.target as Node);
+
+                if (isOpen && clickedOutsideDropdown && clickedOutsideAvatar) {
+                    setIsOpen(false);
+                }
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isOpen]);
 
     const toggleDropdown = () => setIsOpen(!isOpen);
 
     const handleLogout = async () => {
         setIsOpen(false);
         try {
-            await authService.logout();
+            await ApiClient.post('/auth/logout');
             router.push('/');
         } catch (error) {
-            console.error('Logout failed:', error);
+            showAlert(`Logout failed: ${error}`, 'error')
             router.push('/login');
         }
     };

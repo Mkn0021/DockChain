@@ -1,8 +1,9 @@
-import { MenuItem } from '../(components)/MenuItem';
 import {
-    FaUser, FaCog, FaBell, FaSignOutAlt,
+    FaUser, FaCog, FaBell, FaSignOutAlt, FaCopy, FaDownload, FaCheck,
     FaHome, FaUpload, FaPaperPlane, FaCheckCircle, FaUserCog, FaQuestionCircle
 } from 'react-icons/fa';
+import { MenuItem } from "@/components/dashboard/MenuItem";
+
 
 export const PROFILE_MENU_ITEMS = (setIsOpen: (isOpen: boolean) => void): MenuItem[] => [
     {
@@ -36,7 +37,7 @@ export const LOGOUT_BUTTON = {
     label: 'Log Out'
 };
 
-export const ROUTES = {
+export const DASHBOARD_ROUTES = {
     dashboard: {
         path: '/dashboard',
         title: 'Dashboard',
@@ -69,17 +70,53 @@ export const ROUTES = {
     }
 } as const;
 
-export const SIDEBAR_ITEMS = (navigateToRoute: (route: string) => void): MenuItem[] => 
-    Object.entries(ROUTES).map(([id, route]) => ({
+export const SIDEBAR_ITEMS = (navigateToRoute: (route: string) => void): MenuItem[] =>
+    Object.entries(DASHBOARD_ROUTES).map(([id, route]) => ({
         id,
         label: route.title,
         icon: route.icon,
         action: () => navigateToRoute(route.path)
     }));
 
-export const PAGE_PATH = Object.values(ROUTES).reduce((acc, route) => {
+export const DASHBOARD_PAGE_PATH = Object.values(DASHBOARD_ROUTES).reduce((acc, route) => {
     acc[route.path] = { title: route.title };
     return acc;
 }, {} as Record<string, { title: string }>);
 
-export type PagePath = keyof typeof PAGE_PATH;
+
+// Data for Issue Document Steps
+export const DOCUMENT_ISSUING_INSTRACTIONS = [
+    "Review the rendered document before issuing.",
+    "To edit any value, go to the previous step and update the fields."
+];
+
+export const DOCUMENT_ACTION_BUTTONS = [
+    { key: 'copy', Icon: FaCopy, title: 'Copy URL' },
+    { key: 'download', Icon: FaDownload, title: 'Download' },
+    { key: 'finish', Icon: FaCheck, title: 'Finish' }
+];
+
+
+
+// Data for Upload Template Page
+export const UPLOAD_TEMPLATE = {
+    title: 'Upload SVG Template',
+    inputLabels: {
+        title: 'Template Title',
+        description: 'Description (Optional)',
+    },
+    alerts: {
+        noFile: 'Please upload an SVG file with Title before deploying.',
+        noFields: 'No required fields (e.g., {{field_name}}) found in SVG',
+        deploySuccess: 'Template deployed successfully to blockchain!',
+        deployError: (error: string) => `Deployment failed: ${error}`,
+    },
+    fileTypes: {
+        svg: 'image/svg+xml'
+    }
+};
+
+export const DEPLOYMENT_INSTRUCTIONS = [
+    "Use {{field name}} for required fields or variables",
+    "Once deployed, templates can be used to issue documents with dynamic data"
+];

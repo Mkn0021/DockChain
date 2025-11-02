@@ -13,7 +13,7 @@ export interface ErrorResponse {
 
 export type ApiResponse<T> = SuccessResponse<T> | ErrorResponse;
 
-export class ApiClient {
+export class _ApiClient {
     private client: AxiosInstance;
 
     constructor() {
@@ -77,7 +77,7 @@ export class ApiClient {
         return response.data;
     }
 
-    private handleError(error: any): ErrorResponse {
+    private handleError(error: unknown): ErrorResponse {
         if (typeof error === 'object' && error !== null && 'success' in error && 'error' in error) {
             return error as ErrorResponse;
         }
@@ -101,7 +101,7 @@ export class ApiClient {
 
     async post<T>(
         url: string,
-        data?: any,
+        data?: object,
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
@@ -114,7 +114,7 @@ export class ApiClient {
 
     async put<T>(
         url: string,
-        data?: any,
+        data?: object,
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
@@ -127,7 +127,7 @@ export class ApiClient {
 
     async patch<T>(
         url: string,
-        data?: any,
+        data?: object,
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
@@ -174,4 +174,5 @@ export class ApiClient {
     }
 }
 
-export default new ApiClient();
+const ApiClient = new _ApiClient();
+export default ApiClient;

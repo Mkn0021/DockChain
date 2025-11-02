@@ -172,11 +172,9 @@ export class DocumentService {
         const buffer = await QRCode.toBuffer(url);
 
         return {
-            data: { url },
-            file: {
-                buffer: Buffer.from(buffer),
-                fileName: `qr_${id}.png`,
-                contentType: 'image/png'
+            data: {
+                url,
+                qrCode: buffer.toString('base64') // Convert to base64 in JSON
             },
             message: "QR Code generated successfully"
         };
@@ -242,7 +240,7 @@ export class DocumentService {
     static async generatePdf(data: GeneratePdfInput) {
         const { id, renderedDocument } = data;
         // Generate QR code
-        const qrUrl = (await this.generateQrCode(id)).data.url;
+        const qrBase64 = (await this.generateQrCode(id)).data.qrCode;
 
         // Create HTML with both pages
         const html = `
@@ -279,7 +277,7 @@ export class DocumentService {
                 <div class="page qr-container">
                     <div>
                         <h2 class="qr-title">Scan to verify this document</h2>
-                        <img src="${qrUrl}" class="qr-code" />
+                        <img src="data:image/png;base64,${qrBase64}" class="qr-code" />
                     </div>
                 </div>
             </body>

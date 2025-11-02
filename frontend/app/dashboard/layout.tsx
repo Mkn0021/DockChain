@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname, useRouter } from 'next/navigation';
-import { authService } from '@/lib/services/auth.service';
 import type { User } from '@/types/auth.type';
-import ProfileContainer from "./(components)/ProfileContainer";
-import { Sidebar } from "./(components)/Sidebar";
-import { HamburgerMenu } from "./(components)/HamburgerMenu";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import { PAGE_PATH, type PagePath } from './(data)';
+import { usePathname, useRouter } from 'next/navigation';
+import { DashboardPagePath } from '@/types/document.type';
+import { DASHBOARD_PAGE_PATH } from '@/data/dashboard.data';
+import { Sidebar } from "../../components/dashboard/Sidebar";
+import LoadingSpinner from "@/components/_ui/LoadingSpinner";
+import { HamburgerMenu } from "../../components/dashboard/HamburgerMenu";
+import ProfileContainer from "../../components/dashboard/ProfileContainer";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -19,12 +19,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     useEffect(() => {
         const fetchUser = () => {
-            if (!authService.isAuthenticated()) {
-                router.push('/login');
-                return;
-            }
+            const userData = typeof window === 'undefined' ? null
+                : JSON.parse(
+                    localStorage.getItem('user') ||
+                    'null'
+                ) as User | null;
 
-            const userData = authService.getUser();
             if (userData) {
                 setUser(userData);
             } else {
@@ -62,7 +62,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             sidebarOpen={sidebarOpen}
                             setSidebarOpen={setSidebarOpen}
                         />
-                        <h2 className='m-0 p-0'>{PAGE_PATH[pathname as PagePath]?.title || 'Dashboard'}</h2>
+                        <h2 className='m-0 p-0'>{DASHBOARD_PAGE_PATH[pathname as DashboardPagePath]?.title || 'Dashboard'}</h2>
                     </div>
                     <ProfileContainer user={user} />
                 </div>
