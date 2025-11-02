@@ -1,7 +1,7 @@
 "use client";
 
 import { ALERT_STYLES, BASE_STYLES } from '@/data/provider.data';
-import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
 
 export type AlertType = 'success' | 'error' | 'info';
 
@@ -34,7 +34,13 @@ const AlertItem: React.FC<{
     const timerRef = useRef<NodeJS.Timeout | null>(null);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
-    React.useEffect(() => {
+    const handleDismiss = useCallback(() => {
+        setIsVisible(false);
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        setTimeout(() => onDismiss(alert.id), 300);
+    }, [alert.id, onDismiss]);
+
+    useEffect(() => {
         const enterTimer = setTimeout(() => setIsVisible(true), 10);
 
         timerRef.current = setTimeout(() => {
@@ -50,16 +56,10 @@ const AlertItem: React.FC<{
             if (timerRef.current) clearTimeout(timerRef.current);
             if (intervalRef.current) clearInterval(intervalRef.current);
         };
-    }, []);
-
-    const handleDismiss = useCallback(() => {
-        setIsVisible(false);
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        setTimeout(() => onDismiss(alert.id), 300);
-    }, [alert.id, onDismiss]);
+    }, [handleDismiss]);
 
     const styles = ALERT_STYLES[alert.type];
-    
+
     const containerClasses = `
     ${BASE_STYLES.container}
     ${styles.container}

@@ -81,6 +81,7 @@ const AuthForm: React.FC = () => {
                 setSuccess('');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
+                showAlert(`Registration failed: ${err}`, 'error');
             } finally {
                 setLoading(false);
             }
@@ -111,6 +112,7 @@ const AuthForm: React.FC = () => {
                 setSuccess('');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
+                showAlert(`OTP verification failed: ${err}`, 'error');
             } finally {
                 setLoading(false);
             }
@@ -143,6 +145,7 @@ const AuthForm: React.FC = () => {
                 router.push('/dashboard');
             } catch (err) {
                 setError('An unexpected error occurred. Please try again.');
+                showAlert(`Login failed: ${err}`, 'error');
             } finally {
                 setLoading(false);
             }
@@ -173,6 +176,7 @@ const AuthForm: React.FC = () => {
             setSuccess('');
         } catch (err) {
             setError('An unexpected error occurred. Please try again.');
+            showAlert(`Failed to send reset OTP: ${err}`, 'error');
         } finally {
             setLoading(false);
         }
