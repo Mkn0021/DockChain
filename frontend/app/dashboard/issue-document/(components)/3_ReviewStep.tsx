@@ -55,7 +55,7 @@ export default function ReviewStep({
         }
 
         setOnNext(() => handleDocumentIssue)
-    }, [setOnNext, recipient, onDocumentIssued, formValues, selectedTemplate]);
+    }, [setOnNext, recipient, onDocumentIssued, formValues, selectedTemplate, showAlert]);
 
     useEffect(() => {
         setCanGoToNextStep(!!recipient.trim() && !!renderedDocument);

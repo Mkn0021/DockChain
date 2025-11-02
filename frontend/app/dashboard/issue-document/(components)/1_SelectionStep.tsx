@@ -73,7 +73,7 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
             }
         }
         fetchTemplates();
-    }, []);
+    }, [showAlert]);
 
     const templates = allTemplates.slice((currentPage - 1) * limit, currentPage * limit);
 
