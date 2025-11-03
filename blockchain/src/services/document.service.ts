@@ -59,10 +59,19 @@ export class BlockchainDocumentService {
                 exists: result[0],
                 isValid: result[1],
                 issuer: result[2],
-                timestamp: result[3]
+                timestamp: result[3].toString()
             };
         } catch (error) {
-            throw new Error(`Document verification failed: ${(error as Error).message}`);
+            const err = error as any;
+            const message = err?.message ?? String(err);
+
+            return {
+                exists: false,
+                isValid: false,
+                issuer: ethers.ZeroAddress,
+                timestamp: '0',
+                message: `Document verification error: ${message}`
+            };
         }
     }
 
@@ -74,7 +83,7 @@ export class BlockchainDocumentService {
             const baseData = {
                 hash: result[0],
                 issuer: result[1],
-                timestamp: result[2],
+                timestamp: result[2].toString(),
                 revoked: result[3]
             };
 
@@ -142,17 +151,18 @@ export class BlockchainDocumentService {
             return {
                 templateType: result[0],
                 contractOwner: result[1],
-                totalDocuments: result[2]
+                totalDocuments: result[2].toString()
             };
         } catch (error) {
             throw new Error(`Failed to get template info: ${(error as Error).message}`);
         }
     }
 
-    async getDocumentCount(): Promise<bigint> {
+    async getDocumentCount(): Promise<string> {
         try {
             const contract = await this.initializeContract(true);
-            return await contract.documentCount();
+            const count = await contract.documentCount();
+            return count.toString();
         } catch (error) {
             throw new Error(`Failed to get document count: ${(error as Error).message}`);
         }
@@ -188,7 +198,7 @@ export class BlockchainDocumentService {
                     exists: false,
                     isValid: false,
                     issuer: ethers.ZeroAddress,
-                    timestamp: BigInt(0)
+                    timestamp: "0"
                 });
             }
         }

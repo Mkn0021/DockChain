@@ -1,8 +1,10 @@
 "use client";
 
+import { Suspense } from 'react';
 import dynamic from "next/dynamic";
 import { Button } from "@/components/_ui/Button";
 import { Navbar } from "@/components/_ui/Navbar";
+import LoadingSpinner from "@/components/_ui/LoadingSpinner";
 import blockchainAnimation from "@/public/assets/blockchain.json";
 import VerifyFormSection from "@/components/verifypage/VerifyFormSection";
 
@@ -24,7 +26,9 @@ export default function VerifyPage() {
                 <div className="w-full lg:w-1/2 flex flex-col items-center">
                     <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-lg p-8 flex flex-col items-center">
                         <h3>Verify Document</h3>
-                        <VerifyFormSection />
+                        <Suspense fallback={<LoadingSpinner />}>
+                            <VerifyFormSection />
+                        </Suspense>
                     </div>
                 </div>
                 {/* Right: Lottie Animation */}

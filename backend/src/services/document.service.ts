@@ -2,6 +2,8 @@ import QRCode from "qrcode";
 import { env } from "@config/env";
 import puppeteer from "puppeteer";
 import APIError from "@api/errors";
+import { User } from "@type/user.type";
+import UserModel from "@model/User.model";
 import mongoose, { PipelineStage } from "mongoose";
 import { BlockchainDocumentService } from "blockchain";
 import DocumentModel, { IDocument } from "@model/Document.model";
@@ -141,34 +143,68 @@ export class DocumentService {
     }
 
     static async verify(data: verifyDocumentInput) {
-        const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
-        if (!template) throw APIError.notFound("Template not found");
+        try {
+            const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
+            if (!template) throw APIError.notFound("Template not found");
 
-        const blockchain = await this.getBlockchain(template._id.toString());
-        const varifydata = await blockchain.verifyDocument(data.documentHash);
+            const blockchain = await this.getBlockchain(data.templateId);
+            const varifydata = await blockchain.verifyDocument(data.documentHash);
 
-        return {
-            data: varifydata,
-            message: "Document verification completed successfully"
-        };
+            const issuer: User | null = await UserModel.findById(template.createdBy).lean();
+            if (!issuer) throw APIError.notFound("Issuer not found");
+
+            return {
+                data: {
+                    exists: varifydata.exists,
+                    isValid: varifydata.isValid,
+                    issuer: issuer.email,
+                    issuedAt: new Date(parseInt(varifydata.timestamp) * 1000).toLocaleDateString()
+                },
+                message: "Document verification completed successfully"
+            };
+
+        } catch (error) {
+            return {
+                data: {
+                    exists: false,
+                    isValid: false,
+                    issuer: "",
+                    issuedAt: "N/A"
+                },
+                message: `Verification failed: ${error instanceof Error ? error.message : String(error)}`
+            };
+        }
     }
 
     static async verifyBulk(data: verifyBulkDocumentInput) {
-        const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
-        if (!template) throw APIError.notFound("Template not found");
+        try {
+            const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
+            if (!template) throw APIError.notFound("Template not found");
 
-        const blockchain = await this.getBlockchain(template._id.toString());
-        const results = await blockchain.verifyDocumentsBatch(data.documentHashes);
+            const blockchain = await this.getBlockchain(template._id.toString());
+            const results = await blockchain.verifyDocumentsBatch(data.documentHashes);
 
-        return {
-            data: results,
-            message: "Bulk document verification completed successfully"
-        };
+            const issuer: User | null = await UserModel.findById(template.createdBy).lean();
+            if (!issuer) throw APIError.notFound("Issuer not found");
+
+            return {
+                data: {
+                    ...results,
+                    issuer: issuer.email
+                },
+                message: "Bulk document verification completed successfully"
+            };
+        } catch (error) {
+            return {
+                data: [],
+                message: `Bulk verification failed: ${error instanceof Error ? error.message : String(error)}`
+            };
+        }
     }
 
     static async generateQrCode(id: string) {
         const document = await this.getDocumentOrThrow(id);
-        const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+        const url = `${env.ALLOWED_ORIGINS?.split(",")[0]}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
         const buffer = await QRCode.toBuffer(url);
 
         return {

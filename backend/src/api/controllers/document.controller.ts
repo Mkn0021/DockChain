@@ -5,8 +5,8 @@ import { validateRequest } from "@middlewares/validation";
 import { DocumentService } from "@services/document.service";
 import validateAuth from "@middlewares/auth";
 import {
-    issueDocumentSchema, documentIdSchema, verifyDocumentSchema, documentQuerySchema,
-    generatePdfSchema, verifyBulkDocumentSchema, issueBulkDocumentSchema
+    issueDocumentSchema, documentIdSchema, documentQuerySchema, generatePdfSchema,
+    issueBulkDocumentSchema, verifyDocumentSchema, verifyBulkDocumentSchema
 } from "@type/document.type";
 
 export default class DocumentController {
