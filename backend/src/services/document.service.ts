@@ -147,10 +147,10 @@ export class DocumentService {
             const template: ITemplate | null = await TemplateModel.findById(data.templateId).lean();
             if (!template) throw APIError.notFound("Template not found");
 
-            const blockchain = await this.getBlockchain(template._id.toString());
+            const blockchain = await this.getBlockchain(data.templateId);
             const varifydata = await blockchain.verifyDocument(data.documentHash);
 
-            const issuer: User | null = await UserModel.findById(varifydata.issuer).lean();
+            const issuer: User | null = await UserModel.findById(template.createdBy).lean();
             if (!issuer) throw APIError.notFound("Issuer not found");
 
             return {

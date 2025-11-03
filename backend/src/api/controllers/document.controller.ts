@@ -5,8 +5,8 @@ import { validateRequest } from "@middlewares/validation";
 import { DocumentService } from "@services/document.service";
 import validateAuth from "@middlewares/auth";
 import {
-    issueDocumentSchema, documentIdSchema, documentQuerySchema,
-    generatePdfSchema, issueBulkDocumentSchema
+    issueDocumentSchema, documentIdSchema, documentQuerySchema, generatePdfSchema,
+    issueBulkDocumentSchema, verifyDocumentSchema, verifyBulkDocumentSchema
 } from "@type/document.type";
 
 export default class DocumentController {
@@ -66,6 +66,7 @@ export default class DocumentController {
 
     // POST /api/documents/verify
     static verifyDocument = [
+        validateRequest(verifyDocumentSchema),
         asyncHandler(async (req: Request) => {
             const result = await DocumentService.verify(req.body);
             return { data: result.data, message: result.message };
@@ -74,6 +75,7 @@ export default class DocumentController {
 
     // POST /api/documents/verify/bulk
     static verifyBulkDocuments = [
+        validateRequest(verifyBulkDocumentSchema),
         asyncHandler(async (req: Request) => {
             const result = await DocumentService.verifyBulk(req.body);
             return { data: result.data, message: result.message };
