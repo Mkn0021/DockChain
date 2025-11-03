@@ -62,7 +62,16 @@ export class BlockchainDocumentService {
                 timestamp: result[3].toString()
             };
         } catch (error) {
-            throw new Error(`Document verification failed: ${(error as Error).message}`);
+            const err = error as any;
+            const message = err?.message ?? String(err);
+
+            return {
+                exists: false,
+                isValid: false,
+                issuer: ethers.ZeroAddress,
+                timestamp: '0',
+                message: `Document verification error: ${message}`
+            };
         }
     }
 

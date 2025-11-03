@@ -25,6 +25,7 @@ export interface DocumentVerificationResult {
     isValid: boolean;
     issuer: string;
     timestamp: string;
+    message?: string;
 }
 
 export interface TemplateInfo {
