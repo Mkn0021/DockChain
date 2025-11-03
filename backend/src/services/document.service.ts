@@ -204,7 +204,7 @@ export class DocumentService {
 
     static async generateQrCode(id: string) {
         const document = await this.getDocumentOrThrow(id);
-        const url = `${env.BASE_URL}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
+        const url = `${env.ALLOWED_ORIGINS?.split(",")[0]}/verify/?templateId=${document.templateId}&docHash=${document.blockchain.documentHash}`;
         const buffer = await QRCode.toBuffer(url);
 
         return {
