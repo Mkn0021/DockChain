@@ -24,21 +24,21 @@ export interface DocumentVerificationResult {
     exists: boolean;
     isValid: boolean;
     issuer: string;
-    timestamp: bigint;
+    timestamp: string;
 }
 
 export interface TemplateInfo {
     templateType: string;
     contractOwner: string;
-    totalDocuments: bigint;
+    totalDocuments: string;
 }
 
 export interface DocumentDataResult {
     hash: string;
     issuer: string;
-    timestamp: bigint;
+    timestamp: string;
     revoked: boolean;
-    [key: string]: string | Date | number | boolean | bigint;
+    [key: string]: string | Date | number | boolean | string;
 }
 
 export type IssueDocumentParams = z.infer<typeof IssueDocumentParamsSchema>;
