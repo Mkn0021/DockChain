@@ -13,14 +13,22 @@ import { ISSUE_DOCUMENT_STEPS } from "@/data/dashboard.data";
 
 export default function IssueDocumentPage() {
     const [currentStep, setCurrentStep] = useState(0);
-    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(null);
+    const [selectedTemplate, setSelectedTemplate] = useState<Template | null>(
+        null
+    );
     const [formValues, setFormValues] = useState<Record<string, string>>({});
-    const [renderedDocument, setRenderedDocument] = useState<string | null>(null);
+    const [renderedDocument, setRenderedDocument] = useState<string | null>(
+        null
+    );
     const [documentId, setDocumentId] = useState<string>("");
 
     return (
         <StepperProvider>
-            <StepperLayout steps={ISSUE_DOCUMENT_STEPS} current={currentStep} setCurrent={setCurrentStep}>
+            <StepperLayout
+                steps={ISSUE_DOCUMENT_STEPS}
+                current={currentStep}
+                setCurrent={setCurrentStep}
+            >
                 {currentStep === 0 && (
                     <SelectionStep
                         selectedTemplate={selectedTemplate}
@@ -31,7 +39,9 @@ export default function IssueDocumentPage() {
                     <FillFieldsStep
                         selectedTemplate={selectedTemplate!}
                         formValues={formValues}
-                        onInputChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        onInputChange={(
+                            e: React.ChangeEvent<HTMLInputElement>
+                        ) => {
                             setFormValues((prev) => ({
                                 ...prev,
                                 [e.target.name]: e.target.value,

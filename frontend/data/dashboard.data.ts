@@ -18,31 +18,31 @@ import { MenuItem } from "@/components/dashboard/MenuItem";
 export const PROFILE_MENU_ITEMS = (
     setIsOpen: (isOpen: boolean) => void
 ): MenuItem[] => [
-        {
-            icon: FaUser,
-            label: "View Profile",
-            action: () => {
-                console.log("View Profile clicked");
-                setIsOpen(false);
-            },
+    {
+        icon: FaUser,
+        label: "View Profile",
+        action: () => {
+            console.log("View Profile clicked");
+            setIsOpen(false);
         },
-        {
-            icon: FaCog,
-            label: "Account Settings",
-            action: () => {
-                console.log("Settings clicked");
-                setIsOpen(false);
-            },
+    },
+    {
+        icon: FaCog,
+        label: "Account Settings",
+        action: () => {
+            console.log("Settings clicked");
+            setIsOpen(false);
         },
-        {
-            icon: FaBell,
-            label: "Notifications",
-            action: () => {
-                console.log("Notifications clicked");
-                setIsOpen(false);
-            },
+    },
+    {
+        icon: FaBell,
+        label: "Notifications",
+        action: () => {
+            console.log("Notifications clicked");
+            setIsOpen(false);
         },
-    ];
+    },
+];
 
 export const LOGOUT_BUTTON = {
     icon: FaSignOutAlt,
