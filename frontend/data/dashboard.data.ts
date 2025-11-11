@@ -18,31 +18,31 @@ import { MenuItem } from "@/components/dashboard/MenuItem";
 export const PROFILE_MENU_ITEMS = (
     setIsOpen: (isOpen: boolean) => void
 ): MenuItem[] => [
-    {
-        icon: FaUser,
-        label: "View Profile",
-        action: () => {
-            console.log("View Profile clicked");
-            setIsOpen(false);
+        {
+            icon: FaUser,
+            label: "View Profile",
+            action: () => {
+                console.log("View Profile clicked");
+                setIsOpen(false);
+            },
         },
-    },
-    {
-        icon: FaCog,
-        label: "Account Settings",
-        action: () => {
-            console.log("Settings clicked");
-            setIsOpen(false);
+        {
+            icon: FaCog,
+            label: "Account Settings",
+            action: () => {
+                console.log("Settings clicked");
+                setIsOpen(false);
+            },
         },
-    },
-    {
-        icon: FaBell,
-        label: "Notifications",
-        action: () => {
-            console.log("Notifications clicked");
-            setIsOpen(false);
+        {
+            icon: FaBell,
+            label: "Notifications",
+            action: () => {
+                console.log("Notifications clicked");
+                setIsOpen(false);
+            },
         },
-    },
-];
+    ];
 
 export const LOGOUT_BUTTON = {
     icon: FaSignOutAlt,
@@ -133,4 +133,26 @@ export const UPLOAD_TEMPLATE = {
 export const DEPLOYMENT_INSTRUCTIONS = [
     "Use {{field name}} for required fields or variables",
     "Once deployed, templates can be used to issue documents with dynamic data",
+];
+
+export const ISSUE_DOCUMENT_STEPS = [
+    {
+        title: "Select Design",
+        description: "Choose a template design for your document.",
+        nextButtonText: "Continue to Fields",
+    },
+    {
+        title: "Fill Required Fields",
+        description: "Enter all necessary information for the document.",
+        nextButtonText: "Review Details",
+    },
+    {
+        title: "Review All Details",
+        description: "Check and confirm all entered details before issuing.",
+        nextButtonText: "Issue Document",
+    },
+    {
+        title: "QR Code & Finish",
+        description: "Document issued successfully! Here is your QR code.",
+    },
 ];
