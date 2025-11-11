@@ -1,6 +1,6 @@
 import { BsCheckCircle } from "react-icons/bs";
 import { FEATURE_LIST } from "@/data/loginpage.data";
-import AuthForm from "../../components/loginpage/AuthForm";
+import AuthForm from "@/components/loginpage/AuthForm";
 
 export default function LoginPage() {
     return (

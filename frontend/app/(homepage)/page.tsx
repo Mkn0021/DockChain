@@ -2,9 +2,9 @@ import Image from "next/image";
 import Logo from "@/components/_ui/Logo";
 import { Button } from "@/components/_ui/Button";
 import { Navbar } from "@/components/_ui/Navbar";
-import { Section } from "../../components/homepage/Section";
-import SocialIcon from "../../components/homepage/SocialIcon";
-import { FeatureCard } from "../../components/homepage/FeatureCard";
+import { Section } from "@/components/homepage/Section";
+import SocialIcon from "@/components/homepage/SocialIcon";
+import { FeatureCard } from "@/components/homepage/FeatureCard";
 import {
     HERO_IMAGES,
     TESTIMONIALS,

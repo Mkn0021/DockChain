@@ -5,10 +5,10 @@ import type { User } from "@/types/auth.type";
 import { usePathname, useRouter } from "next/navigation";
 import { DashboardPagePath } from "@/types/document.type";
 import { DASHBOARD_PAGE_PATH } from "@/data/dashboard.data";
-import { Sidebar } from "../../components/dashboard/Sidebar";
+import { Sidebar } from "@/components/dashboard/Sidebar";
 import LoadingSpinner from "@/components/_ui/LoadingSpinner";
-import { HamburgerMenu } from "../../components/dashboard/HamburgerMenu";
-import ProfileContainer from "../../components/dashboard/ProfileContainer";
+import { HamburgerMenu } from "@/components/dashboard/HamburgerMenu";
+import ProfileContainer from "@/components/dashboard/ProfileContainer";
 
 export default function DashboardLayout({
     children,

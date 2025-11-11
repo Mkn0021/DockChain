@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ApiClient from "@/lib/api-client";
 import { Button } from "@/components/_ui/Button";
 import InputBox from "@/components/_ui/InputBox";
-import InfoBox from "../../../components/dashboard/InfoBox";
+import InfoBox from "@/components/dashboard/InfoBox";
 import { IoCloudUploadOutline, IoClose } from "react-icons/io5";
 import { useAlert } from "@/components/providers/AlertProvider";
 import {
