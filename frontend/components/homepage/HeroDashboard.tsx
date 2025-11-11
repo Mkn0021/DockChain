@@ -5,15 +5,14 @@ import React from "react";
 import Logo from "../_ui/Logo";
 import { DASHBOARD_ROUTES } from "@/data/dashboard.data";
 import MenuItem from "../dashboard/MenuItem";
+import InputBox from "../_ui/InputBox";
+import { Button } from "../_ui/Button";
+import { MdNavigateNext } from "react-icons/md";
 import {
     IconCheck,
     IconBrandDatabricks,
     IconLoader2,
 } from "@tabler/icons-react";
-import StepperLayout from "../dashboard/StepperLayout";
-import InputBox from "../_ui/InputBox";
-import { Button } from "../_ui/Button";
-import { MdNavigateNext } from "react-icons/md";
 
 export default function HeroDashboard({ className }: { className?: string }) {
     return (
@@ -33,7 +32,7 @@ export default function HeroDashboard({ className }: { className?: string }) {
 function DashboardSidebar() {
     return (
         <div className="align-center flex h-full w-60 flex-col justify-start gap-2 rounded-[30px] rounded-br-none rounded-tr-none border-r border-neutral-300 bg-neutral-200/50 p-4">
-            <Logo className="mx-auto size-20" />
+            <Logo className="mx-auto mb-8 size-20" />
             {Object.values(DASHBOARD_ROUTES).map(({ title, icon }) => (
                 <MenuItem
                     key={title}

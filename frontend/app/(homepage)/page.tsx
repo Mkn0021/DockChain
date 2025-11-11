@@ -5,11 +5,10 @@ import { Navbar } from "@/components/_ui/Navbar";
 import { Section } from "@/components/homepage/Section";
 import SocialIcon from "@/components/homepage/SocialIcon";
 import { FeatureCard } from "@/components/homepage/FeatureCard";
-import {
-    HERO_IMAGES,
-    TESTIMONIALS,
-    WHY_BLOCKCHAIN,
-} from "@/data/homepage.data";
+import KeyFeatures from "@/components/homepage/KeyFeatures";
+import HeroDashboard from "@/components/homepage/HeroDashboard";
+import VerificationMobile from "@/components/homepage/VerificationMobile";
+import { TESTIMONIALS, WHY_BLOCKCHAIN } from "@/data/homepage.data";
 
 export default function HomePage() {
     return (
@@ -56,18 +55,9 @@ export default function HomePage() {
                     </div>
                 </div>
                 <div className="relative w-full max-w-6xl">
-                    {HERO_IMAGES.map((image, index) => (
-                        <div key={index} className={image.position}>
-                            <Image
-                                src={image.src}
-                                loading="eager"
-                                width={image.width}
-                                height={image.height}
-                                className={image.className}
-                                alt={image.alt}
-                            />
-                        </div>
-                    ))}
+                    <KeyFeatures className="hidden lg:flex" />
+                    <VerificationMobile className="hidden lg:flex" />
+                    <HeroDashboard />
                 </div>
             </Section>
 
