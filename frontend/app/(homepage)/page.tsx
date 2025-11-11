@@ -55,9 +55,9 @@ export default function HomePage() {
                     </div>
                 </div>
                 <div className="relative w-full max-w-6xl">
-                    <KeyFeatures className="hidden lg:flex" />
-                    <VerificationMobile className="hidden lg:flex" />
-                    <HeroDashboard />
+                    <KeyFeatures className="hidden transform md:flex md:origin-bottom-left md:scale-75 lg:scale-100" />
+                    <VerificationMobile className="origin-top-right scale-100 transform md:scale-75 lg:scale-100" />
+                    <HeroDashboard className="hidden md:flex" />
                 </div>
             </Section>
 

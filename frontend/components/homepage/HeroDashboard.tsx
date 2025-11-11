@@ -18,7 +18,7 @@ export default function HeroDashboard({ className }: { className?: string }) {
     return (
         <div
             className={cn(
-                "align-center m-auto flex w-[95%] justify-center bg-neutral-50",
+                "align-center m-auto flex w-[85%] justify-center bg-neutral-50 lg:w-[95%]",
                 "border-2 border-neutral-200 shadow-[0_0_0_12px_#fafafa]",
                 className
             )}
@@ -31,8 +31,14 @@ export default function HeroDashboard({ className }: { className?: string }) {
 
 function DashboardSidebar() {
     return (
-        <div className="align-center flex h-full w-60 flex-col justify-start gap-2 rounded-[30px] rounded-br-none rounded-tr-none border-r border-neutral-300 bg-neutral-200/50 p-4">
-            <Logo className="mx-auto mb-8 size-20" />
+        <div
+            className={cn(
+                "min-h-full w-60 flex-col justify-start gap-2 bg-neutral-200/50 p-4",
+                "rounded-[30px] rounded-br-none rounded-tr-none border-r border-neutral-300",
+                "hidden lg:flex"
+            )}
+        >
+            <Logo className="mx-auto mb-12 size-20" />
             {Object.values(DASHBOARD_ROUTES).map(({ title, icon }) => (
                 <MenuItem
                     key={title}
@@ -53,11 +59,11 @@ function DashboardContent() {
         <div className="flex flex-1 flex-col p-8">
             <div className="flex items-center gap-2">
                 <IconBrandDatabricks className="size-8 text-neutral-500" />
-                <h4 className="m-0 text-3xl text-neutral-800">
+                <h4 className="m-0 text-nowrap text-3xl text-neutral-800">
                     Issued Document
                 </h4>
             </div>
-            <div className="flex w-full items-center justify-between py-12">
+            <div className="flex w-full items-center justify-between py-4 lg:py-12">
                 <Circle />
                 <Line />
                 <Circle />
@@ -70,20 +76,18 @@ function DashboardContent() {
             </div>
             <div className="flex h-full items-center justify-center gap-8">
                 <DocumentInfoCard />
-                <div className="flex w-60 flex-col gap-6">
+                <div className="hidden flex-col gap-6 lg:flex">
                     <InputBox
                         label="Recipent Email"
-                        placeholder="Enter recipent email Address"
-                        className=""
+                        placeholder="Enter recipent email address"
                     />
                     <InputBox
                         label="Message"
                         placeholder="Enter custom massage for recipent"
-                        rows={3}
                     />
                 </div>
             </div>
-            <div className="l mt-4 flex items-center justify-center">
+            <div className="mt-6 flex items-center justify-center">
                 <Button
                     variant="primary"
                     className="flex w-72 items-center justify-center gap-2"
@@ -98,7 +102,7 @@ function DashboardContent() {
 
 function DocumentInfoCard() {
     return (
-        <div className="h-full max-w-md rounded-xl border border-neutral-300 bg-neutral-200 p-6">
+        <div className="h-full w-full rounded-xl border border-neutral-300 bg-neutral-200 p-6 lg:w-auto">
             <h3 className="m-0 mb-4 text-xl text-neutral-800">
                 Document Information
             </h3>

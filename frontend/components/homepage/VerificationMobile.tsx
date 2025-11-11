@@ -14,9 +14,9 @@ export default function VerificationMobile({
     return (
         <div
             className={cn(
-                "flex max-w-72 flex-col items-center justify-center rounded-2xl bg-neutral-950 px-4 py-6",
-                "border-2 border-neutral-400 p-4 shadow-[0_0_0_4px_#0f0f0f]",
-                "absolute right-0 top-20",
+                "flex flex-col items-center justify-center rounded-2xl bg-neutral-950 px-4 py-6",
+                "border-2 border-neutral-400 shadow-[0_0_0_4px_#0f0f0f]",
+                "md:absolute md:right-0 md:top-20 md:w-auto md:max-w-72",
                 className
             )}
         >
@@ -43,7 +43,7 @@ function VerificationHeader() {
 
 function GithubEidCard() {
     return (
-        <div className="my-4 flex w-full flex-col gap-16 rounded-xl bg-gradient-to-tl from-gray-800 via-gray-700 to-gray-600 p-4">
+        <div className="my-4 flex w-full flex-col gap-24 md:gap-16 rounded-xl bg-gradient-to-tl from-gray-800 via-gray-700 to-gray-600 p-4">
             <h4 className="m-0 text-lg text-neutral-200">Github eID</h4>
             <div className="flex items-center justify-between">
                 <div className="flex items-center">
