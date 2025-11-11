@@ -1,9 +1,16 @@
 "use client";
 
-import { ALERT_STYLES, BASE_STYLES } from '@/data/provider.data';
-import React, { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { ALERT_STYLES, BASE_STYLES } from "@/data/provider.data";
+import React, {
+    createContext,
+    useContext,
+    useState,
+    useCallback,
+    useRef,
+    useEffect,
+} from "react";
 
-export type AlertType = 'success' | 'error' | 'info';
+export type AlertType = "success" | "error" | "info";
 
 interface Alert {
     id: string;
@@ -20,7 +27,7 @@ const AlertContext = createContext<AlertContextProps | undefined>(undefined);
 export const useAlert = () => {
     const context = useContext(AlertContext);
     if (!context) {
-        throw new Error('useAlert must be used within AlertProvider');
+        throw new Error("useAlert must be used within AlertProvider");
     }
     return context;
 };
@@ -48,7 +55,7 @@ const AlertItem: React.FC<{
         }, 5000);
 
         intervalRef.current = setInterval(() => {
-            setProgress(prev => Math.max(0, prev - 2));
+            setProgress((prev) => Math.max(0, prev - 2));
         }, 100);
 
         return () => {
@@ -63,49 +70,61 @@ const AlertItem: React.FC<{
     const containerClasses = `
     ${BASE_STYLES.container}
     ${styles.container}
-    ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
+    ${isVisible ? "translate-x-0 opacity-100" : "translate-x-full opacity-0"}
   `;
 
     return (
         <div className={containerClasses} role="alert" aria-live="polite">
-            <styles.iconComponent className={`${BASE_STYLES.icon} ${styles.icon}`} />
-            <span className="whitespace-pre-line leading-tight flex-1 text-text-primary">{alert.message}</span>
+            <styles.iconComponent
+                className={`${BASE_STYLES.icon} ${styles.icon}`}
+            />
+            <span className="flex-1 whitespace-pre-line leading-tight text-text-primary">
+                {alert.message}
+            </span>
             <button
                 onClick={handleDismiss}
-                className="ml-2 text-2xl font-semibold opacity-60 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current rounded transition-opacity flex-shrink-0"
+                className="ml-2 flex-shrink-0 rounded text-2xl font-semibold opacity-60 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-current"
                 aria-label="Dismiss alert"
             >
                 ×
             </button>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-200 rounded-b-lg overflow-hidden">
-                <div className={`h-full ${styles.progressBg} transition-all duration-100`} style={{ width: `${progress}%` }}></div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 overflow-hidden rounded-b-lg bg-gray-200">
+                <div
+                    className={`h-full ${styles.progressBg} transition-all duration-100`}
+                    style={{ width: `${progress}%` }}
+                ></div>
             </div>
         </div>
     );
 };
 
-export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({
+    children,
+}) => {
     const [alerts, setAlerts] = useState<Alert[]>([]);
 
-    const showAlert = useCallback((message: string, type: AlertType = 'info') => {
-        const id = Date.now().toString();
-        const newAlert: Alert = { id, message, type };
-        setAlerts(prev => [...prev, newAlert]);
-    }, []);
+    const showAlert = useCallback(
+        (message: string, type: AlertType = "info") => {
+            const id = Date.now().toString();
+            const newAlert: Alert = { id, message, type };
+            setAlerts((prev) => [...prev, newAlert]);
+        },
+        []
+    );
 
     const dismissAlert = useCallback((id: string) => {
-        setAlerts(prev => prev.filter(alert => alert.id !== id));
+        setAlerts((prev) => prev.filter((alert) => alert.id !== id));
     }, []);
 
     const contextValue: AlertContextProps = {
-        showAlert
+        showAlert,
     };
 
     return (
         <AlertContext.Provider value={contextValue}>
             {children}
-            <div className="fixed top-8 right-4 z-50 space-y-3 pointer-events-none">
-                {alerts.map(alert => (
+            <div className="pointer-events-none fixed right-4 top-8 z-50 space-y-3">
+                {alerts.map((alert) => (
                     <div key={alert.id} className="pointer-events-auto">
                         <AlertItem alert={alert} onDismiss={dismissAlert} />
                     </div>

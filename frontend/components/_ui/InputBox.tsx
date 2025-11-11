@@ -1,16 +1,17 @@
-import React from 'react';
+import React from "react";
 
-interface InputBoxProps extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
+interface InputBoxProps
+    extends React.InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement> {
     label?: string;
     className?: string;
-    variant?: 'input' | 'textarea';
+    variant?: "input" | "textarea";
     rows?: number;
 }
 
 const InputBox: React.FC<InputBoxProps> = ({
     label,
-    className = '',
-    variant = 'input',
+    className = "",
+    variant = "input",
     rows,
     ...props
 }) => {
@@ -20,21 +21,21 @@ const InputBox: React.FC<InputBoxProps> = ({
     return (
         <div className="w-full">
             {label && (
-                <label className="block mb-1 text-sm font-medium">
+                <label className="mb-1 block text-sm font-medium">
                     {label}
                 </label>
             )}
 
-            {variant === 'textarea' ? (
+            {variant === "textarea" ? (
                 <textarea
                     className={`${baseClasses} resize-vertical`}
                     rows={rows}
-                    {...props as React.TextareaHTMLAttributes<HTMLTextAreaElement>}
+                    {...(props as React.TextareaHTMLAttributes<HTMLTextAreaElement>)}
                 />
             ) : (
                 <input
                     className={baseClasses}
-                    {...props as React.InputHTMLAttributes<HTMLInputElement>}
+                    {...(props as React.InputHTMLAttributes<HTMLInputElement>)}
                 />
             )}
         </div>

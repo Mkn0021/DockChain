@@ -1,15 +1,17 @@
 "use client";
 
-import ApiClient from '@/lib/api-client';
-import { useState, useEffect } from 'react';
-import { MdNavigateNext } from 'react-icons/md';
-import { Button } from '@/components/_ui/Button';
-import { useAlert } from '@/components/providers/AlertProvider';
-import { useStepper } from '@/components/dashboard/StepperLayout';
-import { Template, TemplateSelectionStepProps } from '@/types/template.type';
+import ApiClient from "@/lib/api-client";
+import { useState, useEffect } from "react";
+import { MdNavigateNext } from "react-icons/md";
+import { Button } from "@/components/_ui/Button";
+import { useAlert } from "@/components/providers/AlertProvider";
+import { useStepper } from "@/components/dashboard/StepperLayout";
+import { Template, TemplateSelectionStepProps } from "@/types/template.type";
 
-
-export default function SelectionStep({ selectedTemplate, onSelectTemplate }: TemplateSelectionStepProps) {
+export default function SelectionStep({
+    selectedTemplate,
+    onSelectTemplate,
+}: TemplateSelectionStepProps) {
     const [allTemplates, setAllTemplates] = useState<Template[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -24,11 +26,18 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
     useEffect(() => {
         const startPage = Math.max(1, currentPage - 1);
         const endPage = Math.min(totalPages, currentPage + 1);
-        const pageButtons = Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map(page => (
+        const pageButtons = Array.from(
+            { length: endPage - startPage + 1 },
+            (_, i) => startPage + i
+        ).map((page) => (
             <button
                 key={page}
                 onClick={() => setCurrentPage(page)}
-                className={`px-3 py-1 text-sm rounded ${page === currentPage ? 'bg-primary text-white' : 'text-text-secondary hover:bg-background-muted'}`}
+                className={`rounded px-3 py-1 text-sm ${
+                    page === currentPage
+                        ? "bg-primary text-white"
+                        : "text-text-secondary hover:bg-background-muted"
+                }`}
             >
                 {page}
             </button>
@@ -39,15 +48,17 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
                 <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
-                    className="p-2 text-text-secondary hover:bg-background-muted rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded p-2 text-text-secondary hover:bg-background-muted disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <MdNavigateNext size={36} className="rotate-180" />
                 </button>
                 {pageButtons}
                 <button
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                    onClick={() =>
+                        setCurrentPage(Math.min(totalPages, currentPage + 1))
+                    }
                     disabled={currentPage === totalPages}
-                    className="p-2 text-text-secondary hover:bg-background-muted rounded disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="rounded p-2 text-text-secondary hover:bg-background-muted disabled:cursor-not-allowed disabled:opacity-50"
                 >
                     <MdNavigateNext size={36} />
                 </button>
@@ -60,43 +71,72 @@ export default function SelectionStep({ selectedTemplate, onSelectTemplate }: Te
     useEffect(() => {
         async function fetchTemplates() {
             try {
-                const response = await ApiClient.get('/templates/');
+                const response = await ApiClient.get("/templates/");
 
                 if (!response.success) {
-                    throw new Error(response.error || 'Failed to fetch templates');
+                    throw new Error(
+                        response.error || "Failed to fetch templates"
+                    );
                 }
-                const data = response.data as { templates: Template[], total: number, pages: number };
+                const data = response.data as {
+                    templates: Template[];
+                    total: number;
+                    pages: number;
+                };
                 setAllTemplates(data.templates);
                 setTotalPages(Math.ceil(data.total / limit));
             } catch (error) {
-                showAlert(`Error fetching templates: ${error}`, 'error');
+                showAlert(`Error fetching templates: ${error}`, "error");
             }
         }
         fetchTemplates();
     }, [showAlert]);
 
-    const templates = allTemplates.slice((currentPage - 1) * limit, currentPage * limit);
+    const templates = allTemplates.slice(
+        (currentPage - 1) * limit,
+        currentPage * limit
+    );
 
     return (
-        <div className="w-full h-auto lg:h-72 rounded-none overflow-x-auto overflow-y-auto lg:overflow-y-hidden">
-            <div className="h-full flex flex-col lg:flex-row gap-6 items-center py-2">
+        <div className="h-auto w-full overflow-x-auto overflow-y-auto rounded-none lg:h-72 lg:overflow-y-hidden">
+            <div className="flex h-full flex-col items-center gap-6 py-2 lg:flex-row">
                 {templates.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center w-full h-full text-center">
-                        <h4 className='m-0 p-0'>No templates available.</h4>
+                    <div className="flex h-full w-full flex-col items-center justify-center text-center">
+                        <h4 className="m-0 p-0">No templates available.</h4>
                         <p>Please upload a template to get started.</p>
                     </div>
                 ) : (
                     templates.map((template) => (
-                        <div key={template.id} className={`w-full lg:w-96 h-auto lg:h-full flex flex-col bg-background-muted p-2 border border-border rounded-lg shadow-md group relative overflow-hidden transition-all duration-300 ${selectedTemplate?.id === template.id ? 'border-2 border-primary' : ''}`}>
-                            <div className="group-hover:hidden w-full flex items-center justify-center overflow-hidden rounded-lg transition-all duration-100 group-hover:opacity-0 group-hover:pointer-events-none [&_svg]:rounded-lg [&_svg]:max-w-full [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:h-auto"
-                                dangerouslySetInnerHTML={{ __html: template.svgTemplate }}
+                        <div
+                            key={template.id}
+                            className={`group relative flex h-auto w-full flex-col overflow-hidden rounded-lg border border-border bg-background-muted p-2 shadow-md transition-all duration-300 lg:h-full lg:w-96 ${
+                                selectedTemplate?.id === template.id
+                                    ? "border-2 border-primary"
+                                    : ""
+                            }`}
+                        >
+                            <div
+                                className="flex w-full items-center justify-center overflow-hidden rounded-lg transition-all duration-100 group-hover:pointer-events-none group-hover:hidden group-hover:opacity-0 [&_svg]:h-auto [&_svg]:max-h-full [&_svg]:w-auto [&_svg]:max-w-full [&_svg]:rounded-lg"
+                                dangerouslySetInnerHTML={{
+                                    __html: template.svgTemplate,
+                                }}
                             />
-                            <div className="hidden group-hover:flex flex-col items-center justify-center h-full w-full text-center gap-4">
+                            <div className="hidden h-full w-full flex-col items-center justify-center gap-4 text-center group-hover:flex">
                                 <div>
-                                    <h4 className="m-0 p-0"> {template.name}</h4>
-                                    <p>{template.description || 'No description provided.'}</p>
+                                    <h4 className="m-0 p-0">
+                                        {" "}
+                                        {template.name}
+                                    </h4>
+                                    <p>
+                                        {template.description ||
+                                            "No description provided."}
+                                    </p>
                                 </div>
-                                <Button onClick={() => onSelectTemplate(template)}>Use This</Button>
+                                <Button
+                                    onClick={() => onSelectTemplate(template)}
+                                >
+                                    Use This
+                                </Button>
                             </div>
                         </div>
                     ))

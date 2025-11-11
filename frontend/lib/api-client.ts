@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
 export interface SuccessResponse<T> {
     success: true;
@@ -18,10 +18,10 @@ export class _ApiClient {
 
     constructor() {
         this.client = axios.create({
-            baseURL: '/api',
+            baseURL: "/api",
             timeout: 10000,
             headers: {
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
             },
             withCredentials: true,
         });
@@ -48,15 +48,18 @@ export class _ApiClient {
                     originalRequest._retry = true;
 
                     try {
-                        const refreshResponse = await this.client.post('/auth/refresh', {});
+                        const refreshResponse = await this.client.post(
+                            "/auth/refresh",
+                            {}
+                        );
 
                         if (refreshResponse.data.success) {
                             return this.client(originalRequest);
                         }
                     } catch (refreshError) {
-                        if (typeof window !== 'undefined') {
-                            localStorage.removeItem('user');
-                            window.location.href = '/login';
+                        if (typeof window !== "undefined") {
+                            localStorage.removeItem("user");
+                            window.location.href = "/login";
                         }
                         return Promise.reject(refreshError);
                     }
@@ -67,23 +70,30 @@ export class _ApiClient {
                 }
                 return Promise.reject({
                     success: false,
-                    error: error.message || 'An unexpected error occurred'
+                    error: error.message || "An unexpected error occurred",
                 });
             }
         );
     }
 
-    private handleResponse<T>(response: AxiosResponse<ApiResponse<T>>): ApiResponse<T> {
+    private handleResponse<T>(
+        response: AxiosResponse<ApiResponse<T>>
+    ): ApiResponse<T> {
         return response.data;
     }
 
     private handleError(error: unknown): ErrorResponse {
-        if (typeof error === 'object' && error !== null && 'success' in error && 'error' in error) {
+        if (
+            typeof error === "object" &&
+            error !== null &&
+            "success" in error &&
+            "error" in error
+        ) {
             return error as ErrorResponse;
         }
         return {
             success: false,
-            error: 'An unexpected error occurred'
+            error: "An unexpected error occurred",
         };
     }
 
@@ -105,7 +115,11 @@ export class _ApiClient {
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await this.client.post<ApiResponse<T>>(url, data, config);
+            const response = await this.client.post<ApiResponse<T>>(
+                url,
+                data,
+                config
+            );
             return this.handleResponse(response);
         } catch (error) {
             return this.handleError(error);
@@ -118,7 +132,11 @@ export class _ApiClient {
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await this.client.put<ApiResponse<T>>(url, data, config);
+            const response = await this.client.put<ApiResponse<T>>(
+                url,
+                data,
+                config
+            );
             return this.handleResponse(response);
         } catch (error) {
             return this.handleError(error);
@@ -131,7 +149,11 @@ export class _ApiClient {
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await this.client.patch<ApiResponse<T>>(url, data, config);
+            const response = await this.client.patch<ApiResponse<T>>(
+                url,
+                data,
+                config
+            );
             return this.handleResponse(response);
         } catch (error) {
             return this.handleError(error);
@@ -143,7 +165,10 @@ export class _ApiClient {
         config?: AxiosRequestConfig & { requireAuth?: boolean }
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await this.client.delete<ApiResponse<T>>(url, config);
+            const response = await this.client.delete<ApiResponse<T>>(
+                url,
+                config
+            );
             return this.handleResponse(response);
         } catch (error) {
             return this.handleError(error);
@@ -156,17 +181,23 @@ export class _ApiClient {
         onProgress?: (progress: number) => void
     ): Promise<ApiResponse<T>> {
         try {
-            const response = await this.client.post<ApiResponse<T>>(url, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-                onUploadProgress: (progressEvent) => {
-                    if (onProgress && progressEvent.total) {
-                        const progress = (progressEvent.loaded / progressEvent.total) * 100;
-                        onProgress(progress);
-                    }
-                },
-            });
+            const response = await this.client.post<ApiResponse<T>>(
+                url,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                    onUploadProgress: (progressEvent) => {
+                        if (onProgress && progressEvent.total) {
+                            const progress =
+                                (progressEvent.loaded / progressEvent.total) *
+                                100;
+                            onProgress(progress);
+                        }
+                    },
+                }
+            );
             return this.handleResponse(response);
         } catch (error) {
             return this.handleError(error);

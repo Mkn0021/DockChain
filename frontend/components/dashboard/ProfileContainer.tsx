@@ -1,14 +1,13 @@
-'use client';
+"use client";
 
-import MenuItem from './MenuItem';
-import React, { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { User } from '@/types/auth.type';
-import { getInitialsAndColor } from '@/utils/profile.util';
-import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
-import ApiClient from '@/lib/api-client';
-import { useAlert } from '../providers/AlertProvider';
-
+import MenuItem from "./MenuItem";
+import React, { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { User } from "@/types/auth.type";
+import { getInitialsAndColor } from "@/utils/profile.util";
+import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from "@/data/dashboard.data";
+import ApiClient from "@/lib/api-client";
+import { useAlert } from "../providers/AlertProvider";
 
 interface ProfileContainerProps {
     user: User;
@@ -17,7 +16,7 @@ interface ProfileContainerProps {
 
 const ProfileContainer: React.FC<ProfileContainerProps> = ({
     user,
-    className = ''
+    className = "",
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -28,8 +27,12 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && avatarRef.current) {
-                const clickedOutsideDropdown = !dropdownRef.current.contains(event.target as Node);
-                const clickedOutsideAvatar = !avatarRef.current.contains(event.target as Node);
+                const clickedOutsideDropdown = !dropdownRef.current.contains(
+                    event.target as Node
+                );
+                const clickedOutsideAvatar = !avatarRef.current.contains(
+                    event.target as Node
+                );
 
                 if (isOpen && clickedOutsideDropdown && clickedOutsideAvatar) {
                     setIsOpen(false);
@@ -37,9 +40,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
             }
         };
 
-        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener("mousedown", handleClickOutside);
         return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener("mousedown", handleClickOutside);
         };
     }, [isOpen]);
 
@@ -48,11 +51,11 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const handleLogout = async () => {
         setIsOpen(false);
         try {
-            await ApiClient.post('/auth/logout');
-            router.push('/');
+            await ApiClient.post("/auth/logout");
+            router.push("/");
         } catch (error) {
-            showAlert(`Logout failed: ${error}`, 'error')
-            router.push('/login');
+            showAlert(`Logout failed: ${error}`, "error");
+            router.push("/login");
         }
     };
 
@@ -65,13 +68,15 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                 <div
                     ref={avatarRef}
                     onClick={toggleDropdown}
-                    className={`w-10 h-10 rounded-full text-white flex items-center justify-center font-semibold text-sm hover:scale-110 cursor-pointer transition-all duration-200 shadow-soft ${getInitialsAndColor(user.name).colorClass}`}
+                    className={`flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-sm font-semibold text-white shadow-soft transition-all duration-200 hover:scale-110 ${
+                        getInitialsAndColor(user.name).colorClass
+                    }`}
                     aria-expanded={isOpen}
                     aria-haspopup="true"
                     role="button"
                     tabIndex={0}
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
+                        if (e.key === "Enter" || e.key === " ") {
                             e.preventDefault();
                             toggleDropdown();
                         }
@@ -85,19 +90,28 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
             {isOpen && (
                 <div
                     ref={dropdownRef}
-                    className="absolute right-0 top-full mt-4 w-80 bg-background dark:bg-background-dark shadow-large border border-border dark:border-border-dark z-50 animate-fade-in duration-200"
+                    className="absolute right-0 top-full z-50 mt-4 w-80 animate-fade-in border border-border bg-background shadow-large duration-200 dark:border-border-dark dark:bg-background-dark"
                 >
-                    <div className="w-72 mx-auto py-2">
+                    <div className="mx-auto w-72 py-2">
                         {/* User Info */}
-                        <div className="p-6 border-b border-border dark:border-border-dark rounded-none">
+                        <div className="rounded-none border-b border-border p-6 dark:border-border-dark">
                             <div className="flex items-center gap-4">
-                                <div className={`w-12 h-12 rounded-full text-white flex items-center justify-center font-medium text-lg ${getInitialsAndColor(user.name).colorClass}`}>
+                                <div
+                                    className={`flex h-12 w-12 items-center justify-center rounded-full text-lg font-medium text-white ${
+                                        getInitialsAndColor(user.name)
+                                            .colorClass
+                                    }`}
+                                >
                                     {getInitialsAndColor(user.name).initials}
                                 </div>
-                                <div className="flex flex-col self-start items-start">
-                                    <h4 className="m-0 whitespace-nowrap overflow-x-auto">{user.name}</h4>
+                                <div className="flex flex-col items-start self-start">
+                                    <h4 className="m-0 overflow-x-auto whitespace-nowrap">
+                                        {user.name}
+                                    </h4>
                                     {user.email && (
-                                        <p className="text-text-secondary dark:text-text-darkSecondary text-xs">{user.email}</p>
+                                        <p className="text-xs text-text-secondary dark:text-text-darkSecondary">
+                                            {user.email}
+                                        </p>
                                     )}
                                 </div>
                             </div>
@@ -115,13 +129,15 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
                         </div>
 
                         {/* Logout */}
-                        <div className="border-t border-border dark:border-border-dark py-2 rounded-none">
+                        <div className="rounded-none border-t border-border py-2 dark:border-border-dark">
                             <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center gap-4 px-6 py-4 text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 transition-all duration-150 border-none"
+                                className="flex w-full items-center gap-4 border-none px-6 py-4 text-left text-red-600 transition-all duration-150 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/10"
                             >
-                                <LOGOUT_BUTTON.icon className="w-5 h-5 flex-shrink-0" />
-                                <span className="font-medium">{LOGOUT_BUTTON.label}</span>
+                                <LOGOUT_BUTTON.icon className="h-5 w-5 flex-shrink-0" />
+                                <span className="font-medium">
+                                    {LOGOUT_BUTTON.label}
+                                </span>
                             </button>
                         </div>
                     </div>

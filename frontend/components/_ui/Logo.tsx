@@ -1,11 +1,11 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from "next/link";
+import React from "react";
 
 interface LogoProps {
     className?: string;
 }
 
-const Logo: React.FC<LogoProps> = ({ className = '' }) => {
+const Logo: React.FC<LogoProps> = ({ className = "" }) => {
     return (
         <Link href="/" className="m-0 p-0" aria-label="Home">
             <svg

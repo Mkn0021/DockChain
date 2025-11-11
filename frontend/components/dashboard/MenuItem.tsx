@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 export interface MenuItem {
     id?: string;
@@ -10,15 +10,15 @@ export interface MenuItem {
 interface MenuItemProps {
     item: MenuItem;
     isActive?: boolean;
-    variant?: 'sidebar' | 'dropdown';
+    variant?: "sidebar" | "dropdown";
     className?: string;
 }
 
 const MenuItem: React.FC<MenuItemProps> = ({
     item,
     isActive = false,
-    variant = 'sidebar',
-    className = ''
+    variant = "sidebar",
+    className = "",
 }) => {
     const Icon = item.icon;
 
@@ -27,14 +27,16 @@ const MenuItem: React.FC<MenuItemProps> = ({
             item.action();
         }
     };
-    const baseClasses = "w-full flex items-center gap-4 px-6 py-4 text-left transition-all duration-150 border-none";
+    const baseClasses =
+        "w-full flex items-center gap-4 px-6 py-4 text-left transition-all duration-150 border-none";
 
     // Variant-specific styling
-    const variantClasses = variant === 'sidebar' && isActive
-        ? 'bg-primary/10 text-primary border border-border'
-        : variant === 'sidebar'
-            ? 'text-text-secondary hover:bg-background-muted hover:text-text-primary'
-            : 'text-text-secondary dark:text-text-darkSecondary hover:bg-background-muted dark:hover:bg-background-mutedDark hover:text-text-primary dark:hover:text-text-darkPrimary';
+    const variantClasses =
+        variant === "sidebar" && isActive
+            ? "bg-primary/10 text-primary border border-border"
+            : variant === "sidebar"
+            ? "text-text-secondary hover:bg-background-muted hover:text-text-primary"
+            : "text-text-secondary dark:text-text-darkSecondary hover:bg-background-muted dark:hover:bg-background-mutedDark hover:text-text-primary dark:hover:text-text-darkPrimary";
 
     return (
         <button
@@ -42,7 +44,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
             className={`${baseClasses} ${variantClasses} ${className}`}
             title={item.label}
         >
-            <Icon className="w-5 h-5 flex-shrink-0 rounded-none" />
+            <Icon className="h-5 w-5 flex-shrink-0 rounded-none" />
             <span className="font-medium">{item.label}</span>
         </button>
     );

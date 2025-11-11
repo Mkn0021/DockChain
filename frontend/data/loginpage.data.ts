@@ -4,5 +4,5 @@ export const FEATURE_LIST = [
     "Ensures a Fast and Reliable Verification Process",
     "Offers Immutable Record Keeping for All Documents",
     "Prevents Fraud through Advanced Authentication",
-    "Delivers Global Accessibility for Users Everywhere"
-]
+    "Delivers Global Accessibility for Users Everywhere",
+];

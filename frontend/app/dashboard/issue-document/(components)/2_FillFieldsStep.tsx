@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
-import { Template } from '@/types/template.type';
-import InputBox from '@/components/_ui/InputBox';
-import { useStepper } from '@/components/dashboard/StepperLayout';
+import { useEffect } from "react";
+import { Template } from "@/types/template.type";
+import InputBox from "@/components/_ui/InputBox";
+import { useStepper } from "@/components/dashboard/StepperLayout";
 
 interface FillFieldsStepProps {
     selectedTemplate: Template;
@@ -12,7 +12,7 @@ interface FillFieldsStepProps {
 export default function FillFieldsStep({
     selectedTemplate,
     formValues,
-    onInputChange
+    onInputChange,
 }: FillFieldsStepProps) {
     const { setCanGoToNextStep } = useStepper();
 
@@ -26,24 +26,27 @@ export default function FillFieldsStep({
 
     return (
         <div className="w-full max-w-3xl">
-            <form className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {selectedTemplate && selectedTemplate.fields.map((field) => {
-                    const formattedKey = field.key.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                    return (
-                        <InputBox
-                            className='w-full max-h-12'
-                            key={field.key}
-                            label={formattedKey}
-                            id={field.key}
-                            name={field.key}
-                            required={field.required}
-                            type={field.type === 'date' ? 'date' : 'text'}
-                            placeholder={`Enter ${formattedKey}`}
-                            value={formValues[field.key] || ''}
-                            onChange={onInputChange}
-                        />
-                    );
-                })}
+            <form className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                {selectedTemplate &&
+                    selectedTemplate.fields.map((field) => {
+                        const formattedKey = field.key
+                            .replace(/_/g, " ")
+                            .replace(/\b\w/g, (c) => c.toUpperCase());
+                        return (
+                            <InputBox
+                                className="max-h-12 w-full"
+                                key={field.key}
+                                label={formattedKey}
+                                id={field.key}
+                                name={field.key}
+                                required={field.required}
+                                type={field.type === "date" ? "date" : "text"}
+                                placeholder={`Enter ${formattedKey}`}
+                                value={formValues[field.key] || ""}
+                                onChange={onInputChange}
+                            />
+                        );
+                    })}
             </form>
         </div>
     );

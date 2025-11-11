@@ -5,10 +5,16 @@ interface HamburgerMenuProps {
     setSidebarOpen: (open: boolean) => void;
 }
 
-export function HamburgerMenu({ sidebarOpen, setSidebarOpen }: HamburgerMenuProps) {
+export function HamburgerMenu({
+    sidebarOpen,
+    setSidebarOpen,
+}: HamburgerMenuProps) {
     return (
-        <button className="lg:hidden mr-2" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            <FaBars className="w-8 h-8 rounded-none" />
+        <button
+            className="mr-2 lg:hidden"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
+            <FaBars className="h-8 w-8 rounded-none" />
         </button>
     );
 }

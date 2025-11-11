@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense } from 'react';
+import { Suspense } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/_ui/Button";
 import { Navbar } from "@/components/_ui/Navbar";
@@ -21,10 +21,10 @@ export default function VerifyPage() {
                     Login
                 </Button>
             </Navbar>
-            <section className="flex flex-col lg:flex-row items-center justify-center min-h-[70vh] px-4 py-12 gap-16 w-full max-w-5xl mx-auto">
+            <section className="mx-auto flex min-h-[70vh] w-full max-w-5xl flex-col items-center justify-center gap-16 px-4 py-12 lg:flex-row">
                 {/* Left: Form */}
-                <div className="w-full lg:w-1/2 flex flex-col items-center">
-                    <div className="w-full max-w-lg bg-white border border-gray-200 rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <div className="flex w-full flex-col items-center lg:w-1/2">
+                    <div className="flex w-full max-w-lg flex-col items-center rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
                         <h3>Verify Document</h3>
                         <Suspense fallback={<LoadingSpinner />}>
                             <VerifyFormSection />
@@ -32,8 +32,8 @@ export default function VerifyPage() {
                     </div>
                 </div>
                 {/* Right: Lottie Animation */}
-                <div className="hidden lg:flex w-1/2 h-full items-center justify-center">
-                    <div className="w-full max-w-xl h-[32rem] flex items-center justify-center">
+                <div className="hidden h-full w-1/2 items-center justify-center lg:flex">
+                    <div className="flex h-[32rem] w-full max-w-xl items-center justify-center">
                         <Lottie
                             autoplay
                             loop

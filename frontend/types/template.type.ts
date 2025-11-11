@@ -24,4 +24,4 @@ export type Template = {
 export type TemplateSelectionStepProps = {
     selectedTemplate: Template | null;
     onSelectTemplate: (template: Template) => void;
-}
+};
