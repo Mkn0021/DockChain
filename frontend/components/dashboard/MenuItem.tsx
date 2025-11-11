@@ -1,4 +1,5 @@
 import React from "react";
+import { cn } from "@/utils/cn.util";
 
 export interface MenuItem {
     id?: string;
@@ -30,7 +31,6 @@ const MenuItem: React.FC<MenuItemProps> = ({
     const baseClasses =
         "w-full flex items-center gap-4 px-6 py-4 text-left transition-all duration-150 border-none";
 
-    // Variant-specific styling
     const variantClasses =
         variant === "sidebar" && isActive
             ? "bg-primary/10 text-primary border border-border"
@@ -41,11 +41,11 @@ const MenuItem: React.FC<MenuItemProps> = ({
     return (
         <button
             onClick={handleClick}
-            className={`${baseClasses} ${variantClasses} ${className}`}
+            className={cn(baseClasses, variantClasses, className)}
             title={item.label}
         >
             <Icon className="h-5 w-5 flex-shrink-0 rounded-none" />
-            <span className="font-medium">{item.label}</span>
+            <span className="text-nowrap font-medium">{item.label}</span>
         </button>
     );
 };
