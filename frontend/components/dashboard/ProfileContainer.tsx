@@ -4,7 +4,7 @@ import MenuItem from './MenuItem';
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { User } from '@/types/auth.type';
-import { getInitialsAndColor } from '@/utils/profileUtils';
+import { getInitialsAndColor } from '@/utils/profile.util';
 import { LOGOUT_BUTTON, PROFILE_MENU_ITEMS } from '@/data/dashboard.data';
 import ApiClient from '@/lib/api-client';
 import { useAlert } from '../providers/AlertProvider';
