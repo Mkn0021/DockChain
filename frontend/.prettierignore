@@ -1,0 +1,34 @@
+# Ignore dependencies
+node_modules
+
+# Next.js build
+.next
+out
+
+# Build folders
+dist
+build
+
+# Generated / static assets
+public/assets
+
+# Editor/project settings
+.vscode
+
+# Coverage & reports
+coverage
+
+# Lockfiles (optionally)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# System files
+.DS_Store
+
+# Minified files
+*.min.js
+
+# Ignore compiled CSS/JS from other tools
+*.css.map
+*.js.map
