@@ -3,6 +3,7 @@
 import { cn } from "@/utils/cn.util";
 import React from "react";
 import Logo from "../_ui/Logo";
+import { motion } from "motion/react";
 import { DASHBOARD_ROUTES } from "@/data/dashboard.data";
 import MenuItem from "../dashboard/MenuItem";
 import InputBox from "../_ui/InputBox";
@@ -16,7 +17,7 @@ import {
 
 export default function HeroDashboard({ className }: { className?: string }) {
     return (
-        <div
+        <motion.div
             className={cn(
                 "align-center m-auto flex w-[85%] justify-center bg-neutral-50 lg:w-[95%]",
                 "border-2 border-neutral-200 shadow-[0_0_0_12px_#fafafa]",
@@ -25,7 +26,7 @@ export default function HeroDashboard({ className }: { className?: string }) {
         >
             <DashboardSidebar />
             <DashboardContent />
-        </div>
+        </motion.div>
     );
 }
 

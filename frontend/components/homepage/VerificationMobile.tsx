@@ -1,4 +1,7 @@
+"use client";
+
 import React from "react";
+import { motion } from "motion/react";
 import { cn } from "@/utils/cn.util";
 import {
     IconBrandGithubFilled,
@@ -12,7 +15,20 @@ export default function VerificationMobile({
     className?: string;
 }) {
     return (
-        <div
+        <motion.div
+            initial={{
+                y: 80,
+            }}
+            whileInView={{
+                y: 0,
+            }}
+            viewport={{
+                once: true,
+            }}
+            transition={{
+                duration: 0.3,
+                ease: "easeOut",
+            }}
             className={cn(
                 "flex flex-col items-center justify-center rounded-2xl bg-neutral-950 px-4 py-6",
                 "border-2 border-neutral-400 shadow-[0_0_0_4px_#0f0f0f]",
@@ -23,7 +39,7 @@ export default function VerificationMobile({
             <VerificationHeader />
             <GithubEidCard />
             <AnonymousVerificationCard />
-        </div>
+        </motion.div>
     );
 }
 

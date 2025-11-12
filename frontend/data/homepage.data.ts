@@ -1,3 +1,11 @@
+export const KEY_FEATURES = [
+    "Create Ecosystem",
+    "Secure Storage",
+    "Instant Verification",
+    "Global Accessibility",
+    "Tamper-Proof Records",
+];
+
 export const WHY_BLOCKCHAIN = [
     {
         imageSrc: "/assets/why-blockchain-1.webp",
